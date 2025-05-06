@@ -1,0 +1,33 @@
+# Python / Poetry
+__pycache__/
+*.py[cod]
+*.sqlite3
+.env
+.env.*
+# exclude .env.template from gitignore
+!.env.template
+
+# Poetry virtual env
+.env/
+poetry.lock
+
+# Django
+/static/
+/media/
+
+# Node / Vite
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# macOS / Linux / Windows
+.DS_Store
+Thumbs.db
+
+# PyCharm
+.idea/
+
+# VS Code
+.vscode/
+.vscode-test/
+
