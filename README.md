@@ -23,3 +23,8 @@ Start poetry environment:
 ```bash
 poetry shell
 ```
+
+### About .env files
+
+The `.env` file is used to store environment variables for the project. Copy the `.env.template` file to `.env` and
+adjust the variables as needed.
