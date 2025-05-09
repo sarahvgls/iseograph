@@ -31,3 +31,6 @@ Thumbs.db
 .vscode/
 .vscode-test/
 
+# Data
+*.graphml
+*.json
