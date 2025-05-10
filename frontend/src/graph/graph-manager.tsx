@@ -4,7 +4,8 @@ import { ReactFlow, Controls, type NodeOrigin, Panel } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import useStore, { type RFState } from "./store.ts";
 import { shallow } from "zustand/vanilla/shallow";
-import { CustomNode } from "../components";
+
+import SequenceNode from "../components/sequence-node/sequence-node.tsx";
 
 const selector = (state: RFState) => ({
   nodes: state.nodes,
@@ -18,11 +19,11 @@ const nodeOrigin: NodeOrigin = [0.5, 0.5];
 
 //custom node
 const nodeTypes = {
-  custom: CustomNode,
+  custom: SequenceNode,
 };
 
-function Flow() {
-  // whenever you use multiple values, you should use shallow to make sure the component only re-renders when one of the values changes
+const Flow = () => {
+  //whenever you use multiple values, you should use shallow to make sure the component only re-renders when one of the values changes
   const { nodes, edges, onNodesChange, onEdgesChange } = useStore(
     selector,
     shallow,
@@ -44,6 +45,6 @@ function Flow() {
       </Panel>
     </ReactFlow>
   );
-}
+};
 
 export default Flow;

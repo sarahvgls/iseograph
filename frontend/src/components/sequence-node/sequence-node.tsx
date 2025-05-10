@@ -1,5 +1,6 @@
-import { Handle, type NodeProps, Position } from "@xyflow/react"; //changed to type NodeProps? is that correct?
+import { Handle, type NodeProps, NodeToolbar, Position } from "@xyflow/react"; //changed to type NodeProps? is that correct?
 import styled from "styled-components";
+import type { SequenceNodeProps } from "./sequence-node.props.tsx";
 
 export type NodeData = {
   label: string;
@@ -63,19 +64,20 @@ const StyledHandle = styled(Handle)`
 // const handleLeftStyle = {top: -50};
 // const handleRightStyle = { right: 10 };
 
-export const CustomNode = ({ data }: NodeProps<NodeData>) => {
+function SequenceNode({ data }: NodeProps<SequenceNodeProps>) {
   return (
     <div
       style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
     >
-      {/* Bar on top */}
-      <Bar intensity={data.intensity} />
-
-      {/* Node box with handles */}
+      <NodeToolbar isVisible={true} position={Position.Top}>
+        <div
+          style={{ backgroundColor: "#000", width: "10px", height: "10px" }}
+        ></div>
+        <Bar intensity={data.intensity} />
+      </NodeToolbar>
       <div
         style={{ position: "relative", display: "flex", alignItems: "center" }}
       >
-        {/* Left Handle (centered relative to node box only) */}
         <StyledHandle
           type="target"
           position={Position.Left}
@@ -87,7 +89,6 @@ export const CustomNode = ({ data }: NodeProps<NodeData>) => {
           }}
         />
 
-        {/* Node content box */}
         <div
           style={{
             border: "1px solid black",
@@ -100,7 +101,6 @@ export const CustomNode = ({ data }: NodeProps<NodeData>) => {
           </StyledNode>
         </div>
 
-        {/* Right Handle (centered relative to node box only) */}
         <StyledHandle
           type="source"
           position={Position.Right}
@@ -114,4 +114,6 @@ export const CustomNode = ({ data }: NodeProps<NodeData>) => {
       </div>
     </div>
   );
-};
+}
+
+export default SequenceNode;
