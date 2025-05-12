@@ -1,17 +1,17 @@
 body {
-    margin: 0;
+  margin: 0;
 }
 
 html,
 body,
 #root {
-    height: 100%;
+  height: 100%;
 }
 
 .react-flow__custom-node {
-    background: white;
-    border-radius: 2px;
-    border: 1px solid transparent;
-    padding: 2px 5px;
-    font-weight: 700;
+  background: white;
+  border-radius: 2px;
+  border: 1px solid transparent;
+  padding: 2px 5px;
+  font-weight: 700;
 }
