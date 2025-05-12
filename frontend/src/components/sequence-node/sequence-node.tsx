@@ -11,36 +11,12 @@ export type NodeData = {
 
 const StyledNode = styled.div`
   background: #fff;
-  border-radius: 5px;
   padding: 10px;
-  border: 1px solid #222;
   display: flex;
   flex-direction: column;
   align-items: center;
 `;
 
-// const Bar = styled.div<{ intensity: number }>`
-//     width: 100%;
-//     height: 10px;
-//     background-color: #ddd;
-//     border-radius: 5px;
-//     margin-top: 5px;
-//     position: relative;
-//     overflow: hidden;
-//
-//     &::after {
-//       content: '';
-//       position: absolute;
-//       top: 0;
-//       left: 0;
-//       height: 100%;
-//       width: ${(props) => props.intensity * 10}%;
-//       background-color: #007bff;
-//       transition: width 0.3s ease-in-out;
-//     }
-// `;
-
-// create a bar that takes the intensity and creates a bar-chart like bar horizontal bar
 const Bar = styled.div<{ intensity: number }>`
   width: 10%;
   height: ${(props) => props.intensity * 100}px;
@@ -54,16 +30,14 @@ const Bar = styled.div<{ intensity: number }>`
 
 const StyledHandle = styled(Handle)`
   background: #222;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
+  width: 3px;
+  height: 3px;
   position: relative;
   z-index: 1;
+  top: 50%;
 `;
 
-// const handleLeftStyle = {top: -50};
-// const handleRightStyle = { right: 10 };
-
+// TODO width that adapts to whether its collapsed or not?
 function SequenceNode({ data }: NodeProps<SequenceNodeProps>) {
   return (
     <div
@@ -81,12 +55,11 @@ function SequenceNode({ data }: NodeProps<SequenceNodeProps>) {
         <StyledHandle
           type="target"
           position={Position.Left}
-          style={{
-            position: "absolute",
-            left: "-10px",
-            top: "50%",
-            transform: "translateY(-50%)",
-          }}
+          // style={{
+          //   position: "absolute",
+          //   top: "50%",
+          //   transform: "translateY(-50%)",
+          // }}
         />
 
         <div
@@ -94,6 +67,7 @@ function SequenceNode({ data }: NodeProps<SequenceNodeProps>) {
             border: "1px solid black",
             padding: "10px",
             borderRadius: "5px",
+            fill: "#fff",
           }}
         >
           <StyledNode>
@@ -104,12 +78,11 @@ function SequenceNode({ data }: NodeProps<SequenceNodeProps>) {
         <StyledHandle
           type="source"
           position={Position.Right}
-          style={{
-            position: "absolute",
-            right: "-10px",
-            top: "50%",
-            transform: "translateY(-50%)",
-          }}
+          // style={{
+          //   position: "absolute",
+          //   top: "50%",
+          //   transform: "translateY(-50%)",
+          // }}
         />
       </div>
     </div>

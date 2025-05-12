@@ -13,6 +13,7 @@ import Dagre from "@dagrejs/dagre";
 
 import nodes from "../../../generated/nodes.json";
 import edges from "../../../generated/edges.json";
+import type { SequenceNodeProps } from "../components/sequence-node/sequence-node.props.tsx";
 
 export type RFState = {
   nodes: Node[];
@@ -22,13 +23,14 @@ export type RFState = {
 };
 
 // create nodes of type sequence node for each node in the nodes.json file
-const createNodes = (nodes: Node[]) => {
+const createNodes = (nodes: SequenceNodeProps[]): SequenceNodeProps[] => {
   return nodes.map((node) => ({
     ...node,
     type: "custom",
     data: {
       sequence: node.data.sequence,
       intensity: node.data.intensity,
+      feature: node.data.feature,
     },
   }));
 };
@@ -48,32 +50,32 @@ const getLayoutedElements = (
   });
 
   edges.forEach((edge) => g.setEdge(edge.source, edge.target));
-  nodes.forEach((node) =>
+  nodes.forEach((node) => {
+    const sequence: string = node.data.sequence as string;
+    const sequenceLength = sequence.length * 10 + 100; // 10 is the approximated width of each character, plus 25px on each side
     g.setNode(node.id, {
       ...node,
-      width: 100,
+      width: sequenceLength ?? 100,
       height: 100,
-    }),
-  );
+    });
+  });
 
   Dagre.layout(g);
-  console.log(nodes);
 
   return {
     nodes: nodes.map((node) => {
       const position = g.node(node.id);
-      // We are shifting the dagre node position (anchor=center center) to the top left
-      // so it matches the React Flow node anchor point (top left).
-      //const x = position.x - (node.measured?.width ?? 0) / 2;
-      const y = node.height ?? 0 / 2;
-
-      return { ...node, position: { x: position.x, y: y } };
+      // take the x coordinate from dagre layout but adjust y coordinate to useful post-position
+      return { ...node, position: { x: position.x, y: 0 } };
     }),
     edges,
   };
 };
 
-function symmetricallyOffsetVariations(nodes: Node[], edges: Edge[]): Node[] {
+function symmetricallyOffsetVariations(
+  nodes: SequenceNodeProps[],
+  edges: Edge[],
+): SequenceNodeProps[] {
   const spacing = 100; // vertical distance between variations
   const sourceToTargets: Record<string, string[]> = {};
 
@@ -91,21 +93,30 @@ function symmetricallyOffsetVariations(nodes: Node[], edges: Edge[]): Node[] {
     if (!parent) return node;
 
     const [, siblings] = parent;
+    // sort siblings by node.data.intensity
+    siblings.sort(
+      (a, b) =>
+        (nodes.find((n) => n.id === b)?.data.intensity ?? 0) -
+        (nodes.find((n) => n.id === a)?.data.intensity ?? 0),
+    );
     const index = siblings.indexOf(node.id);
-    const offset = (index - (siblings.length - 1) / 2) * spacing;
+    const yOffset = (index - (siblings.length - 1) / 2) * spacing;
+    const xOffset = index * 50; // TODO decide if xOffset is needed
 
     return {
       ...node,
       position: {
-        x: node.position.x,
-        y: node.position.y + offset,
+        x: node.position.x + xOffset,
+        y: node.position.y + yOffset,
       },
     };
   });
 }
 
 // apply layout to nodes and edges
-const customNodes: Node[] = createNodes(nodes);
+const customNodes: SequenceNodeProps[] = createNodes(
+  nodes as SequenceNodeProps[],
+);
 const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
   customNodes,
   edges,
@@ -113,7 +124,10 @@ const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
 );
 
 // apply the offset to the variations
-const offsetNodes = symmetricallyOffsetVariations(layoutedNodes, layoutedEdges);
+const offsetNodes = symmetricallyOffsetVariations(
+  layoutedNodes as SequenceNodeProps[],
+  layoutedEdges,
+);
 
 const useStore = createWithEqualityFn<RFState>((set, get) => ({
   nodes: offsetNodes,
