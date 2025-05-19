@@ -16,7 +16,7 @@ const focusNeighborNode = (
     if (focusedNode && node.id === focusedNode.id) {
       continue;
     }
-    let distance = node.position.x - currentX;
+    const distance = node.position.x - currentX;
     if (
       (forward ? distance < minDistance : distance > minDistance) &&
       (forward ? distance > 0 : distance < 0)

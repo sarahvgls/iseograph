@@ -18,7 +18,7 @@ export const useFocusHandlers = (
         duration: 800,
       });
     },
-    [setCenter],
+    [setCenter, setFocusedNode],
   );
 
   const onFocusNextNode = useCallback(
@@ -32,7 +32,7 @@ export const useFocusHandlers = (
         focusNode(nextNode);
       }
     },
-    [nodes, focusNode],
+    [nodes, focusNode, viewport],
   );
 
   const onFocusPreviousNode = useCallback(
@@ -46,7 +46,7 @@ export const useFocusHandlers = (
         focusNode(prevNode);
       }
     },
-    [nodes, focusNode],
+    [nodes, focusNode, viewport],
   );
 
   return { focusNode, onFocusNextNode, onFocusPreviousNode };
