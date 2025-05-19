@@ -1,4 +1,9 @@
-import { ReactFlow, Controls, type NodeOrigin, Panel } from "@xyflow/react";
+import {
+  ReactFlow,
+  type NodeOrigin,
+  Panel,
+  type NodeMouseHandler,
+} from "@xyflow/react";
 
 // we have to import the React Flow styles for it to work
 import "@xyflow/react/dist/style.css";
@@ -6,6 +11,10 @@ import useStore, { type RFState } from "./store.ts";
 import { shallow } from "zustand/vanilla/shallow";
 
 import SequenceNode from "../components/sequence-node/sequence-node.tsx";
+import { useCallback, useState } from "react";
+import type { SequenceNodeProps } from "../components/sequence-node/sequence-node.props.tsx";
+import GraphControls from "./controls.tsx";
+import { useFocusHandlers } from "../controls/focus-node/focus-utils.ts";
 
 const selector = (state: RFState) => ({
   nodes: state.nodes,
@@ -16,11 +25,7 @@ const selector = (state: RFState) => ({
 
 // this places the node origin in the center of a node
 const nodeOrigin: NodeOrigin = [0.5, 0.5];
-
-//custom node
-const nodeTypes = {
-  custom: SequenceNode,
-};
+const nodeTypes = { custom: SequenceNode };
 
 const Flow = () => {
   //whenever you use multiple values, you should use shallow to make sure the component only re-renders when one of the values changes
@@ -28,6 +33,24 @@ const Flow = () => {
     selector,
     shallow,
   );
+  const [focusedNode, setFocusedNode] = useState<SequenceNodeProps>();
+  const { focusNode, onFocusNextNode, onFocusPreviousNode } = useFocusHandlers(
+    nodes as SequenceNodeProps[],
+    setFocusedNode,
+  );
+
+  const onNodeClick: NodeMouseHandler = useCallback(
+    (_event, node) => {
+      focusNode(node as SequenceNodeProps);
+    },
+    [focusNode],
+  );
+
+  const fitViewOptions = {
+    minZoom: 0.4,
+    maxZoom: 1,
+    nodes: nodes.slice(0, 3),
+  };
 
   return (
     <ReactFlow
@@ -37,12 +60,25 @@ const Flow = () => {
       onNodesChange={onNodesChange}
       onEdgesChange={onEdgesChange}
       nodeOrigin={nodeOrigin}
+      minZoom={0.05}
+      width={100}
+      onNodeClick={onNodeClick}
       fitView
+      fitViewOptions={fitViewOptions}
     >
-      <Controls showInteractive={false} />
+      <GraphControls
+        onFocusNextNode={() => onFocusNextNode(focusedNode)}
+        onFocusPreviousNode={() => onFocusPreviousNode(focusedNode)}
+        onFocusCurrentNode={() => {
+          if (focusedNode) {
+            focusNode(focusedNode);
+          }
+        }}
+      />
       <Panel position="top-left">
         Proteoform graph visualization with React Flow library
       </Panel>
+      {/* TODO add Zoom settings here after tailwind and shadcn configuration*/}
     </ReactFlow>
   );
 };
