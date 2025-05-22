@@ -3,7 +3,7 @@ import { action, makeObservable, observable } from "mobx";
 
 export const theme = {
   offsets: {
-    useSequenceLength: false,
+    defaultWidthCollapsed: false,
     defaultLength: 100,
     useXOffset: true, // TODO decide if xOffset is needed
   },

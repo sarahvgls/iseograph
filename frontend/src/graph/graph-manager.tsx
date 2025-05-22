@@ -7,7 +7,7 @@ import {
 
 // we have to import the React Flow styles for it to work
 import "@xyflow/react/dist/style.css";
-import useStore, { type RFState } from "./store.ts";
+import useGraphStore, { type RFState } from "./store.ts";
 import { shallow } from "zustand/vanilla/shallow";
 
 import SequenceNode from "../components/sequence-node/sequence-node.tsx";
@@ -21,6 +21,8 @@ const selector = (state: RFState) => ({
   edges: state.edges,
   onNodesChange: state.onNodesChange,
   onEdgesChange: state.onEdgesChange,
+  nodeWidthMode: state.nodeWidthMode,
+  toggleNodeWidthMode: state.toggleNodeWidthMode,
 });
 
 // this places the node origin in the center of a node
@@ -29,10 +31,8 @@ const nodeTypes = { custom: SequenceNode };
 
 const Flow = () => {
   //whenever you use multiple values, you should use shallow to make sure the component only re-renders when one of the values changes
-  const { nodes, edges, onNodesChange, onEdgesChange } = useStore(
-    selector,
-    shallow,
-  );
+  const { nodes, edges, onNodesChange, onEdgesChange, toggleNodeWidthMode } =
+    useGraphStore(selector, shallow);
   const [focusedNode, setFocusedNode] = useState<SequenceNodeProps>();
   const { focusNode, onFocusNextNode, onFocusPreviousNode } = useFocusHandlers(
     nodes as SequenceNodeProps[],
@@ -73,6 +73,9 @@ const Flow = () => {
           if (focusedNode) {
             focusNode(focusedNode);
           }
+        }}
+        toggleNodeWidthMode={() => {
+          toggleNodeWidthMode();
         }}
       />
       <Panel position="top-left">

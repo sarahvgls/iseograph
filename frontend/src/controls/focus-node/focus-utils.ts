@@ -3,6 +3,8 @@ import { useReactFlow, useViewport } from "@xyflow/react";
 import type { SequenceNodeProps } from "../../components/sequence-node/sequence-node.props.tsx";
 import { focusNextNode, focusPreviousNode } from "./index.tsx";
 
+// TODO think about using "origin x" to not have moved nodes alter the result
+
 export const useFocusHandlers = (
   nodes: SequenceNodeProps[],
   setFocusedNode: (node: SequenceNodeProps) => void,

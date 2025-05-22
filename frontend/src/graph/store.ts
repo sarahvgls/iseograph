@@ -1,12 +1,12 @@
 import {
+  applyEdgeChanges,
+  applyNodeChanges,
   type Edge,
   type EdgeChange,
   type Node,
   type NodeChange,
-  type OnNodesChange,
   type OnEdgesChange,
-  applyNodeChanges,
-  applyEdgeChanges,
+  type OnNodesChange,
 } from "@xyflow/react";
 import { createWithEqualityFn } from "zustand/traditional";
 import Dagre from "@dagrejs/dagre";
@@ -15,12 +15,15 @@ import nodes from "../../../generated/nodes.json";
 import edges from "../../../generated/edges.json";
 import type { SequenceNodeProps } from "../components/sequence-node/sequence-node.props.tsx";
 import { theme } from "../theme";
+import { nodeWidthModes } from "../theme/types.tsx";
 
 export type RFState = {
   nodes: Node[];
   edges: Edge[];
   onNodesChange: OnNodesChange;
   onEdgesChange: OnEdgesChange;
+  nodeWidthMode: nodeWidthModes;
+  toggleNodeWidthMode: () => void;
 };
 
 // create nodes of type sequence node for each node in the nodes.json file
@@ -36,10 +39,11 @@ const createNodes = (nodes: SequenceNodeProps[]): SequenceNodeProps[] => {
   }));
 };
 
-// layout nodes and edges
+// ----- functions for layouting nodes and edges -----
 const getLayoutedElements = (
   nodes: Node[],
   edges: Edge[],
+  nodeWidthMode: nodeWidthModes,
   options: { direction: string },
 ) => {
   const g = new Dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
@@ -53,12 +57,13 @@ const getLayoutedElements = (
   edges.forEach((edge) => g.setEdge(edge.source, edge.target));
   nodes.forEach((node) => {
     const sequence: string = node.data.sequence as string;
-    const sequenceLength = sequence.length * 10 + 100; // 10 is the approximated width of each character, plus 25px on each side
+    const sequenceLength = sequence.length * 12 + 100; // 10 is the approximated width of each character, plus 25px on each side
     g.setNode(node.id, {
       ...node,
-      width: theme.offsets.useSequenceLength
-        ? sequenceLength
-        : theme.offsets.defaultLength,
+      width:
+        nodeWidthMode === nodeWidthModes.Collapsed
+          ? theme.offsets.defaultLength
+          : sequenceLength,
       height: theme.offsets.defaultLength,
     });
   });
@@ -116,13 +121,16 @@ function symmetricallyOffsetVariations(
   });
 }
 
-// apply layout to nodes and edges
+// ---- apply layout to nodes and edges ----
 const customNodes: SequenceNodeProps[] = createNodes(
   nodes as SequenceNodeProps[],
 );
 const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
   customNodes,
   edges,
+  theme.offsets.defaultWidthCollapsed
+    ? nodeWidthModes.Collapsed
+    : nodeWidthModes.Expanded,
   { direction: "LR" },
 );
 
@@ -132,9 +140,12 @@ const offsetNodes = symmetricallyOffsetVariations(
   layoutedEdges,
 );
 
-const useStore = createWithEqualityFn<RFState>((set, get) => ({
+const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
   nodes: offsetNodes,
   edges: layoutedEdges,
+  nodeWidthMode: theme.offsets.defaultWidthCollapsed
+    ? nodeWidthModes.Collapsed
+    : nodeWidthModes.Expanded,
   onNodesChange: (changes: NodeChange[]) => {
     set({
       nodes: applyNodeChanges(changes, get().nodes),
@@ -145,6 +156,33 @@ const useStore = createWithEqualityFn<RFState>((set, get) => ({
       edges: applyEdgeChanges(changes, get().edges),
     });
   },
+  toggleNodeWidthMode: () => {
+    set((state) => ({
+      nodeWidthMode:
+        state.nodeWidthMode === nodeWidthModes.Collapsed
+          ? nodeWidthModes.Expanded
+          : nodeWidthModes.Collapsed,
+    }));
+    // reapply layout to nodes and edges
+    const { nodes, edges } = get();
+    const state = get();
+    const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
+      nodes,
+      edges,
+      state.nodeWidthMode === nodeWidthModes.Collapsed
+        ? nodeWidthModes.Collapsed
+        : nodeWidthModes.Expanded,
+      { direction: "LR" },
+    );
+    const offsetNodes = symmetricallyOffsetVariations(
+      layoutedNodes as SequenceNodeProps[],
+      layoutedEdges,
+    );
+    set({
+      nodes: offsetNodes,
+      edges: layoutedEdges,
+    });
+  },
 }));
 
-export default useStore;
+export default useGraphStore;
