@@ -14,6 +14,7 @@ import Dagre from "@dagrejs/dagre";
 import nodes from "../../../generated/nodes.json";
 import edges from "../../../generated/edges.json";
 import type { SequenceNodeProps } from "../components/sequence-node/sequence-node.props.tsx";
+import { theme } from "../theme";
 
 export type RFState = {
   nodes: Node[];
@@ -55,8 +56,10 @@ const getLayoutedElements = (
     const sequenceLength = sequence.length * 10 + 100; // 10 is the approximated width of each character, plus 25px on each side
     g.setNode(node.id, {
       ...node,
-      width: sequenceLength ?? 100,
-      height: 100,
+      width: theme.offsets.useSequenceLength
+        ? sequenceLength
+        : theme.offsets.defaultLength,
+      height: theme.offsets.defaultLength,
     });
   });
 
@@ -101,7 +104,7 @@ function symmetricallyOffsetVariations(
     );
     const index = siblings.indexOf(node.id);
     const yOffset = (index - (siblings.length - 1) / 2) * spacing;
-    const xOffset = index * 50; // TODO decide if xOffset is needed
+    const xOffset = theme.offsets.useXOffset ? index * 50 : 0;
 
     return {
       ...node,

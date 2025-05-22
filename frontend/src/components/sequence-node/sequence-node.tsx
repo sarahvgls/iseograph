@@ -7,12 +7,15 @@ import {
 } from "@xyflow/react"; //changed to type NodeProps? is that correct?
 import styled from "styled-components";
 import type { SequenceNodeProps } from "./sequence-node.props.tsx";
+import { theme } from "../../theme";
+import { SequenceContainer } from "./sequence-container/sequence-container.tsx";
 
 const NodeWrapper = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
   position: relative;
+  width: 100%;
 `;
 
 const StyledNode = styled.div`
@@ -50,7 +53,9 @@ const useZoom = () => useStore((store) => store.transform[2]); // [x, y, zoom]
 // TODO width that adapts to whether its collapsed or not?
 function SequenceNode({ data }: NodeProps<SequenceNodeProps>) {
   // calculated width
-  const width = data.sequence.length * 10 + 100; // 10 is the approximated width of each character, plus 50px on each side
+  const width = theme.offsets.useSequenceLength
+    ? data.sequence.length * 10 + 100
+    : theme.offsets.defaultLength; // 10 is the approximated width of each character, plus 50px on each side
 
   // values for invisible bounding box scale
   const zoom = useZoom();
@@ -83,7 +88,7 @@ function SequenceNode({ data }: NodeProps<SequenceNodeProps>) {
       <NodeWrapper>
         <StyledHandle type="target" position={Position.Left} />
         <StyledNode>
-          <p>{data.sequence}</p>
+          <SequenceContainer sequence={data.sequence} collapsed={true} />
         </StyledNode>
         <StyledHandle type="source" position={Position.Right} />
       </NodeWrapper>
