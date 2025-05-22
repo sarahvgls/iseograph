@@ -1,6 +1,6 @@
 import { css } from "styled-components";
 
-import { Theme } from "./theme";
+import type { Theme } from "./theme";
 
 /** Extracts a value from the theme passed to the component. */
 export const lookup =
@@ -36,10 +36,13 @@ export const size = lookup("sizes");
 export const spacing = lookup("spacing");
 export const zIndex = lookup("zIndices");
 
-export const mediaQuery = (key: keyof Theme["mediaQueries"], styles?: ReturnType<typeof css>) =>
+export const mediaQuery = (
+  key: keyof Theme["mediaQueries"],
+  styles?: ReturnType<typeof css>,
+) =>
   styles
     ? css`
-        ${lookup("mediaQueries")(key)} {
+        ${lookup("mediaQueries")(key) as unknown as string} {
           ${styles}
         }
       `
@@ -84,7 +87,10 @@ export const parseUnitFromMetric = (value: string): string => {
 export const scaleMetric = (value: string, factor: number): string =>
   `${String(parseNumberFromMetric(value) * factor)}${parseUnitFromMetric(value)}`;
 
-export type ComputationInput<P> = string | number | ((props: P) => string | number);
+export type ComputationInput<P> =
+  | string
+  | number
+  | ((props: P) => string | number);
 
 /**
  * Returns a computed value to be used in styling.
@@ -141,7 +147,8 @@ export const computeStyleValue =
     return typeof result === "string"
       ? result
       : `${String(result)}${
-          typeof resolvedInputs[0] === "string" && /^(\+|-)?\d/.exec(resolvedInputs[0])
+          typeof resolvedInputs[0] === "string" &&
+          /^(\+|-)?\d/.exec(resolvedInputs[0])
             ? parseUnitFromMetric(resolvedInputs[0])
             : ""
         }`;
