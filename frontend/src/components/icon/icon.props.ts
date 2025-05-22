@@ -20,12 +20,6 @@ export interface IconProps extends React.SVGProps<SVGSVGElement> {
   isDisabled?: boolean;
 }
 
-export interface DefaultColoredIconProps extends React.SVGProps<SVGSVGElement> {
-  icon: DefaultColoredIconType;
-  isSmall?: boolean;
-  isBig?: boolean;
-}
-
 export interface IconButtonProps extends IconProps {
   hoverColor?: Color;
 }

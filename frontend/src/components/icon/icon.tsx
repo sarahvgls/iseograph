@@ -1,12 +1,7 @@
 import React, { useState } from "react";
 import { css, styled } from "styled-components";
 
-import type {
-  DefaultColoredIconProps,
-  DefaultColoredIconType,
-  IconButtonProps,
-  IconProps,
-} from "./icon.props";
+import type { IconButtonProps, IconProps } from "./icon.props";
 import * as icons from "./icons";
 import { type Color, color, opacity, size } from "../../theme";
 
@@ -15,8 +10,7 @@ import { type Color, color, opacity, size } from "../../theme";
 export const iconColor =
   <CK extends Color>(colorKey?: CK) =>
   () => css`
-    fill: none;
-    stroke: ${color(
+    fill: ${color(
       (colorKey as Color) ?? ("primary" as Color),
     ) as unknown as string};
 
@@ -69,19 +63,6 @@ export const Icon = React.forwardRef<SVGSVGElement, IconProps>(function Icon(
     </StyledSVG>
   );
 });
-
-export const DefaultColoredIcon: React.FC<DefaultColoredIconProps> = ({
-  icon,
-  style,
-}) => {
-  const defaultColors: Record<DefaultColoredIconType, Color> = {
-    complete: "green",
-    incomplete: "blue",
-    outdated: "yellow",
-    failed: "red",
-  };
-  return <Icon icon={icon} color={defaultColors[icon]} style={style} />;
-};
 
 export const IconButton = React.forwardRef<SVGSVGElement, IconButtonProps>(
   function IconButton(
