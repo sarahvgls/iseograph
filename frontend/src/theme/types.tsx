@@ -5,3 +5,10 @@ export const nodeWidthModes = {
 
 export type nodeWidthModes =
   (typeof nodeWidthModes)[keyof typeof nodeWidthModes];
+
+export const layoutModes = {
+  Basic: "basic",
+  Snake: "snake",
+};
+
+export type layoutModes = (typeof layoutModes)[keyof typeof layoutModes];

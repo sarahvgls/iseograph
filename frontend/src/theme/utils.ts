@@ -7,7 +7,7 @@ export const lookup =
   <TK extends keyof Theme>(themeKey: TK) =>
   <VK extends keyof Theme[TK]>(valueKey: VK) =>
   ({ theme }: { theme: Theme }): Theme[TK][VK] | VK => {
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+     
     if (!theme) return valueKey;
 
     const values = theme[themeKey];

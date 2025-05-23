@@ -1,11 +1,18 @@
 import { action, makeObservable, observable } from "mobx";
+import { layoutModes, nodeWidthModes } from "./types.tsx";
 //TODO refactor: what is still needed
 
 export const theme = {
   offsets: {
     defaultWidthCollapsed: false,
     defaultLength: 100,
-    useXOffset: true, // TODO decide if xOffset is needed
+    defaultSpacingBetweenNodes: 100,
+    useXOffset: false, // TODO decide if xOffset is needed
+  },
+  layout: {
+    mode: layoutModes.Basic,
+    nodeWidthMode: nodeWidthModes.Collapsed,
+    direction: "LR",
   },
 };
 
@@ -311,7 +318,7 @@ export const getTheme = (
   makeObservable(
     {
       ...theme,
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+       
       colors: colorModes[colorMode] || theme.colors,
       mediaQueries: {
         ...theme.mediaQueries,

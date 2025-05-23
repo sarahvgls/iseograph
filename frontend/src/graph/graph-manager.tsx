@@ -15,6 +15,7 @@ import { useCallback, useState } from "react";
 import type { SequenceNodeProps } from "../components/sequence-node/sequence-node.props.tsx";
 import GraphControls from "./controls.tsx";
 import { useFocusHandlers } from "../controls/focus-node/focus-utils.ts";
+import { nodeWidthModes } from "../theme/types.tsx";
 
 const selector = (state: RFState) => ({
   nodes: state.nodes,
@@ -22,7 +23,7 @@ const selector = (state: RFState) => ({
   onNodesChange: state.onNodesChange,
   onEdgesChange: state.onEdgesChange,
   nodeWidthMode: state.nodeWidthMode,
-  toggleNodeWidthMode: state.toggleNodeWidthMode,
+  setNodeWidthMode: state.setNodeWidthMode,
 });
 
 // this places the node origin in the center of a node
@@ -31,13 +32,27 @@ const nodeTypes = { custom: SequenceNode };
 
 const Flow = () => {
   //whenever you use multiple values, you should use shallow to make sure the component only re-renders when one of the values changes
-  const { nodes, edges, onNodesChange, onEdgesChange, toggleNodeWidthMode } =
-    useGraphStore(selector, shallow);
+  const {
+    nodes,
+    edges,
+    onNodesChange,
+    onEdgesChange,
+    nodeWidthMode,
+    setNodeWidthMode,
+  } = useGraphStore(selector, shallow);
   const [focusedNode, setFocusedNode] = useState<SequenceNodeProps>();
   const { focusNode, onFocusNextNode, onFocusPreviousNode } = useFocusHandlers(
     nodes as SequenceNodeProps[],
     setFocusedNode,
   );
+
+  const toggleNodeWidthMode = () => {
+    setNodeWidthMode(
+      nodeWidthMode === nodeWidthModes.Collapsed
+        ? nodeWidthModes.Expanded
+        : nodeWidthModes.Collapsed,
+    );
+  };
 
   const onNodeClick: NodeMouseHandler = useCallback(
     (_event, node) => {
@@ -75,7 +90,7 @@ const Flow = () => {
           }
         }}
         toggleNodeWidthMode={() => {
-          toggleNodeWidthMode();
+          void toggleNodeWidthMode();
         }}
       />
       <Panel position="top-left">

@@ -6,7 +6,7 @@ import * as icons from "./icons";
 import { type Color, color, opacity, size } from "../../theme";
 
 /** Icon color mixin. */
-// eslint-disable-next-line react-refresh/only-export-components
+
 export const iconColor =
   <CK extends Color>(colorKey?: CK) =>
   () => css`
@@ -57,7 +57,7 @@ export const Icon = React.forwardRef<SVGSVGElement, IconProps>(function Icon(
 ) {
   return (
     // TODO: Fix Vite ref passing
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any, import/namespace
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     <StyledSVG as={icons[icon] as any} {...rest} ref={ref}>
       {children}
     </StyledSVG>
