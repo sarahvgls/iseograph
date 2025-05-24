@@ -15,7 +15,7 @@ import edges from "../../../generated/edges.json";
 import type { SequenceNodeProps } from "../components/sequence-node/sequence-node.props.tsx";
 import { theme } from "../theme";
 import { type layoutModes, nodeWidthModes } from "../theme/types.tsx";
-import { applyLayout } from "./layout.tsx";
+import { applyLayout } from "./layout/layout.tsx";
 
 export type RFState = {
   nodes: Node[];
@@ -37,6 +37,8 @@ const createNodes = (nodes: SequenceNodeProps[]): SequenceNodeProps[] => {
       sequence: node.data.sequence,
       intensity: node.data.intensity,
       feature: node.data.feature,
+      positionIndex: 0,
+      intensityRank: 0,
     },
   }));
 };
@@ -52,6 +54,10 @@ const [layoutedNodes, layoutedEdges] = applyLayout(
   customEdges,
   theme.layout.nodeWidthMode,
 );
+
+if (theme.debugMode) {
+  console.log("Nodes after initial Layout:", layoutedNodes);
+}
 
 const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
   nodes: layoutedNodes,

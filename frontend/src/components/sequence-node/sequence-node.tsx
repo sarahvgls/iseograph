@@ -59,7 +59,7 @@ const useZoom = () => useStore((store) => store.transform[2]); // [x, y, zoom]
 
 function SequenceNode({ data }: NodeProps<SequenceNodeProps>) {
   const { nodeWidthMode } = useGraphStore(selector, shallow);
-  const width = theme.offsets.defaultWidthCollapsed
+  const width = theme.offsets.defaultWidthCollapsed // TODO what happens here
     ? data.sequence.length * 10 + 100
     : theme.offsets.defaultLength; // 10 is the approximated width of each character, plus 50px on each side
 

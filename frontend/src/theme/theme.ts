@@ -3,6 +3,7 @@ import { layoutModes, nodeWidthModes } from "./types.tsx";
 //TODO refactor: what is still needed
 
 export const theme = {
+  debugMode: true,
   offsets: {
     defaultWidthCollapsed: false,
     defaultLength: 100,
@@ -10,9 +11,16 @@ export const theme = {
     useXOffset: false, // TODO decide if xOffset is needed
   },
   layout: {
-    mode: layoutModes.Basic,
+    mode: layoutModes.Snake,
     nodeWidthMode: nodeWidthModes.Collapsed,
-    direction: "LR",
+    basic: {
+      direction: "LR",
+    },
+    snake: {
+      yOffsetBetweenRows: 300,
+      maxAAsPerRow: 60,
+      splitLargeNodes: false, // if true, large nodes will be split into smaller nodes when reaching the end of a line
+    },
   },
 };
 
@@ -318,7 +326,7 @@ export const getTheme = (
   makeObservable(
     {
       ...theme,
-       
+
       colors: colorModes[colorMode] || theme.colors,
       mediaQueries: {
         ...theme.mediaQueries,

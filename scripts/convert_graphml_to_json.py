@@ -6,7 +6,7 @@ import networkx as nx
 import json
 
 # Load GraphML file
-G = nx.read_graphml("../data/custom.graphml")
+G = nx.read_graphml("../data/protein.graphml")
 nodes = G.nodes(data=True)
 # Print nodes and edges for debugging
 print("Nodes:")

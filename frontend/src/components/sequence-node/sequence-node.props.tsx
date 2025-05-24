@@ -3,6 +3,12 @@ import type { NodeProps } from "@xyflow/react";
 export interface SequenceNodeProps extends NodeProps {
   label: string;
   position: { x: number; y: number };
-  data: { sequence: string; intensity: number; feature: string };
+  data: {
+    sequence: string;
+    intensity: number;
+    feature: string;
+    positionIndex: number;
+    intensityRank: number;
+  };
   id: string;
 }
