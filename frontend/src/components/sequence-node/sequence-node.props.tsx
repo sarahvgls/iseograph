@@ -13,7 +13,7 @@ export interface SequenceNodeProps extends NodeProps {
     intensityRank: number;
   };
   id: string;
-  type: nodeTypes.SequenceNode;
+  type: typeof nodeTypes.SequenceNode;
   parentId?: string; // optional, used for grouping nodes in layouts
   extent?: "parent"; // optional, used for grouping nodes in layouts
 }

@@ -6,20 +6,17 @@ import type { SequenceNodeProps } from "../../components/sequence-node/sequence-
 export const applySnakeLayout = (
   nodes: NodeTypes[],
   edges: Edge[],
-): [(SequenceNodeProps | Node)[], Edge[]] => {
 ): [NodeTypes[], Edge[]] => {
   // expects nodes that are already in a sequence
-  let aaCountForRow = 0; //not used right now
-  let widthCountForRow = 0;
   let isCurrentRowReversed = false; //should be used
-  let rowCount = 0;
+  let rowCount = 1;
   let lastPositonIndex = -1;
-  let xOffset = 0;
+  let xOffset = 25;
   let yOffset = 0;
 
   //consts to refactor later
   const groupHeight = 300;
-  const groupWidth = 2000;
+  const groupWidth = 2500;
 
   // Sort nodes by node.data.positionIndex to ensure they are in the correct order
   nodes.sort((a, b) => {
@@ -38,7 +35,6 @@ export const applySnakeLayout = (
     data: {
       label: `Row ${rowCount}`,
       isReversed: isCurrentRowReversed,
-      aaCountForRow: aaCountForRow,
     },
     style: {
       backgroundColor: "rgba(255, 0, 255, 0.2)",
@@ -62,29 +58,30 @@ export const applySnakeLayout = (
       } as SequenceNodeProps;
     }
 
-    widthCountForRow += node.width ?? 1;
-
-    if (widthCountForRow > theme.layout.snake.maxWidthPerRow) {
+    if (
+      (node.data.positionIndex as number) >
+      theme.layout.snake.maxNodesPerRow * rowCount - 1
+    ) {
       if (theme.layout.snake.splitLargeNodes) {
-        // TODO
+        // TODO split if not collapsed
       }
       // Start a new row with current node
-      widthCountForRow = node.width ?? 1;
-      isCurrentRowReversed = !isCurrentRowReversed;
-
+      isCurrentRowReversed = !isCurrentRowReversed; // TODO implement reverse order of node
       rowCount++;
       yOffset = 0;
-      xOffset = -node.position.x;
+      xOffset = -(node.position.x - 100);
 
       rowId = `group-${rowCount}`;
       const newGroupNode: Node = {
         id: rowId,
         type: "group",
-        position: { x: 0, y: theme.layout.snake.yOffsetBetweenRows * rowCount },
+        position: {
+          x: 0,
+          y: theme.layout.snake.yOffsetBetweenRows * (rowCount - 1),
+        },
         data: {
           label: `Row ${rowCount}`,
           isReversed: isCurrentRowReversed,
-          aaCountForRow: aaCountForRow,
         },
         style: {
           backgroundColor: "rgba(40, 0, 255, 0.09)",
@@ -95,9 +92,11 @@ export const applySnakeLayout = (
       groupNodes.push(newGroupNode);
     }
 
+    // handle nodes with same positionIndex with the same offsets
+    // TODO fix position index
     lastPositonIndex = node.data.positionIndex as number;
 
-    const groupedNode = {
+    return {
       ...node,
       position: {
         x: node.position.x + xOffset,
@@ -106,8 +105,6 @@ export const applySnakeLayout = (
       parentId: rowId,
       extent: "parent",
     } as SequenceNodeProps;
-
-    return groupedNode;
   });
 
   const allNodes: NodeTypes[] = [...groupNodes, ...layoutedNodes];

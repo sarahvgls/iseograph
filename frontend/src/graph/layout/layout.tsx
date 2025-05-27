@@ -37,7 +37,7 @@ const applyBasicLayoutDagre = (
       ...node,
       width:
         nodeWidthMode === nodeWidthModes.Collapsed
-          ? theme.offsets.defaultLength
+          ? theme.offsets.largeWidth
           : sequenceLength,
       height: theme.offsets.defaultLength,
     });
@@ -73,14 +73,6 @@ const applyBasicLayoutDagre = (
       return {
         ...node,
         position: { x: position.x, y: 0 },
-        //calculate actual width and height
-        width:
-          nodeWidthMode === nodeWidthModes.Collapsed
-            ? sequenceLength > theme.offsets.defaultLength
-              ? theme.offsets.defaultLength
-              : sequenceLength
-            : sequenceLength,
-        height: theme.offsets.defaultLength,
       } as SequenceNodeProps;
     }),
     edges,
@@ -179,6 +171,8 @@ export const applyLayout = (
   let layoutedNodes: NodeTypes[];
   let layoutedEdges: Edge[];
 
+  console.log("nodes before layout:", nodes);
+
   // reset nodes
   nodes = nodes.filter((node) => node.type !== nodeTypes.GroupNode);
   nodes = nodes.map((node) => ({
@@ -192,6 +186,8 @@ export const applyLayout = (
       intensityRank: 0, // reset intensityRank for layouting
     },
   }));
+
+  console.log("nodes after removing group nodes:", nodes);
   [layoutedNodes, layoutedEdges] = applyBasicLayoutDagre(
     nodes,
     edges,
@@ -200,17 +196,20 @@ export const applyLayout = (
       direction: theme.layout.basic.direction,
     },
   );
+  console.log("Nodes after basic layout:", layoutedNodes);
   // add symmetrical offset for variations
   [layoutedNodes, layoutedEdges] = addSymmetricalOffsetForVariations(
     layoutedNodes,
     layoutedEdges,
   );
-  if (theme.layout.mode == layoutModes.Snake) {
+  console.log("Nodes after adding symmetrical offset:", layoutedNodes);
+  if (layoutMode == layoutModes.Snake) {
     [layoutedNodes, layoutedEdges] = applySnakeLayout(
       layoutedNodes,
       layoutedEdges,
     );
   }
+  console.log("Nodes after snake layout:", layoutedNodes);
 
   return [layoutedNodes, layoutedEdges];
 };

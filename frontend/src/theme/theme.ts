@@ -7,6 +7,7 @@ export const theme = {
   offsets: {
     defaultWidthCollapsed: false,
     defaultLength: 100,
+    largeWidth: 150,
     defaultSpacingBetweenNodes: 100,
     useXOffset: false, // TODO decide if xOffset is needed
   },
@@ -18,8 +19,9 @@ export const theme = {
     },
     snake: {
       yOffsetBetweenRows: 300,
-      maxAAsPerRow: 60,
-      maxWidthPerRow: 1000,
+      maxAAsPerRow: 60, //not used
+      maxWidthPerRow: 1000, //not used
+      maxNodesPerRow: 11,
       splitLargeNodes: false, // if true, large nodes will be split into smaller nodes when reaching the end of a line
     },
   },
