@@ -14,7 +14,11 @@ import nodes from "../../../generated/nodes.json";
 import edges from "../../../generated/edges.json";
 import type { SequenceNodeProps } from "../components/sequence-node/sequence-node.props.tsx";
 import { theme } from "../theme";
-import { type layoutModes, nodeWidthModes } from "../theme/types.tsx";
+import {
+  type layoutModes,
+  nodeTypes,
+  nodeWidthModes,
+} from "../theme/types.tsx";
 import { applyLayout } from "./layout/layout.tsx";
 
 export type RFState = {
@@ -32,11 +36,12 @@ export type RFState = {
 const createNodes = (nodes: SequenceNodeProps[]): SequenceNodeProps[] => {
   return nodes.map((node) => ({
     ...node,
-    type: "custom",
+    type: nodeTypes.SequenceNode,
     data: {
       sequence: node.data.sequence,
       intensity: node.data.intensity,
       feature: node.data.feature,
+      visualWidth: node.data.visualWidth || 0, // default to 0 if not provided
       positionIndex: 0,
       intensityRank: 0,
     },
@@ -53,6 +58,7 @@ const [layoutedNodes, layoutedEdges] = applyLayout(
   customNodes,
   customEdges,
   theme.layout.nodeWidthMode,
+  theme.layout.mode,
 );
 
 if (theme.debugMode) {
@@ -79,23 +85,33 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
       nodeWidthMode: nodeWidthMode,
     });
     const { nodes, edges } = get();
-    const customNodes: SequenceNodeProps[] = createNodes(
-      nodes as SequenceNodeProps[],
-    );
     const state = get();
-    const [offsetNodes, offsetEdges] = applyLayout(
-      customNodes,
+    const [layoutedNodes, layoutedEdges] = applyLayout(
+      nodes,
       edges,
       state.nodeWidthMode,
+      state.layoutMode,
     );
     set({
-      nodes: offsetNodes,
-      edges: offsetEdges,
+      nodes: layoutedNodes,
+      edges: layoutedEdges,
     });
   },
   setLayoutMode: (layoutMode: layoutModes) => {
     set({
       layoutMode,
+    });
+    const { nodes, edges } = get();
+    const state = get();
+    const [layoutedNodes, layoutedEdges] = applyLayout(
+      nodes,
+      edges,
+      state.nodeWidthMode,
+      state.layoutMode,
+    );
+    set({
+      nodes: layoutedNodes,
+      edges: layoutedEdges,
     });
   },
 }));

@@ -6,6 +6,7 @@ interface GraphControlsProps {
   onFocusPreviousNode: () => void;
   onFocusCurrentNode: () => void;
   toggleNodeWidthMode: () => void;
+  toggleSnakeLayout: () => void;
 }
 
 const GraphControls = ({
@@ -13,6 +14,7 @@ const GraphControls = ({
   onFocusPreviousNode,
   onFocusCurrentNode,
   toggleNodeWidthMode,
+  toggleSnakeLayout,
 }: GraphControlsProps) => {
   return (
     <Controls showInteractive={false}>
@@ -22,6 +24,7 @@ const GraphControls = ({
       <ControlButton onClick={toggleNodeWidthMode}>
         <Icon icon={"compress"} />
       </ControlButton>
+      <ControlButton onClick={toggleSnakeLayout}>s</ControlButton>
     </Controls>
   );
 };

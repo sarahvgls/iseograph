@@ -1,19 +1,25 @@
-import type { SequenceNodeProps } from "../../components/sequence-node/sequence-node.props.tsx";
 import type { Edge, Node } from "@xyflow/react";
 import { theme } from "../../theme";
+import type { NodeTypes } from "../../theme/types.tsx";
+import type { SequenceNodeProps } from "../../components/sequence-node/sequence-node.props.tsx";
 
 export const applySnakeLayout = (
-  nodes: SequenceNodeProps[],
+  nodes: NodeTypes[],
   edges: Edge[],
 ): [(SequenceNodeProps | Node)[], Edge[]] => {
+): [NodeTypes[], Edge[]] => {
   // expects nodes that are already in a sequence
-  let aaCountForRow = 0;
-  let isCurrentRowReversed = false;
+  let aaCountForRow = 0; //not used right now
+  let widthCountForRow = 0;
+  let isCurrentRowReversed = false; //should be used
   let rowCount = 0;
   let lastPositonIndex = -1;
-  let endOfRowXOffset = 0; // used to calculate the x offset for the next node in the row
   let xOffset = 0;
   let yOffset = 0;
+
+  //consts to refactor later
+  const groupHeight = 300;
+  const groupWidth = 2000;
 
   // Sort nodes by node.data.positionIndex to ensure they are in the correct order
   nodes.sort((a, b) => {
@@ -36,8 +42,8 @@ export const applySnakeLayout = (
     },
     style: {
       backgroundColor: "rgba(255, 0, 255, 0.2)",
-      height: 300,
-      width: 2000,
+      height: groupHeight,
+      width: groupWidth,
     },
   };
   groupNodes.push(initialGroupNode);
@@ -49,27 +55,26 @@ export const applySnakeLayout = (
         ...node,
         position: {
           x: node.position.x + xOffset,
-          y: node.position.y + yOffset + 150,
+          y: node.position.y + yOffset + groupHeight / 2,
         },
         parentId: rowId,
         extent: "parent",
-      };
+      } as SequenceNodeProps;
     }
 
-    const sequence: string = node.data.sequence as string;
-    aaCountForRow += sequence.length;
+    widthCountForRow += node.width ?? 1;
 
-    if (aaCountForRow > theme.layout.snake.maxAAsPerRow) {
+    if (widthCountForRow > theme.layout.snake.maxWidthPerRow) {
       if (theme.layout.snake.splitLargeNodes) {
         // TODO
       }
       // Start a new row with current node
-      aaCountForRow = sequence.length;
+      widthCountForRow = node.width ?? 1;
       isCurrentRowReversed = !isCurrentRowReversed;
 
       rowCount++;
       yOffset = 0;
-      xOffset -= node.position.x;
+      xOffset = -node.position.x;
 
       rowId = `group-${rowCount}`;
       const newGroupNode: Node = {
@@ -83,8 +88,8 @@ export const applySnakeLayout = (
         },
         style: {
           backgroundColor: "rgba(40, 0, 255, 0.09)",
-          height: 300,
-          width: 2000,
+          height: groupHeight,
+          width: groupWidth,
         },
       };
       groupNodes.push(newGroupNode);
@@ -92,21 +97,20 @@ export const applySnakeLayout = (
 
     lastPositonIndex = node.data.positionIndex as number;
 
-    return {
+    const groupedNode = {
       ...node,
       position: {
         x: node.position.x + xOffset,
-        y: node.position.y + yOffset + 150,
+        y: node.position.y + yOffset + groupHeight / 2,
       },
       parentId: rowId,
       extent: "parent",
-    };
+    } as SequenceNodeProps;
+
+    return groupedNode;
   });
 
-  const allNodes: (SequenceNodeProps | Node)[] = [
-    ...groupNodes,
-    ...layoutedNodes,
-  ];
+  const allNodes: NodeTypes[] = [...groupNodes, ...layoutedNodes];
 
   return [allNodes, edges];
 };

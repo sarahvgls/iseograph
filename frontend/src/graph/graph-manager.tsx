@@ -15,7 +15,7 @@ import { useCallback, useState } from "react";
 import type { SequenceNodeProps } from "../components/sequence-node/sequence-node.props.tsx";
 import GraphControls from "./controls.tsx";
 import { useFocusHandlers } from "../controls/focus-node/focus-utils.ts";
-import { nodeWidthModes } from "../theme/types.tsx";
+import { layoutModes, nodeTypes, nodeWidthModes } from "../theme/types.tsx";
 
 const selector = (state: RFState) => ({
   nodes: state.nodes,
@@ -24,11 +24,15 @@ const selector = (state: RFState) => ({
   onEdgesChange: state.onEdgesChange,
   nodeWidthMode: state.nodeWidthMode,
   setNodeWidthMode: state.setNodeWidthMode,
+  layoutMode: state.layoutMode,
+  setLayoutMode: state.setLayoutMode,
 });
 
 // this places the node origin in the center of a node
 const nodeOrigin: NodeOrigin = [0.5, 0.5];
-const nodeTypes = { custom: SequenceNode };
+const myNodeTypes = {
+  [nodeTypes.SequenceNode]: SequenceNode,
+};
 
 const Flow = () => {
   //whenever you use multiple values, you should use shallow to make sure the component only re-renders when one of the values changes
@@ -39,10 +43,12 @@ const Flow = () => {
     onEdgesChange,
     nodeWidthMode,
     setNodeWidthMode,
+    layoutMode,
+    setLayoutMode,
   } = useGraphStore(selector, shallow);
   const [focusedNode, setFocusedNode] = useState<SequenceNodeProps>();
   const { focusNode, onFocusNextNode, onFocusPreviousNode } = useFocusHandlers(
-    nodes as SequenceNodeProps[],
+    nodes,
     setFocusedNode,
   );
 
@@ -51,6 +57,13 @@ const Flow = () => {
       nodeWidthMode === nodeWidthModes.Collapsed
         ? nodeWidthModes.Expanded
         : nodeWidthModes.Collapsed,
+    );
+  };
+
+  const toggleSnakeLayout = () => {
+    console.log("Toggle snake layout", layoutMode);
+    setLayoutMode(
+      layoutMode === layoutModes.Basic ? layoutModes.Snake : layoutModes.Basic,
     );
   };
 
@@ -71,7 +84,7 @@ const Flow = () => {
     <ReactFlow
       nodes={nodes}
       edges={edges}
-      nodeTypes={nodeTypes}
+      nodeTypes={myNodeTypes}
       onNodesChange={onNodesChange}
       onEdgesChange={onEdgesChange}
       nodeOrigin={nodeOrigin}
@@ -91,6 +104,9 @@ const Flow = () => {
         }}
         toggleNodeWidthMode={() => {
           void toggleNodeWidthMode();
+        }}
+        toggleSnakeLayout={() => {
+          void toggleSnakeLayout();
         }}
       />
       <Panel position="top-left">

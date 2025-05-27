@@ -19,6 +19,7 @@ export const theme = {
     snake: {
       yOffsetBetweenRows: 300,
       maxAAsPerRow: 60,
+      maxWidthPerRow: 1000,
       splitLargeNodes: false, // if true, large nodes will be split into smaller nodes when reaching the end of a line
     },
   },

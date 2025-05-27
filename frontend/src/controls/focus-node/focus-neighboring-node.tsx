@@ -1,9 +1,10 @@
 import type { SequenceNodeProps } from "../../components/sequence-node/sequence-node.props.tsx";
+import { nodeTypes, type NodeTypes } from "../../theme/types.tsx";
 
 const focusNeighborNode = (
   forward: boolean,
   focusedNode: SequenceNodeProps,
-  nodes: SequenceNodeProps[],
+  nodes: NodeTypes[],
   viewport: { x: number; y: number; zoom: number },
 ) => {
   const screenWidth = window.innerWidth;
@@ -13,7 +14,12 @@ const focusNeighborNode = (
   let minDistance = forward ? 1000000 : -1000000;
   let nextNode = focusedNode;
   for (const node of nodes) {
-    if (focusedNode && node.id === focusedNode.id) {
+    if (
+      (focusedNode &&
+        node.id === focusedNode.id &&
+        node.type === nodeTypes.SequenceNode) ||
+      node.type !== nodeTypes.SequenceNode
+    ) {
       continue;
     }
     const distance = node.position.x - currentX;
@@ -30,7 +36,7 @@ const focusNeighborNode = (
 
 export const focusNextNode = (
   focusedNode: SequenceNodeProps,
-  nodes: SequenceNodeProps[],
+  nodes: NodeTypes[],
   viewport: { x: number; y: number; zoom: number },
 ) => {
   return focusNeighborNode(true, focusedNode, nodes, viewport);
@@ -38,7 +44,7 @@ export const focusNextNode = (
 
 export const focusPreviousNode = (
   focusedNode: SequenceNodeProps,
-  nodes: SequenceNodeProps[],
+  nodes: NodeTypes[],
   viewport: { x: number; y: number; zoom: number },
 ) => {
   return focusNeighborNode(false, focusedNode, nodes, viewport);
