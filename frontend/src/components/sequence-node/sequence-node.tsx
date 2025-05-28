@@ -92,14 +92,20 @@ function SequenceNode({ data }: NodeProps<SequenceNodeProps>) {
       </NodeToolbar>
 
       <NodeWrapper>
-        <StyledHandle type="target" position={Position.Left} />
+        <StyledHandle
+          type={data.isReversed ? "source" : "target"}
+          position={Position.Left}
+        />
         <StyledNode>
           <SequenceContainer
             sequence={data.sequence}
             collapsed={nodeWidthMode == nodeWidthModes.Collapsed}
           />
         </StyledNode>
-        <StyledHandle type="source" position={Position.Right} />
+        <StyledHandle
+          type={data.isReversed ? "target" : "source"}
+          position={Position.Right}
+        />
       </NodeWrapper>
     </div>
   );

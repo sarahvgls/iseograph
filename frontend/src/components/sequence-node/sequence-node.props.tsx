@@ -11,6 +11,7 @@ export interface SequenceNodeProps extends NodeProps {
     feature: string;
     positionIndex: number;
     intensityRank: number;
+    isReversed?: boolean;
   };
   id: string;
   type: typeof nodeTypes.SequenceNode;

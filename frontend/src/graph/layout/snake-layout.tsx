@@ -13,10 +13,16 @@ export const applySnakeLayout = (
   let lastPositonIndex = -1;
   let xOffset = 25;
   let yOffset = 0;
+  let nodesInCurrentRow = 0;
 
   //consts to refactor later
   const groupHeight = 300;
-  const groupWidth = 2500;
+  const style = {
+    border: `none`,
+    backgroundColor: "transparent",
+    height: groupHeight,
+    width: 2500,
+  };
 
   // Sort nodes by node.data.positionIndex to ensure they are in the correct order
   nodes.sort((a, b) => {
@@ -26,7 +32,7 @@ export const applySnakeLayout = (
   });
 
   // add subflow groups for each row
-  let groupNodes: Node[] = [];
+  const groupNodes: Node[] = [];
   let rowId = "group-0";
   const initialGroupNode: Node = {
     id: rowId,
@@ -36,13 +42,12 @@ export const applySnakeLayout = (
       label: `Row ${rowCount}`,
       isReversed: isCurrentRowReversed,
     },
-    style: {
-      backgroundColor: "rgba(255, 0, 255, 0.2)",
-      height: groupHeight,
-      width: groupWidth,
-    },
+    style: style,
   };
   groupNodes.push(initialGroupNode);
+
+  // x positions in groups depending on row length for (reversed) nodes
+  const positions: number[] = [];
 
   const layoutedNodes: SequenceNodeProps[] = nodes.map((node) => {
     if (node.data.positionIndex === lastPositonIndex) {
@@ -50,26 +55,29 @@ export const applySnakeLayout = (
       return {
         ...node,
         position: {
-          x: node.position.x + xOffset,
+          x: xOffset,
           y: node.position.y + yOffset + groupHeight / 2,
+        },
+        data: {
+          ...node.data,
+          isReversed: isCurrentRowReversed,
         },
         parentId: rowId,
         extent: "parent",
       } as SequenceNodeProps;
     }
 
-    if (
-      (node.data.positionIndex as number) >
-      theme.layout.snake.maxNodesPerRow * rowCount - 1
-    ) {
+    nodesInCurrentRow++;
+
+    if (nodesInCurrentRow > theme.layout.snake.maxNodesPerRow) {
       if (theme.layout.snake.splitLargeNodes) {
         // TODO split if not collapsed
       }
       // Start a new row with current node
       isCurrentRowReversed = !isCurrentRowReversed; // TODO implement reverse order of node
+      nodesInCurrentRow = 1;
       rowCount++;
       yOffset = 0;
-      xOffset = -(node.position.x - 100);
 
       rowId = `group-${rowCount}`;
       const newGroupNode: Node = {
@@ -83,11 +91,7 @@ export const applySnakeLayout = (
           label: `Row ${rowCount}`,
           isReversed: isCurrentRowReversed,
         },
-        style: {
-          backgroundColor: "rgba(40, 0, 255, 0.09)",
-          height: groupHeight,
-          width: groupWidth,
-        },
+        style: style,
       };
       groupNodes.push(newGroupNode);
     }
@@ -96,14 +100,29 @@ export const applySnakeLayout = (
     // TODO fix position index
     lastPositonIndex = node.data.positionIndex as number;
 
+    // fill x positions array for first row only and then use
+    if (rowCount === 1) {
+      positions.push(node.position.x + 25);
+      xOffset = node.position.x + 25;
+    }
+    xOffset = isCurrentRowReversed
+      ? positions[
+          theme.layout.snake.maxNodesPerRow - (nodesInCurrentRow - 1) - 1
+        ]
+      : positions[nodesInCurrentRow - 1];
+
     return {
       ...node,
       position: {
-        x: node.position.x + xOffset,
+        x: xOffset,
         y: node.position.y + yOffset + groupHeight / 2,
       },
       parentId: rowId,
       extent: "parent",
+      data: {
+        ...node.data,
+        isReversed: isCurrentRowReversed,
+      },
     } as SequenceNodeProps;
   });
 
