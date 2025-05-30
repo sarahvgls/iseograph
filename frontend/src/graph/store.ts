@@ -16,6 +16,7 @@ import type { SequenceNodeProps } from "../components/sequence-node/sequence-nod
 import { theme } from "../theme";
 import {
   type layoutModes,
+  type NodeTypes,
   nodeTypes,
   nodeWidthModes,
 } from "../theme/types.tsx";
@@ -23,6 +24,7 @@ import { applyLayout } from "./layout/layout.tsx";
 
 export type RFState = {
   nodes: Node[];
+  setNodes: (nodes: Node[]) => void;
   edges: Edge[];
   onNodesChange: OnNodesChange;
   onEdgesChange: OnEdgesChange;
@@ -30,6 +32,11 @@ export type RFState = {
   setNodeWidthMode: (nodeWidthMode: nodeWidthModes) => void;
   layoutMode: layoutModes;
   setLayoutMode: (layoutMode: layoutModes) => void;
+  isReversedStore: Record<string, boolean>;
+  setIsReversedStore: (nodeId: string, isReversed: boolean) => void;
+  getIsReversedStore: (nodeId: string) => boolean;
+  resetIsReversedStore: () => void;
+  updateIsReversed: (nodeId: string, isReversed: boolean) => void;
 };
 
 // create nodes of type sequence node for each node in the nodes.json file
@@ -54,20 +61,21 @@ const customNodes: SequenceNodeProps[] = createNodes(
 );
 const customEdges: Edge[] = edges;
 
-const [layoutedNodes, layoutedEdges] = applyLayout(
-  customNodes,
-  customEdges,
-  theme.layout.nodeWidthMode,
-  theme.layout.mode,
-);
-
-if (theme.debugMode) {
-  console.log("Nodes after initial Layout:", layoutedNodes);
-}
+// const [layoutedNodes, layoutedEdges] = applyLayout(
+//   customNodes,
+//   customEdges,
+//   theme.layout.nodeWidthMode,
+//   theme.layout.mode,
+// );
 
 const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
-  nodes: layoutedNodes,
-  edges: layoutedEdges,
+  nodes: customNodes,
+  setNodes: (nodes: Node[]) => {
+    set({
+      nodes: nodes,
+    });
+  },
+  edges: customEdges,
   nodeWidthMode: theme.layout.nodeWidthMode,
   layoutMode: theme.layout.mode,
   onNodesChange: (changes: NodeChange[]) => {
@@ -109,11 +117,123 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
       state.nodeWidthMode,
       state.layoutMode,
     );
+    console.log("nodes that are set:", layoutedNodes);
+
+    // console.log("iSreveresedSTore:", get().isReversedStore);
+    // console.log("n40", get().getIsReversedStore("n40"));
+    //const getIsReversedStore = get().getIsReversedStore;
+    // const isReversedStore = stateAfterLayout.isReversedStore;
+    // set({
+    //   nodes: layoutedNodes.map((node) => {
+    //     if (node.type === nodeTypes.SequenceNode && node.id) {
+    //       return {
+    //         ...node,
+    //         data: {
+    //           ...node.data,
+    //           positionIndex: 0,
+    //           intensityRank: 0,
+    //           isReversed: getIsReveresedStore(node.id),
+    //         },
+    //       } as SequenceNodeProps;
+    //     } else {
+    //       return node; // return the node as is if id is empty
+    //     }
+    //   }),
+    //   edges: layoutedEdges,
+    // });
+
+    // const updatedNodes = layoutedNodes.map((node) => {
+    //   if (node.type === nodeTypes.SequenceNode && node.id) {
+    //     const isReversed = getIsReversedStore(node.id);
+    //     return {
+    //       ...node,
+    //       data: {
+    //         ...node.data,
+    //         isReversed,
+    //       },
+    //     } as SequenceNodeProps;
+    //   }
+    //   return { ...node }; // Ensure all nodes are recreated
+    // });
+
+    //manually re render nodes
+    let rerenderedNodes: NodeTypes[] = [];
+    for (const node of layoutedNodes) {
+      let newNode: NodeTypes;
+      if (node.type === nodeTypes.SequenceNode && node.id) {
+        const newNodeId = node.id + "-rerendered"; // Create a new ID to force React Flow to re-render the node
+        newNode = {
+          ...node,
+          id: newNodeId,
+        }; // Ensure a new object is created
+        const isReversed = get().getIsReversedStore(node.id);
+        newNode.data = {
+          ...newNode.data,
+          isReversed,
+          positionIndex: 0, // reset positionIndex
+          intensityRank: 0, // reset intensityRank
+        };
+      } else {
+        newNode = { ...node }; // Ensure all nodes are recreated
+      }
+      rerenderedNodes.push(newNode);
+    }
+
     set({
-      nodes: layoutedNodes,
+      nodes: rerenderedNodes,
+    });
+
+    //change back id
+    rerenderedNodes = rerenderedNodes.map((node) => {
+      if (
+        node.type === nodeTypes.SequenceNode &&
+        node.id.endsWith("-rerendered")
+      ) {
+        return { ...node, id: node.id.replace("-rerendered", "") };
+      }
+      return node;
+    });
+
+    set({
+      nodes: rerenderedNodes,
       edges: layoutedEdges,
     });
   },
+  isReversedStore: Object.fromEntries(
+    customNodes.map((node) => [node.id, false]),
+  ),
+  setIsReversedStore: (nodeId: string, isReversed: boolean) =>
+    set((state) => ({
+      isReversedStore: {
+        ...state.isReversedStore,
+        [nodeId]: isReversed,
+      },
+    })),
+  getIsReversedStore: (nodeId: string) =>
+    get().isReversedStore[nodeId] || false,
+  resetIsReversedStore: () =>
+    set({
+      isReversedStore: Object.fromEntries(
+        customNodes.map((node) => [node.id, false]),
+      ),
+    }),
+  updateIsReversed: (nodeId: string, isReversed: boolean) => {
+    set({
+      nodes: get().nodes.map((node) => {
+        if (node.id === nodeId && node.type === nodeTypes.SequenceNode) {
+          // it's important to create a new object here, to inform React Flow about the changes
+          return { ...node, data: { ...node.data, isReversed } };
+        }
+
+        return node;
+      }),
+    });
+  },
 }));
+
+console.log(
+  "useGraphStore initialized with nodes:",
+  useGraphStore.getState().nodes,
+);
 
 export default useGraphStore;

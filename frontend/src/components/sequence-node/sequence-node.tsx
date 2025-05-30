@@ -12,6 +12,7 @@ import { SequenceContainer } from "./sequence-container/sequence-container.tsx";
 import useGraphStore, { type RFState } from "../../graph/store.ts";
 import { shallow } from "zustand/vanilla/shallow";
 import { nodeWidthModes } from "../../theme/types.tsx";
+import { useEffect } from "react";
 
 const selector = (state: RFState) => ({
   nodeWidthMode: state.nodeWidthMode,
@@ -57,7 +58,8 @@ const StyledHandle = styled(Handle)`
 
 const useZoom = () => useStore((store) => store.transform[2]); // [x, y, zoom]
 
-function SequenceNode({ data }: NodeProps<SequenceNodeProps>) {
+function SequenceNode({ id, data }: NodeProps<SequenceNodeProps>) {
+  console.log("SequenceNode rendered", id, data);
   const { nodeWidthMode } = useGraphStore(selector, shallow);
   const width = theme.offsets.defaultWidthCollapsed // TODO what happens here
     ? data.sequence.length * 10 + 100
@@ -69,6 +71,19 @@ function SequenceNode({ data }: NodeProps<SequenceNodeProps>) {
   const size = 50;
   const hitboxHeight = size * scale * 2;
   const hitboxWidth = width;
+
+  //const updateIsReversed = useGraphStore((store) => store.updateIsReversed);
+
+  //bringt nichts wtf
+  // useEffect(() => {
+  //   // Initialize isReversed based on data
+  //   console.log("when is this called?", id, data);
+  //   if (data.isReversed === undefined) {
+  //     updateIsReversed(id, false);
+  //   } else {
+  //     updateIsReversed(id, data.isReversed);
+  //   }
+  // }, [updateIsReversed, data.isReversed, id]);
 
   return (
     <div>
@@ -84,12 +99,12 @@ function SequenceNode({ data }: NodeProps<SequenceNodeProps>) {
         }}
       />
 
-      <NodeToolbar isVisible={true} position={Position.Top}>
-        <div
-          style={{ backgroundColor: "#000", width: "10px", height: "10px" }}
-        ></div>
-        <Bar $intensity={data.intensity} />
-      </NodeToolbar>
+      {/*<NodeToolbar isVisible={true} position={Position.Top}>*/}
+      {/*  <div*/}
+      {/*    style={{ backgroundColor: "#000", width: "10px", height: "10px" }}*/}
+      {/*  ></div>*/}
+      {/*  <Bar $intensity={data.intensity} />*/}
+      {/*</NodeToolbar>*/}
 
       <NodeWrapper>
         <StyledHandle

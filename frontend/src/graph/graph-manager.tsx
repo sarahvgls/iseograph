@@ -3,6 +3,8 @@ import {
   type NodeOrigin,
   Panel,
   type NodeMouseHandler,
+  useNodesState,
+  useEdgesState,
 } from "@xyflow/react";
 
 // we have to import the React Flow styles for it to work
@@ -11,7 +13,7 @@ import useGraphStore, { type RFState } from "./store.ts";
 import { shallow } from "zustand/vanilla/shallow";
 
 import SequenceNode from "../components/sequence-node/sequence-node.tsx";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { SequenceNodeProps } from "../components/sequence-node/sequence-node.props.tsx";
 import GraphControls from "./controls.tsx";
 import { useFocusHandlers } from "../controls/focus-node/focus-utils.ts";
@@ -51,6 +53,38 @@ const Flow = () => {
     nodes,
     setFocusedNode,
   );
+
+  // const [nodesReverseState, setNodesReverseState] = useState<
+  //   Record<string, boolean>
+  // >({});
+  //
+  // useEffect(() => {
+  //   // Initialize the reverse state for each node
+  //   const initialReverseState: Record<string, boolean> = {};
+  //   nodes.forEach((node) => {
+  //     if (node.type === nodeTypes.SequenceNode) {
+  //       initialReverseState[node.id] = false; // default to false
+  //     }
+  //   });
+  //   setNodesReverseState(initialReverseState);
+  // }, []);
+  //
+  // useEffect(() => {
+  //   // rerender node whenever nodeReverseState changes
+  //   const updatedNodes = nodes.map((node) => {
+  //     if (node.type === nodeTypes.SequenceNode) {
+  //       return {
+  //         ...node,
+  //         data: {
+  //           ...node.data,
+  //           isReversed: nodesReverseState[node.id] || false,
+  //         },
+  //       };
+  //     }
+  //     return node;
+  //   });
+  //   useGraphStore.setState({ nodes: updatedNodes });
+  // }, [nodesReverseState]);
 
   const toggleNodeWidthMode = () => {
     setNodeWidthMode(

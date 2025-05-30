@@ -2,6 +2,7 @@ import type { Edge, Node } from "@xyflow/react";
 import { theme } from "../../theme";
 import type { NodeTypes } from "../../theme/types.tsx";
 import type { SequenceNodeProps } from "../../components/sequence-node/sequence-node.props.tsx";
+import useGraphStore from "../store.ts";
 
 export const applySnakeLayout = (
   nodes: NodeTypes[],
@@ -14,6 +15,10 @@ export const applySnakeLayout = (
   let xOffset = 25;
   let yOffset = 0;
   let nodesInCurrentRow = 0;
+
+  // isReversedStore to keep track of reversed nodes
+  //const setIsReversedStore = useGraphStore.getState().setIsReversedStore;
+  const updateIsReversed = useGraphStore.getState().updateIsReversed;
 
   //consts to refactor later
   const groupHeight = 300;
@@ -52,6 +57,10 @@ export const applySnakeLayout = (
   const layoutedNodes: SequenceNodeProps[] = nodes.map((node) => {
     if (node.data.positionIndex === lastPositonIndex) {
       // No new calculation if node is a sibling to previous
+      if (node.id) {
+        updateIsReversed(node.id, isCurrentRowReversed);
+      }
+
       return {
         ...node,
         position: {
@@ -89,7 +98,6 @@ export const applySnakeLayout = (
         },
         data: {
           label: `Row ${rowCount}`,
-          isReversed: isCurrentRowReversed,
         },
         style: style,
       };
@@ -111,6 +119,11 @@ export const applySnakeLayout = (
         ]
       : positions[nodesInCurrentRow - 1];
 
+    // update isReversedStore
+    if (node.id) {
+      updateIsReversed(node.id, isCurrentRowReversed);
+    }
+
     return {
       ...node,
       position: {
@@ -121,7 +134,7 @@ export const applySnakeLayout = (
       extent: "parent",
       data: {
         ...node.data,
-        isReversed: isCurrentRowReversed,
+        isReversed: isCurrentRowReversed, // will be removed
       },
     } as SequenceNodeProps;
   });

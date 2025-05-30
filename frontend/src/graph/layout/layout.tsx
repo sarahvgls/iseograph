@@ -1,5 +1,5 @@
 // ----- functions for layouting nodes and edges -----
-import type { Edge } from "@xyflow/react";
+import { type Edge, useStore } from "@xyflow/react";
 import {
   layoutModes,
   nodeTypes,
@@ -10,6 +10,8 @@ import Dagre from "@dagrejs/dagre";
 import type { SequenceNodeProps } from "../../components/sequence-node/sequence-node.props.tsx";
 import { theme } from "../../theme";
 import { applySnakeLayout } from "./snake-layout.tsx";
+import useGraphStore from "../store.ts";
+import { useEffect } from "react";
 
 const applyBasicLayoutDagre = (
   nodes: NodeTypes[],
@@ -70,6 +72,7 @@ const applyBasicLayoutDagre = (
           ? theme.offsets.defaultLength
           : sequenceLength,
       );
+
       return {
         ...node,
         position: { x: position.x, y: 0 },
@@ -162,6 +165,13 @@ function addSymmetricalOffsetForVariations(
   return [alteredNodes, edges];
 }
 
+const resetIsReversedForNodes = (nodes: NodeTypes[]) => {
+  const updateIsReversed = useGraphStore((store) => store.updateIsReversed);
+  nodes.forEach((node) => {
+    updateIsReversed(node.id, false);
+  });
+};
+
 export const applyLayout = (
   nodes: NodeTypes[],
   edges: Edge[],
@@ -173,23 +183,37 @@ export const applyLayout = (
 
   console.log("nodes before layout:", nodes);
 
-  // reset nodes
-  nodes = nodes.filter((node) => node.type !== nodeTypes.GroupNode);
-  nodes = nodes.map((node) => ({
+  // remove groups
+  let filteredNodes = nodes.filter(
+    (node) => node.type === nodeTypes.SequenceNode,
+  );
+  // remove group assignment and rankings
+  filteredNodes = filteredNodes.map((node) => ({
     ...node,
-    position: { x: 0, y: 0 },
-    extent: undefined, // remove extent for group nodes
-    parentId: undefined, // remove parentId for group nodes
+    parentId: undefined, // remove parentId to avoid grouping
+    extent: undefined, // remove extent to avoid grouping
     data: {
       ...node.data,
-      positionIndex: 0, // reset positionIndex for layouting
-      intensityRank: 0, // reset intensityRank for layouting
+      positionIndex: 0, // reset positionIndex
+      intensityRank: 0, // reset intensityRank
     },
   }));
 
-  console.log("nodes after removing group nodes:", nodes);
+  //commit to store
+  //useGraphStore.getState().setNodes(filteredNodes);
+
+  // reset isReveresed for every node
+  // useEffect(() => {
+  //   console.log("is called?");
+  //   resetIsReversedForNodes(filteredNodes);
+  // }, [resetIsReversedForNodes, filteredNodes]);
+  //useGraphStore.getState().resetIsReversedStore();
+
+  //const nodesFromStore = useGraphStore.getState().nodes;
+  //console.log("nodes from store:", nodesFromStore);
+
   [layoutedNodes, layoutedEdges] = applyBasicLayoutDagre(
-    nodes,
+    filteredNodes,
     edges,
     nodeWidthMode,
     {
@@ -208,8 +232,27 @@ export const applyLayout = (
       layoutedNodes,
       layoutedEdges,
     );
+    console.log("Nodes after snake layout:", layoutedNodes);
+    //console.log("isReversedStore:", useGraphStore.getState().isReversedStore);
   }
-  console.log("Nodes after snake layout:", layoutedNodes);
+
+  // add isReversedStore to nodes
+  // const getIsReversedStore = useGraphStore.getState().getIsReversedStore;
+  // console.log("store::", useGraphStore.getState().isReversedStore);
+  // console.log("id40:", getIsReversedStore("n40"));
+  // layoutedNodes = layoutedNodes.map((node) => {
+  //   if (node.type !== nodeTypes.SequenceNode) {
+  //     return node;
+  //   }
+  //   const isReversed = getIsReversedStore(node.id) || false;
+  //   return {
+  //     ...node,
+  //     data: {
+  //       ...node.data,
+  //       isReversed: isReversed,
+  //     },
+  //   } as SequenceNodeProps;
+  // });
 
   return [layoutedNodes, layoutedEdges];
 };
