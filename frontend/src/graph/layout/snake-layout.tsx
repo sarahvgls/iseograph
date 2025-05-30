@@ -17,8 +17,8 @@ export const applySnakeLayout = (
   let nodesInCurrentRow = 0;
 
   // isReversedStore to keep track of reversed nodes
-  //const setIsReversedStore = useGraphStore.getState().setIsReversedStore;
-  const updateIsReversed = useGraphStore.getState().updateIsReversed;
+  const setIsReversedStore = useGraphStore.getState().setIsReversedStore;
+  //const updateIsReversed = useGraphStore.getState().updateIsReversed;
 
   //consts to refactor later
   const groupHeight = 300;
@@ -58,7 +58,7 @@ export const applySnakeLayout = (
     if (node.data.positionIndex === lastPositonIndex) {
       // No new calculation if node is a sibling to previous
       if (node.id) {
-        updateIsReversed(node.id, isCurrentRowReversed);
+        setIsReversedStore(node.id, isCurrentRowReversed);
       }
 
       return {
@@ -121,7 +121,7 @@ export const applySnakeLayout = (
 
     // update isReversedStore
     if (node.id) {
-      updateIsReversed(node.id, isCurrentRowReversed);
+      setIsReversedStore(node.id, isCurrentRowReversed);
     }
 
     return {

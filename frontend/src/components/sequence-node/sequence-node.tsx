@@ -4,6 +4,7 @@ import {
   NodeToolbar,
   Position,
   useStore,
+  useUpdateNodeInternals,
 } from "@xyflow/react"; //changed to type NodeProps? is that correct?
 import styled from "styled-components";
 import type { SequenceNodeProps } from "./sequence-node.props.tsx";
@@ -59,8 +60,9 @@ const StyledHandle = styled(Handle)`
 const useZoom = () => useStore((store) => store.transform[2]); // [x, y, zoom]
 
 function SequenceNode({ id, data }: NodeProps<SequenceNodeProps>) {
-  console.log("SequenceNode rendered", id, data);
+  console.log("SequenceNode rendered", id, data.isReversed);
   const { nodeWidthMode } = useGraphStore(selector, shallow);
+  const updateNodeInternals = useUpdateNodeInternals();
   const width = theme.offsets.defaultWidthCollapsed // TODO what happens here
     ? data.sequence.length * 10 + 100
     : theme.offsets.defaultLength; // 10 is the approximated width of each character, plus 50px on each side
@@ -71,6 +73,16 @@ function SequenceNode({ id, data }: NodeProps<SequenceNodeProps>) {
   const size = 50;
   const hitboxHeight = size * scale * 2;
   const hitboxWidth = width;
+
+  // Update node internals when isReversed changes
+  useEffect(() => {
+    console.log(
+      "isReversed changed, updating node internals",
+      id,
+      data.isReversed,
+    );
+    updateNodeInternals(id);
+  }, [id, data.isReversed, updateNodeInternals]);
 
   //const updateIsReversed = useGraphStore((store) => store.updateIsReversed);
 
