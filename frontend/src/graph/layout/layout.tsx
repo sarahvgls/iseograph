@@ -164,13 +164,6 @@ function addSymmetricalOffsetForVariations(
   return [alteredNodes, edges];
 }
 
-// const resetIsReversedForNodes = (nodes: NodeTypes[]) => {
-//   const updateIsReversed = useGraphStore((store) => store.updateIsReversed);
-//   nodes.forEach((node) => {
-//     updateIsReversed(node.id, false);
-//   });
-// };
-
 export const applyLayout = (
   nodes: NodeTypes[],
   edges: Edge[],
@@ -178,8 +171,6 @@ export const applyLayout = (
   layoutMode: layoutModes,
 ): [NodeTypes[], Edge[]] => {
   useGraphStore.getState().resetIsReversedStore();
-
-  console.log("nodes before layout:", nodes);
 
   // remove groups and reset layouting properties
   let filteredNodes = nodes
@@ -196,19 +187,6 @@ export const applyLayout = (
       },
     }));
 
-  //commit to store
-  //useGraphStore.getState().setNodes(filteredNodes);
-
-  // reset isReveresed for every node
-  // useEffect(() => {
-  //   console.log("is called?");
-  //   resetIsReversedForNodes(filteredNodes);
-  // }, [resetIsReversedForNodes, filteredNodes]);
-  //useGraphStore.getState().resetIsReversedStore();
-
-  //const nodesFromStore = useGraphStore.getState().nodes;
-  //console.log("nodes from store:", nodesFromStore);
-
   let [layoutedNodes, layoutedEdges] = applyBasicLayoutDagre(
     filteredNodes,
     edges,
@@ -217,20 +195,17 @@ export const applyLayout = (
       direction: theme.layout.basic.direction,
     },
   );
-  console.log("Nodes after basic layout:", layoutedNodes);
-  // add symmetrical offset for variations
+
   [layoutedNodes, layoutedEdges] = addSymmetricalOffsetForVariations(
     layoutedNodes,
     layoutedEdges,
   );
-  console.log("Nodes after adding symmetrical offset:", layoutedNodes);
+
   if (layoutMode == layoutModes.Snake) {
     [layoutedNodes, layoutedEdges] = applySnakeLayout(
       layoutedNodes,
       layoutedEdges,
     );
-    console.log("Nodes after snake layout:", layoutedNodes);
-    //console.log("isReversedStore:", useGraphStore.getState().isReversedStore);
   }
 
   // Apply isReversed values from store to ensure React Flow rerenders
@@ -249,24 +224,6 @@ export const applyLayout = (
     }
     return node;
   });
-
-  // add isReversedStore to nodes
-  // const getIsReversedStore = useGraphStore.getState().getIsReversedStore;
-  // console.log("store::", useGraphStore.getState().isReversedStore);
-  // console.log("id40:", getIsReversedStore("n40"));
-  // layoutedNodes = layoutedNodes.map((node) => {
-  //   if (node.type !== nodeTypes.SequenceNode) {
-  //     return node;
-  //   }
-  //   const isReversed = getIsReversedStore(node.id) || false;
-  //   return {
-  //     ...node,
-  //     data: {
-  //       ...node.data,
-  //       isReversed: isReversed,
-  //     },
-  //   } as SequenceNodeProps;
-  // });
 
   return [layoutedNodes, layoutedEdges];
 };

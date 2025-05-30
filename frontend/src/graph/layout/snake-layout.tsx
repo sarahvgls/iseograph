@@ -18,7 +18,6 @@ export const applySnakeLayout = (
 
   // isReversedStore to keep track of reversed nodes
   const setIsReversedStore = useGraphStore.getState().setIsReversedStore;
-  //const updateIsReversed = useGraphStore.getState().updateIsReversed;
 
   //consts to refactor later
   const groupHeight = 300;
@@ -83,7 +82,7 @@ export const applySnakeLayout = (
         // TODO split if not collapsed
       }
       // Start a new row with current node
-      isCurrentRowReversed = !isCurrentRowReversed; // TODO implement reverse order of node
+      isCurrentRowReversed = !isCurrentRowReversed;
       nodesInCurrentRow = 1;
       rowCount++;
       yOffset = 0;

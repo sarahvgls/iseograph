@@ -3,8 +3,6 @@ import {
   type NodeOrigin,
   Panel,
   type NodeMouseHandler,
-  useNodesState,
-  useEdgesState,
 } from "@xyflow/react";
 
 // we have to import the React Flow styles for it to work
@@ -18,6 +16,7 @@ import type { SequenceNodeProps } from "../components/sequence-node/sequence-nod
 import GraphControls from "./controls.tsx";
 import { useFocusHandlers } from "../controls/focus-node/focus-utils.ts";
 import { layoutModes, nodeTypes, nodeWidthModes } from "../theme/types.tsx";
+import { applyLayout } from "./layout";
 
 const selector = (state: RFState) => ({
   nodes: state.nodes,
@@ -54,37 +53,18 @@ const Flow = () => {
     setFocusedNode,
   );
 
-  // const [nodesReverseState, setNodesReverseState] = useState<
-  //   Record<string, boolean>
-  // >({});
-  //
-  // useEffect(() => {
-  //   // Initialize the reverse state for each node
-  //   const initialReverseState: Record<string, boolean> = {};
-  //   nodes.forEach((node) => {
-  //     if (node.type === nodeTypes.SequenceNode) {
-  //       initialReverseState[node.id] = false; // default to false
-  //     }
-  //   });
-  //   setNodesReverseState(initialReverseState);
-  // }, []);
-  //
-  // useEffect(() => {
-  //   // rerender node whenever nodeReverseState changes
-  //   const updatedNodes = nodes.map((node) => {
-  //     if (node.type === nodeTypes.SequenceNode) {
-  //       return {
-  //         ...node,
-  //         data: {
-  //           ...node.data,
-  //           isReversed: nodesReverseState[node.id] || false,
-  //         },
-  //       };
-  //     }
-  //     return node;
-  //   });
-  //   useGraphStore.setState({ nodes: updatedNodes });
-  // }, [nodesReverseState]);
+  useEffect(() => {
+    const [layoutedNodes, layoutedEdges] = applyLayout(
+      nodes,
+      edges,
+      nodeWidthMode,
+      layoutMode,
+    );
+    useGraphStore.setState({
+      nodes: layoutedNodes,
+      edges: layoutedEdges,
+    });
+  }, []);
 
   const toggleNodeWidthMode = () => {
     setNodeWidthMode(
@@ -95,7 +75,6 @@ const Flow = () => {
   };
 
   const toggleSnakeLayout = () => {
-    console.log("Toggle snake layout", layoutMode);
     setLayoutMode(
       layoutMode === layoutModes.Basic ? layoutModes.Snake : layoutModes.Basic,
     );
