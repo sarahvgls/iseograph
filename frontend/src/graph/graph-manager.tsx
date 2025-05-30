@@ -11,11 +11,12 @@ import useGraphStore, { type RFState } from "./store.ts";
 import { shallow } from "zustand/vanilla/shallow";
 
 import SequenceNode from "../components/sequence-node/sequence-node.tsx";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { SequenceNodeProps } from "../components/sequence-node/sequence-node.props.tsx";
 import GraphControls from "./controls.tsx";
 import { useFocusHandlers } from "../controls/focus-node/focus-utils.ts";
 import { layoutModes, nodeTypes, nodeWidthModes } from "../theme/types.tsx";
+import { applyLayout } from "./layout";
 
 const selector = (state: RFState) => ({
   nodes: state.nodes,
@@ -52,6 +53,19 @@ const Flow = () => {
     setFocusedNode,
   );
 
+  useEffect(() => {
+    const [layoutedNodes, layoutedEdges] = applyLayout(
+      nodes,
+      edges,
+      nodeWidthMode,
+      layoutMode,
+    );
+    useGraphStore.setState({
+      nodes: layoutedNodes,
+      edges: layoutedEdges,
+    });
+  }, []);
+
   const toggleNodeWidthMode = () => {
     setNodeWidthMode(
       nodeWidthMode === nodeWidthModes.Collapsed
@@ -61,7 +75,6 @@ const Flow = () => {
   };
 
   const toggleSnakeLayout = () => {
-    console.log("Toggle snake layout", layoutMode);
     setLayoutMode(
       layoutMode === layoutModes.Basic ? layoutModes.Snake : layoutModes.Basic,
     );

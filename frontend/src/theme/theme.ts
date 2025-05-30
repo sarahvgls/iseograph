@@ -12,7 +12,7 @@ export const theme = {
     useXOffset: false, // TODO decide if xOffset is needed
   },
   layout: {
-    mode: layoutModes.Snake,
+    mode: layoutModes.Basic,
     nodeWidthMode: nodeWidthModes.Collapsed,
     basic: {
       direction: "LR",

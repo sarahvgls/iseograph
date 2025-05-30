@@ -30,6 +30,10 @@ export type RFState = {
   setNodeWidthMode: (nodeWidthMode: nodeWidthModes) => void;
   layoutMode: layoutModes;
   setLayoutMode: (layoutMode: layoutModes) => void;
+  isReversedStore: Record<string, boolean>;
+  setIsReversedStore: (nodeId: string, isReversed: boolean) => void;
+  getIsReversedStore: (nodeId: string) => boolean;
+  resetIsReversedStore: () => void;
 };
 
 // create nodes of type sequence node for each node in the nodes.json file
@@ -54,20 +58,9 @@ const customNodes: SequenceNodeProps[] = createNodes(
 );
 const customEdges: Edge[] = edges;
 
-const [layoutedNodes, layoutedEdges] = applyLayout(
-  customNodes,
-  customEdges,
-  theme.layout.nodeWidthMode,
-  theme.layout.mode,
-);
-
-if (theme.debugMode) {
-  console.log("Nodes after initial Layout:", layoutedNodes);
-}
-
 const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
-  nodes: layoutedNodes,
-  edges: layoutedEdges,
+  nodes: customNodes,
+  edges: customEdges,
   nodeWidthMode: theme.layout.nodeWidthMode,
   layoutMode: theme.layout.mode,
   onNodesChange: (changes: NodeChange[]) => {
@@ -78,6 +71,26 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
   onEdgesChange: (changes: EdgeChange[]) => {
     set({
       edges: applyEdgeChanges(changes, get().edges),
+    });
+  },
+  setLayoutMode: (layoutMode: layoutModes) => {
+    set({ layoutMode });
+
+    const { nodes, edges } = get();
+    const state = get();
+
+    // Apply layout
+    const [layoutedNodes, layoutedEdges] = applyLayout(
+      nodes,
+      edges,
+      state.nodeWidthMode,
+      layoutMode,
+    );
+
+    // Set nodes and edges directly - no need for temporary IDs
+    set({
+      nodes: layoutedNodes,
+      edges: layoutedEdges,
     });
   },
   setNodeWidthMode: (nodeWidthMode: nodeWidthModes) => {
@@ -97,23 +110,24 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
       edges: layoutedEdges,
     });
   },
-  setLayoutMode: (layoutMode: layoutModes) => {
+  isReversedStore: Object.fromEntries(
+    customNodes.map((node) => [node.id, false]),
+  ),
+  setIsReversedStore: (nodeId: string, isReversed: boolean) =>
+    set((state) => ({
+      isReversedStore: {
+        ...state.isReversedStore,
+        [nodeId]: isReversed,
+      },
+    })),
+  getIsReversedStore: (nodeId: string) =>
+    get().isReversedStore[nodeId] || false,
+  resetIsReversedStore: () =>
     set({
-      layoutMode,
-    });
-    const { nodes, edges } = get();
-    const state = get();
-    const [layoutedNodes, layoutedEdges] = applyLayout(
-      nodes,
-      edges,
-      state.nodeWidthMode,
-      state.layoutMode,
-    );
-    set({
-      nodes: layoutedNodes,
-      edges: layoutedEdges,
-    });
-  },
+      isReversedStore: Object.fromEntries(
+        customNodes.map((node) => [node.id, false]),
+      ),
+    }),
 }));
 
 export default useGraphStore;

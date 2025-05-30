@@ -1,5 +1,5 @@
 // ----- functions for layouting nodes and edges -----
-import type { Edge } from "@xyflow/react";
+import { type Edge } from "@xyflow/react";
 import {
   layoutModes,
   nodeTypes,
@@ -10,6 +10,7 @@ import Dagre from "@dagrejs/dagre";
 import type { SequenceNodeProps } from "../../components/sequence-node/sequence-node.props.tsx";
 import { theme } from "../../theme";
 import { applySnakeLayout } from "./snake-layout.tsx";
+import useGraphStore from "../store.ts";
 
 const applyBasicLayoutDagre = (
   nodes: NodeTypes[],
@@ -70,6 +71,7 @@ const applyBasicLayoutDagre = (
           ? theme.offsets.defaultLength
           : sequenceLength,
       );
+
       return {
         ...node,
         position: { x: position.x, y: 0 },
@@ -168,48 +170,60 @@ export const applyLayout = (
   nodeWidthMode: nodeWidthModes,
   layoutMode: layoutModes,
 ): [NodeTypes[], Edge[]] => {
-  let layoutedNodes: NodeTypes[];
-  let layoutedEdges: Edge[];
+  useGraphStore.getState().resetIsReversedStore();
 
-  console.log("nodes before layout:", nodes);
+  // remove groups and reset layouting properties
+  let filteredNodes = nodes
+    .filter((node) => node.type === nodeTypes.SequenceNode)
+    .map((node) => ({
+      ...node,
+      parentId: undefined,
+      extent: undefined,
+      data: {
+        ...node.data,
+        positionIndex: 0,
+        intensityRank: 0,
+        isReversed: false, // Reset isReversed
+      },
+    }));
 
-  // reset nodes
-  nodes = nodes.filter((node) => node.type !== nodeTypes.GroupNode);
-  nodes = nodes.map((node) => ({
-    ...node,
-    position: { x: 0, y: 0 },
-    extent: undefined, // remove extent for group nodes
-    parentId: undefined, // remove parentId for group nodes
-    data: {
-      ...node.data,
-      positionIndex: 0, // reset positionIndex for layouting
-      intensityRank: 0, // reset intensityRank for layouting
-    },
-  }));
-
-  console.log("nodes after removing group nodes:", nodes);
-  [layoutedNodes, layoutedEdges] = applyBasicLayoutDagre(
-    nodes,
+  let [layoutedNodes, layoutedEdges] = applyBasicLayoutDagre(
+    filteredNodes,
     edges,
     nodeWidthMode,
     {
       direction: theme.layout.basic.direction,
     },
   );
-  console.log("Nodes after basic layout:", layoutedNodes);
-  // add symmetrical offset for variations
+
   [layoutedNodes, layoutedEdges] = addSymmetricalOffsetForVariations(
     layoutedNodes,
     layoutedEdges,
   );
-  console.log("Nodes after adding symmetrical offset:", layoutedNodes);
+
   if (layoutMode == layoutModes.Snake) {
     [layoutedNodes, layoutedEdges] = applySnakeLayout(
       layoutedNodes,
       layoutedEdges,
     );
   }
-  console.log("Nodes after snake layout:", layoutedNodes);
+
+  // Apply isReversed values from store to ensure React Flow rerenders
+  const getIsReversedStore = useGraphStore.getState().getIsReversedStore;
+  layoutedNodes = layoutedNodes.map((node) => {
+    if (node.type === nodeTypes.SequenceNode) {
+      const isReversed = getIsReversedStore(node.id);
+      // Create completely new node object
+      return {
+        ...node,
+        data: {
+          ...node.data,
+          isReversed,
+        },
+      };
+    }
+    return node;
+  });
 
   return [layoutedNodes, layoutedEdges];
 };
