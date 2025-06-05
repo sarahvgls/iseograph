@@ -25,7 +25,7 @@ export const applySnakeLayout = (
     border: `none`,
     backgroundColor: "transparent",
     height: groupHeight,
-    width: 2500,
+    width: 10000,
   };
 
   // Sort nodes by node.data.positionIndex to ensure they are in the correct order
@@ -51,7 +51,7 @@ export const applySnakeLayout = (
   groupNodes.push(initialGroupNode);
 
   // x positions in groups depending on row length for (reversed) nodes
-  const positions: number[] = [];
+  const positions: number[] = []; // TODO think about changing this again to allow large nodes
 
   const layoutedNodes: SequenceNodeProps[] = nodes.map((node) => {
     if (node.data.positionIndex === lastPositonIndex) {
@@ -104,7 +104,6 @@ export const applySnakeLayout = (
     }
 
     // handle nodes with same positionIndex with the same offsets
-    // TODO fix position index
     lastPositonIndex = node.data.positionIndex as number;
 
     // fill x positions array for first row only and then use

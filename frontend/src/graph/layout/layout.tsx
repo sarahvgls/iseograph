@@ -121,11 +121,19 @@ function addSymmetricalOffsetForVariations(
 
       const children = sourceToTargets[parent].targets;
       if (children.length === 0) break;
-      for (const child of children) {
-        sourceToTargets[child].positionId =
+      for (const childId of children) {
+        sourceToTargets[childId].positionId =
           sourceToTargets[parent].positionId + 1;
-        if (!parentIdStack.includes(child)) {
-          parentIdStack.push(child);
+        if (!parentIdStack.includes(childId)) {
+          parentIdStack.push(childId);
+        }
+        if (childId === "n45" || childId === "n76" || childId === "n15") {
+          console.log(
+            "Child node ",
+            childId,
+            " found, positionId:",
+            sourceToTargets[childId].positionId,
+          );
         }
       }
     }
@@ -145,7 +153,7 @@ function addSymmetricalOffsetForVariations(
         ((nodes.find((n) => n.id === a)?.data.intensity as number) ?? 0),
     );
     const intensityIndex = siblings.indexOf(node.id);
-    const positionIndex = parent[1].positionId + 1;
+    const positionIndex = sourceToTargets[node.id].positionId;
 
     const yOffset = (intensityIndex - (siblings.length - 1) / 2) * spacing;
     const xOffset = theme.offsets.useXOffset ? intensityIndex * 50 : 0;
@@ -210,12 +218,10 @@ export const applyLayout = (
     );
   }
 
-  // Apply isReversed values from store to ensure React Flow rerenders
   const getIsReversedStore = useGraphStore.getState().getIsReversedStore;
   layoutedNodes = layoutedNodes.map((node) => {
     if (node.type === nodeTypes.SequenceNode) {
       const isReversed = getIsReversedStore(node.id);
-      // Create completely new node object
       return {
         ...node,
         data: {
