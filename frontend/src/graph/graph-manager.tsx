@@ -108,6 +108,8 @@ const Flow = () => {
       onNodeClick={onNodeClick}
       fitView
       fitViewOptions={fitViewOptions}
+      nodesDraggable={false}
+      nodesConnectable={false}
     >
       {theme.debugMode && <DevTools />}
       <GraphControls

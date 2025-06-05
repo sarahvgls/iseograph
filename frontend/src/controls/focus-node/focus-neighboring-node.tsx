@@ -5,13 +5,7 @@ const focusNeighborNode = (
   forward: boolean,
   focusedNode: SequenceNodeProps,
   nodes: NodeTypes[],
-  viewport: { x: number; y: number; zoom: number },
 ) => {
-  const screenWidth = window.innerWidth;
-  const currentX = focusedNode
-    ? focusedNode.position.x
-    : viewport.x + screenWidth / 2;
-  let minDistance = forward ? 1000000 : -1000000;
   let nextNode = focusedNode;
   for (const node of nodes) {
     if (
@@ -22,13 +16,15 @@ const focusNeighborNode = (
     ) {
       continue;
     }
-    const distance = node.position.x - currentX;
-    if (
-      (forward ? distance < minDistance : distance > minDistance) &&
-      (forward ? distance > 0 : distance < 0)
-    ) {
-      minDistance = distance;
-      nextNode = node as SequenceNodeProps;
+    const currentPositionIndex = focusedNode.data.positionIndex;
+    for (const node of nodes) {
+      if (
+        node.type == nodeTypes.SequenceNode &&
+        node.data.positionIndex ===
+          (forward ? currentPositionIndex + 1 : currentPositionIndex - 1)
+      ) {
+        nextNode = node as SequenceNodeProps;
+      }
     }
   }
   return nextNode;
@@ -37,15 +33,13 @@ const focusNeighborNode = (
 export const focusNextNode = (
   focusedNode: SequenceNodeProps,
   nodes: NodeTypes[],
-  viewport: { x: number; y: number; zoom: number },
 ) => {
-  return focusNeighborNode(true, focusedNode, nodes, viewport);
+  return focusNeighborNode(true, focusedNode, nodes);
 };
 
 export const focusPreviousNode = (
   focusedNode: SequenceNodeProps,
   nodes: NodeTypes[],
-  viewport: { x: number; y: number; zoom: number },
 ) => {
-  return focusNeighborNode(false, focusedNode, nodes, viewport);
+  return focusNeighborNode(false, focusedNode, nodes);
 };

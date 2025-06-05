@@ -8,7 +8,8 @@ export const theme = {
     defaultWidthCollapsed: false,
     defaultLength: 100,
     largeWidth: 150,
-    defaultSpacingBetweenNodes: 100,
+    defaultYSpacingBetweenNodes: 100,
+    debugYSpacingBetweenNodes: 500,
     useXOffset: false, // TODO decide if xOffset is needed
   },
   layout: {

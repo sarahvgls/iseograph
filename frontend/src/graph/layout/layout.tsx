@@ -85,7 +85,9 @@ function addSymmetricalOffsetForVariations(
   nodes: NodeTypes[],
   edges: Edge[],
 ): [NodeTypes[], Edge[]] {
-  const spacing = theme.offsets.defaultSpacingBetweenNodes; // vertical distance between variations
+  const spacing = theme.debugMode
+    ? theme.offsets.debugYSpacingBetweenNodes
+    : theme.offsets.defaultYSpacingBetweenNodes; // vertical distance between variations
   const sourceToTargets: Record<
     string,
     { positionId: number; targets: string[] }
