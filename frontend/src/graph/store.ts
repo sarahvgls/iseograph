@@ -79,7 +79,6 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
     const { nodes, edges } = get();
     const state = get();
 
-    // Apply layout
     const [layoutedNodes, layoutedEdges] = applyLayout(
       nodes,
       edges,
@@ -87,7 +86,6 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
       layoutMode,
     );
 
-    // Set nodes and edges directly - no need for temporary IDs
     set({
       nodes: layoutedNodes,
       edges: layoutedEdges,

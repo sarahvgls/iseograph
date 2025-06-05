@@ -6,7 +6,6 @@ import {
 } from "@xyflow/react";
 import DevTools from "./devtools/devtools.tsx";
 
-// we have to import the React Flow styles for it to work
 import "@xyflow/react/dist/style.css";
 import useGraphStore, { type RFState } from "./store.ts";
 import { shallow } from "zustand/vanilla/shallow";
@@ -38,7 +37,6 @@ const myNodeTypes = {
 };
 
 const Flow = () => {
-  //whenever you use multiple values, you should use shallow to make sure the component only re-renders when one of the values changes
   const {
     nodes,
     edges,
@@ -48,7 +46,7 @@ const Flow = () => {
     setNodeWidthMode,
     layoutMode,
     setLayoutMode,
-  } = useGraphStore(selector, shallow);
+  } = useGraphStore(selector, shallow); // using shallow to make sure the component only re-renders when one of the values changes
   const [focusedNode, setFocusedNode] = useState<SequenceNodeProps>();
   const { focusNode, onFocusNextNode, onFocusPreviousNode } = useFocusHandlers(
     nodes,

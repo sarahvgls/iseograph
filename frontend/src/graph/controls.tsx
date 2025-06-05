@@ -17,7 +17,7 @@ const GraphControls = ({
   toggleSnakeLayout,
 }: GraphControlsProps) => {
   return (
-    <Controls showInteractive={true}>
+    <Controls showInteractive={false}>
       <ControlButton onClick={onFocusNextNode}>→</ControlButton>
       <ControlButton onClick={onFocusPreviousNode}>←</ControlButton>
       <ControlButton onClick={onFocusCurrentNode}>→←</ControlButton>
