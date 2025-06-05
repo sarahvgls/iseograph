@@ -4,6 +4,7 @@ import {
   Panel,
   type NodeMouseHandler,
 } from "@xyflow/react";
+import DevTools from "./devtools/devtools.tsx";
 
 // we have to import the React Flow styles for it to work
 import "@xyflow/react/dist/style.css";
@@ -17,6 +18,7 @@ import GraphControls from "./controls.tsx";
 import { useFocusHandlers } from "../controls/focus-node/focus-utils.ts";
 import { layoutModes, nodeTypes, nodeWidthModes } from "../theme/types.tsx";
 import { applyLayout } from "./layout";
+import { theme } from "../theme";
 
 const selector = (state: RFState) => ({
   nodes: state.nodes,
@@ -107,6 +109,7 @@ const Flow = () => {
       fitView
       fitViewOptions={fitViewOptions}
     >
+      {theme.debugMode && <DevTools />}
       <GraphControls
         onFocusNextNode={() => onFocusNextNode(focusedNode)}
         onFocusPreviousNode={() => onFocusPreviousNode(focusedNode)}
@@ -122,7 +125,7 @@ const Flow = () => {
           void toggleSnakeLayout();
         }}
       />
-      <Panel position="top-left">
+      <Panel position="top-right">
         Proteoform graph visualization with React Flow library
       </Panel>
       {/* TODO add Zoom settings here after tailwind and shadcn configuration*/}
