@@ -30,14 +30,17 @@ export const useFocusHandlers = (
 
       const absPosition = internalNode?.internals.positionAbsolute;
       const correctedPosition = {
-        x: absPosition.x - internalNode.measured.width! / 2,
-        y: absPosition.y - internalNode.measured.height! / 2,
+        x: absPosition.x + (internalNode.measured.width ?? 0) / 2,
+        y: absPosition.y + (internalNode.measured.height ?? 0) / 2,
       };
 
       setCenter(correctedPosition.x, correctedPosition.y, {
         zoom: 1,
         duration: 800,
       });
+      if (theme.debugMode) {
+        console.log("Set center to:", correctedPosition);
+      }
     },
     [setCenter, setFocusedNode],
   );

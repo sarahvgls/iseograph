@@ -55,6 +55,15 @@ const Flow = () => {
     setFocusedNode,
   );
 
+  const focusWithDelay = (nodeToBeFocused: SequenceNodeProps) => {
+    const timer = setTimeout(() => {
+      focusNode(nodeToBeFocused);
+    }, 500); // 500ms delay to allow React Flow to render the nodes and edges properly
+
+    return () => clearTimeout(timer);
+  };
+
+  // Initial render
   useEffect(() => {
     const [layoutedNodes, layoutedEdges] = applyLayout(
       nodes,
@@ -66,6 +75,9 @@ const Flow = () => {
       nodes: layoutedNodes,
       edges: layoutedEdges,
     });
+    if (layoutedNodes.length > 0) {
+      focusWithDelay(layoutedNodes[0] as SequenceNodeProps);
+    }
   }, []);
 
   const toggleNodeWidthMode = () => {
@@ -80,6 +92,7 @@ const Flow = () => {
     setLayoutMode(
       layoutMode === layoutModes.Basic ? layoutModes.Snake : layoutModes.Basic,
     );
+    focusWithDelay(focusedNode as SequenceNodeProps);
   };
 
   const onNodeClick: NodeMouseHandler = useCallback(
