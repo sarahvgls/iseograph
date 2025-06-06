@@ -81,12 +81,12 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
     });
   },
   layoutMode: theme.layout.mode,
-  setLayoutMode: (layoutMode: layoutModes) => {
+  setLayoutMode: async (layoutMode: layoutModes) => {
     set({ layoutMode });
 
     const { nodes, edges, getInternalNodeFn, nodeWidthMode } = get();
 
-    const [layoutedNodes, layoutedEdges] = applyLayout(
+    const [layoutedNodes, layoutedEdges] = await applyLayout(
       nodes,
       edges,
       nodeWidthMode,
@@ -100,12 +100,12 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
     });
   },
   nodeWidthMode: theme.layout.nodeWidthMode,
-  setNodeWidthMode: (nodeWidthMode: nodeWidthModes) => {
+  setNodeWidthMode: async (nodeWidthMode: nodeWidthModes) => {
     set({ nodeWidthMode });
 
     const { nodes, edges, getInternalNodeFn, layoutMode } = get();
 
-    const [layoutedNodes, layoutedEdges] = applyLayout(
+    const [layoutedNodes, layoutedEdges] = await applyLayout(
       nodes,
       edges,
       nodeWidthMode,

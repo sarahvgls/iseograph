@@ -65,20 +65,40 @@ const Flow = () => {
 
   // Initial render
   useEffect(() => {
-    const [layoutedNodes, layoutedEdges] = applyLayout(
-      nodes,
-      edges,
-      nodeWidthMode,
-      layoutMode,
-      getInternalNode,
-    );
-    useGraphStore.setState({
-      nodes: layoutedNodes,
-      edges: layoutedEdges,
-    });
-    if (layoutedNodes.length > 0) {
-      focusWithDelay(layoutedNodes[0] as SequenceNodeProps);
-    }
+    let mounted = true;
+
+    const applyInitialLayout = async () => {
+      try {
+        const [layoutedNodes, layoutedEdges] = await applyLayout(
+          nodes,
+          edges,
+          nodeWidthMode,
+          layoutMode,
+          getInternalNode,
+        );
+
+        // Only update state if component is still mounted
+        if (mounted) {
+          useGraphStore.setState({
+            nodes: layoutedNodes,
+            edges: layoutedEdges,
+          });
+
+          if (layoutedNodes.length > 0) {
+            focusWithDelay(layoutedNodes[0] as SequenceNodeProps);
+          }
+        }
+      } catch (error) {
+        console.error("Error applying layout:", error);
+      }
+    };
+
+    void applyInitialLayout();
+
+    // Cleanup function to prevent state updates if component unmounts
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   useEffect(() => {

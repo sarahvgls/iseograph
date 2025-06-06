@@ -162,7 +162,7 @@ export const applyLayout = (
   nodeWidthMode: nodeWidthModes,
   layoutMode: layoutModes,
   getInternalNode: ((id: string) => InternalNode | undefined) | null,
-): [NodeTypes[], Edge[]] => {
+): Promise<[NodeTypes[], Edge[]]> => {
   console.log("Applying layout with ndoe mode:", nodeWidthMode);
   useGraphStore.getState().resetIsReversedStore();
 
@@ -181,43 +181,66 @@ export const applyLayout = (
       },
     }));
 
-  let [layoutedNodes, layoutedEdges] = applyBasicLayoutDagre(
-    filteredNodes,
-    edges,
-    nodeWidthMode,
-    {
-      direction: theme.layout.basic.direction,
-    },
-  );
+  return new Promise((resolve) => {
+    let [layoutedNodes, layoutedEdges] = applyBasicLayoutDagre(
+      filteredNodes,
+      edges,
+      nodeWidthMode,
+      {
+        direction: theme.layout.basic.direction,
+      },
+    );
 
-  [layoutedNodes, layoutedEdges] = addSymmetricalOffsetForVariations(
-    layoutedNodes,
-    layoutedEdges,
-  );
-  console.log("Layouted nodes after basic layout:", layoutedNodes);
-
-  if (layoutMode == layoutModes.Snake) {
-    [layoutedNodes, layoutedEdges] = applySnakeLayout(
+    [layoutedNodes, layoutedEdges] = addSymmetricalOffsetForVariations(
       layoutedNodes,
       layoutedEdges,
-      getInternalNode,
     );
-  }
 
-  const getIsReversedStore = useGraphStore.getState().getIsReversedStore;
-  layoutedNodes = layoutedNodes.map((node) => {
-    if (node.type === nodeTypes.SequenceNode) {
-      const isReversed = getIsReversedStore(node.id);
-      return {
-        ...node,
-        data: {
-          ...node.data,
-          isReversed,
-        },
-      };
+    if (layoutMode !== layoutModes.Snake) {
+      const getIsReversedStore = useGraphStore.getState().getIsReversedStore;
+      const finalNodes = layoutedNodes.map((node) => {
+        if (node.type === nodeTypes.SequenceNode) {
+          const isReversed = getIsReversedStore(node.id);
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              isReversed,
+            },
+          };
+        }
+        return node;
+      });
+      resolve([finalNodes, layoutedEdges]);
+      return;
     }
-    return node;
-  });
 
-  return [layoutedNodes, layoutedEdges];
+    // Wait for two animation frames to ensure DOM is updated with new node widths
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const [snakeNodes, snakeEdges] = applySnakeLayout(
+          layoutedNodes,
+          layoutedEdges,
+          getInternalNode,
+        );
+
+        const getIsReversedStore = useGraphStore.getState().getIsReversedStore;
+        const finalNodes = snakeNodes.map((node) => {
+          if (node.type === nodeTypes.SequenceNode) {
+            const isReversed = getIsReversedStore(node.id);
+            return {
+              ...node,
+              data: {
+                ...node.data,
+                isReversed,
+              },
+            };
+          }
+          return node;
+        });
+
+        resolve([finalNodes, snakeEdges]);
+      });
+    });
+  });
 };
