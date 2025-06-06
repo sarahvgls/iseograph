@@ -35,10 +35,6 @@ export type RFState = {
   setNodeWidthMode: (nodeWidthMode: nodeWidthModes) => void;
   layoutMode: layoutModes;
   setLayoutMode: (layoutMode: layoutModes) => void;
-  isReversedStore: Record<string, boolean>;
-  setIsReversedStore: (nodeId: string, isReversed: boolean) => void;
-  getIsReversedStore: (nodeId: string) => boolean;
-  resetIsReversedStore: () => void;
 };
 
 // create nodes of type sequence node for each node in the nodes.json file
@@ -118,24 +114,6 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
       edges: layoutedEdges,
     });
   },
-  isReversedStore: Object.fromEntries(
-    customNodes.map((node) => [node.id, false]),
-  ),
-  setIsReversedStore: (nodeId: string, isReversed: boolean) =>
-    set((state) => ({
-      isReversedStore: {
-        ...state.isReversedStore,
-        [nodeId]: isReversed,
-      },
-    })),
-  getIsReversedStore: (nodeId: string) =>
-    get().isReversedStore[nodeId] || false,
-  resetIsReversedStore: () =>
-    set({
-      isReversedStore: Object.fromEntries(
-        customNodes.map((node) => [node.id, false]),
-      ),
-    }),
 }));
 
 export default useGraphStore;

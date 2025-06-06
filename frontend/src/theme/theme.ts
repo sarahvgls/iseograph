@@ -20,11 +20,16 @@ export const theme = {
     },
     snake: {
       yOffsetBetweenRows: 300,
+      xOffsetBetweenNodes: 100,
       maxAAsPerRow: 60, //not used
-      maxWidthPerRow: 1000,
+      maxWidthPerRow: 1200,
       maxNodesPerRow: 11, // not used
+      // TODO decide if feature needed
       splitLargeNodes: false, // if true, large nodes will be split into smaller nodes when reaching the end of a line
     },
+  },
+  rowNode: {
+    height: 300,
   },
 };
 

@@ -10,7 +10,6 @@ import Dagre from "@dagrejs/dagre";
 import type { SequenceNodeProps } from "../../components/sequence-node/sequence-node.props.tsx";
 import { theme } from "../../theme";
 import { applySnakeLayout } from "./snake-layout.tsx";
-import useGraphStore from "../store.ts";
 
 const applyBasicLayoutDagre = (
   nodes: NodeTypes[],
@@ -52,15 +51,6 @@ const applyBasicLayoutDagre = (
         return node;
       }
       const position = g.node(node.id);
-      //let sequence = "";
-
-      try {
-        // take the x coordinate from dagre layout but adjust y coordinate later
-        //sequence = node.data.sequence as string;
-      } catch (error) {
-        console.error("Error in layouting node:", node.id, error);
-        return node; // return original node if layout fails
-      }
 
       return {
         ...node,
@@ -163,9 +153,6 @@ export const applyLayout = (
   layoutMode: layoutModes,
   getInternalNode: ((id: string) => InternalNode | undefined) | null,
 ): Promise<[NodeTypes[], Edge[]]> => {
-  console.log("Applying layout with ndoe mode:", nodeWidthMode);
-  useGraphStore.getState().resetIsReversedStore();
-
   // remove groups and reset layouting properties
   let filteredNodes = nodes
     .filter((node) => node.type === nodeTypes.SequenceNode)
@@ -197,15 +184,13 @@ export const applyLayout = (
     );
 
     if (layoutMode !== layoutModes.Snake) {
-      const getIsReversedStore = useGraphStore.getState().getIsReversedStore;
       const finalNodes = layoutedNodes.map((node) => {
         if (node.type === nodeTypes.SequenceNode) {
-          const isReversed = getIsReversedStore(node.id);
           return {
             ...node,
             data: {
               ...node.data,
-              isReversed,
+              isReversed: false,
             },
           };
         }
@@ -224,15 +209,13 @@ export const applyLayout = (
           getInternalNode,
         );
 
-        const getIsReversedStore = useGraphStore.getState().getIsReversedStore;
         const finalNodes = snakeNodes.map((node) => {
           if (node.type === nodeTypes.SequenceNode) {
-            const isReversed = getIsReversedStore(node.id);
             return {
               ...node,
               data: {
                 ...node.data,
-                isReversed,
+                isReversed: node.data.isReversed ?? false, // Ensure isReversed is set
               },
             };
           }

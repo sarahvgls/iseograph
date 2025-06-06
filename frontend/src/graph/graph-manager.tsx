@@ -19,6 +19,7 @@ import { useFocusHandlers } from "../controls/focus-node/focus-utils.ts";
 import { layoutModes, nodeTypes, nodeWidthModes } from "../theme/types.tsx";
 import { applyLayout } from "./layout";
 import { theme } from "../theme";
+import RowNode from "../components/row-node.tsx";
 
 const selector = (state: RFState) => ({
   nodes: state.nodes,
@@ -35,6 +36,7 @@ const selector = (state: RFState) => ({
 const nodeOrigin: NodeOrigin = [0.5, 0.5];
 const myNodeTypes = {
   [nodeTypes.SequenceNode]: SequenceNode,
+  [nodeTypes.RowNode]: RowNode,
 };
 
 const Flow = () => {

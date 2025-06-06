@@ -5,7 +5,7 @@ export type NodeTypes = SequenceNodeProps | Node;
 
 export const nodeTypes = {
   SequenceNode: "custom",
-  GroupNode: "group",
+  RowNode: "row",
 } as const;
 
 export const nodeWidthModes = {

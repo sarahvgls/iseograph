@@ -2,7 +2,8 @@ import { type Edge, type InternalNode, type Node } from "@xyflow/react";
 import { theme } from "../../theme";
 import type { NodeTypes } from "../../theme/types.tsx";
 import type { SequenceNodeProps } from "../../components/sequence-node/sequence-node.props.tsx";
-import useGraphStore from "../store.ts";
+import { GroupNode } from "./group-node.tsx";
+//import useGraphStore from "../store.ts";
 
 // Function that aligns nodes in a snake-like layout on the screen
 // - expects nodes to have correct node.data.positionIndex attributes
@@ -36,15 +37,6 @@ export const applySnakeLayout = (
   };
 
   // --- constants and initializations ---
-  //consts to refactor later
-  const groupHeight = 300;
-  const style = {
-    border: `none`,
-    backgroundColor: "transparent",
-    height: groupHeight,
-    width: 10000,
-  };
-
   let nodesInCurrentRow = 0; // var to count the number of nodes in the current row for calculation of x position
   let widthInCurrentRow = 0; // var to keep track of the width of the current row to limit it
   let previousPositionIndex = -1; // var to track the positionIndex of the previous node to handle siblings correctly
@@ -55,38 +47,20 @@ export const applySnakeLayout = (
 
   // Rows are represented by group nodes
   const groupNodes: Node[] = [];
-  const initialGroupNode: Node = {
-    id: "group-1",
-    type: "group",
-    position: { x: 0, y: 0 },
-    data: {
-      label: `Row ${rowCount}`,
-      isReversed: isCurrentRowReversed,
-    },
-    style: style,
-  };
-  groupNodes.push(initialGroupNode);
-
-  // TODO continue here
-  // isReversedStore to keep track of reversed nodes
-  const setIsReversedStore = useGraphStore.getState().setIsReversedStore;
+  groupNodes.push(GroupNode.create(rowId, rowCount, isCurrentRowReversed));
 
   // --- main layouting logic ---
-  // delay 500 ms to ensure that all nodes are loaded before layouting
   nodes = sortNodesByPositionIndex();
 
   const layoutedNodes: SequenceNodeProps[] = nodes.map((node) => {
+    // No new calculation if node is a sibling to previous
+    // TODO maybe calculate x position from width of widest sibling
     if (node.data.positionIndex === previousPositionIndex) {
-      // No new calculation if node is a sibling to previous
-      if (node.id) {
-        setIsReversedStore(node.id, isCurrentRowReversed);
-      }
-
       return {
         ...node,
         position: {
           x: xPosition,
-          y: node.position.y + groupHeight / 2,
+          y: node.position.y + GroupNode.style.height / 2,
         },
         data: {
           ...node.data,
@@ -97,70 +71,51 @@ export const applySnakeLayout = (
       } as SequenceNodeProps;
     }
 
+    // handle nodes with same positionIndex with the same offsets
+    previousPositionIndex = node.data.positionIndex as number;
+
     // width in row as metric to determine if a new row is needed
     const measuredWidth = getMeasuredWidth(node);
     widthInCurrentRow += measuredWidth;
 
     // --- new row ---
     if (widthInCurrentRow > theme.layout.snake.maxWidthPerRow) {
-      if (theme.layout.snake.splitLargeNodes) {
-        // TODO split if not collapsed
-      }
-      // Start a new row with current node
       isCurrentRowReversed = !isCurrentRowReversed;
       nodesInCurrentRow = 0;
       widthInCurrentRow = measuredWidth; // reset to current node width
       rowCount++;
 
       rowId = `group-${rowCount}`;
-      const newGroupNode: Node = {
-        id: rowId,
-        type: "group",
-        position: {
-          x: 0,
-          y: theme.layout.snake.yOffsetBetweenRows * (rowCount - 1),
-        },
-        data: {
-          label: `Row ${rowCount}`,
-        },
-        style: style,
-      };
-      groupNodes.push(newGroupNode);
+      groupNodes.push(GroupNode.create(rowId, rowCount, isCurrentRowReversed));
     }
 
-    // handle nodes with same positionIndex with the same offsets
-    previousPositionIndex = node.data.positionIndex as number;
-
+    // --- calculate x position ---
     xPosition = isCurrentRowReversed
       ? theme.layout.snake.maxWidthPerRow * 2 -
         widthInCurrentRow -
-        100 * nodesInCurrentRow +
+        theme.layout.snake.xOffsetBetweenNodes * nodesInCurrentRow +
         measuredWidth / 2 +
-        150
+        theme.layout.snake.maxWidthPerRow / 3
       : widthInCurrentRow + 100 * nodesInCurrentRow - measuredWidth / 2;
 
     nodesInCurrentRow++;
-
-    // update isReversedStore
-    if (node.id) {
-      setIsReversedStore(node.id, isCurrentRowReversed);
-    }
 
     return {
       ...node,
       position: {
         x: xPosition,
-        y: node.position.y + groupHeight / 2,
+        y: node.position.y + GroupNode.style.height / 2,
       },
       parentId: rowId,
       extent: "parent",
       data: {
         ...node.data,
-        isReversed: isCurrentRowReversed, // will be removed
+        isReversed: isCurrentRowReversed,
       },
     } as SequenceNodeProps;
   });
 
+  // add group nodes to node collection
   const allNodes: NodeTypes[] = [...groupNodes, ...layoutedNodes];
 
   return [allNodes, edges];
