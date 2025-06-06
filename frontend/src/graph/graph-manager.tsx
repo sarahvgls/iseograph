@@ -12,7 +12,7 @@ import useGraphStore, { type RFState } from "./store.ts";
 import { shallow } from "zustand/vanilla/shallow";
 
 import SequenceNode from "../components/sequence-node/sequence-node.tsx";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { SequenceNodeProps } from "../components/sequence-node/sequence-node.props.tsx";
 import GraphControls from "./controls.tsx";
 import { useFocusHandlers } from "../controls/focus-node/focus-utils.ts";
@@ -128,11 +128,36 @@ const Flow = () => {
     focusWithDelay(focusedNode as SequenceNodeProps);
   };
 
+  const lastClickTimeRef = useRef<number>(0);
+  const clickTimerRef = useRef<number | null>(null);
+
   const onNodeClick: NodeMouseHandler = useCallback(
     (_event, node) => {
-      focusNode(node as SequenceNodeProps);
+      const currentTime = new Date().getTime();
+      const timeSinceLastClick = currentTime - lastClickTimeRef.current;
+
+      if (timeSinceLastClick < 300 && lastClickTimeRef.current > 0) {
+        if (node.type === nodeTypes.SequenceNode) {
+          focusNode(node as SequenceNodeProps);
+        }
+        lastClickTimeRef.current = 0;
+      } else {
+        lastClickTimeRef.current = currentTime;
+
+        if (clickTimerRef.current !== null) {
+          clearTimeout(clickTimerRef.current);
+        }
+
+        clickTimerRef.current = window.setTimeout(() => {
+          if (lastClickTimeRef.current > 0) {
+            // TODO only toggle selected node
+            toggleNodeWidthMode();
+          }
+          clickTimerRef.current = null;
+        }, 300);
+      }
     },
-    [focusNode],
+    [focusNode, toggleNodeWidthMode],
   );
 
   const fitViewOptions = {
@@ -150,6 +175,7 @@ const Flow = () => {
       onEdgesChange={onEdgesChange}
       nodeOrigin={nodeOrigin}
       minZoom={0.05}
+      zoomOnDoubleClick={false}
       width={100}
       onNodeClick={onNodeClick}
       fitView
