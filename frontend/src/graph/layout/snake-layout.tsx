@@ -1,24 +1,41 @@
-import type { Edge, Node } from "@xyflow/react";
+import { type Edge, type InternalNode, type Node } from "@xyflow/react";
 import { theme } from "../../theme";
 import type { NodeTypes } from "../../theme/types.tsx";
 import type { SequenceNodeProps } from "../../components/sequence-node/sequence-node.props.tsx";
 import useGraphStore from "../store.ts";
 
+// Function that aligns nodes in a snake-like layout on the screen
+// - expects nodes to have correct node.data.positionIndex attributes
+// - row length is determined by theme.layout.snake.maxWidthPerRow
 export const applySnakeLayout = (
   nodes: NodeTypes[],
   edges: Edge[],
+  getInternalNode: ((id: string) => InternalNode | undefined) | null,
 ): [NodeTypes[], Edge[]] => {
-  // expects nodes that are already in a sequence
-  let isCurrentRowReversed = false; //should be used
-  let rowCount = 1;
-  let lastPositonIndex = -1;
-  let xOffset = 25;
-  let yOffset = 0;
-  let nodesInCurrentRow = 0;
+  // --- helper functions ---
+  // Function to get the visual width of a node via the internal node
+  const getMeasuredWidth = (node: Node) => {
+    let internalNode: InternalNode | undefined;
+    if (getInternalNode) {
+      internalNode = getInternalNode(node.id);
+    }
+    if (!internalNode) {
+      console.warn(`Internal node not found for ${node.id}`);
+      return 0;
+    }
+    return internalNode?.measured.width ?? 0;
+  };
 
-  // isReversedStore to keep track of reversed nodes
-  const setIsReversedStore = useGraphStore.getState().setIsReversedStore;
+  // Function that sorts nodes by their positionIndex
+  const sortNodesByPositionIndex = () => {
+    return nodes.sort((a, b) => {
+      const positionA = a.data.positionIndex as number;
+      const positionB = b.data.positionIndex as number;
+      return positionA - positionB;
+    });
+  };
 
+  // --- constants and initializations ---
   //consts to refactor later
   const groupHeight = 300;
   const style = {
@@ -28,18 +45,18 @@ export const applySnakeLayout = (
     width: 10000,
   };
 
-  // Sort nodes by node.data.positionIndex to ensure they are in the correct order
-  nodes.sort((a, b) => {
-    const positionA = a.data.positionIndex as number;
-    const positionB = b.data.positionIndex as number;
-    return positionA - positionB;
-  });
+  let nodesInCurrentRow = 0; // var to count the number of nodes in the current row for calculation of x position
+  let widthInCurrentRow = 0; // var to keep track of the width of the current row to limit it
+  let previousPositionIndex = -1; // var to track the positionIndex of the previous node to handle siblings correctly
+  let xPosition = 0; // var to calculate the x position of the current node and make it available to siblings as well
+  let isCurrentRowReversed = false; // var to reverse nodes in every second row
+  let rowCount = 1;
+  let rowId = "group-1"; // id of the current row, used for parentId of nodes
 
-  // add subflow groups for each row
+  // Rows are represented by group nodes
   const groupNodes: Node[] = [];
-  let rowId = "group-0";
   const initialGroupNode: Node = {
-    id: rowId,
+    id: "group-1",
     type: "group",
     position: { x: 0, y: 0 },
     data: {
@@ -50,11 +67,16 @@ export const applySnakeLayout = (
   };
   groupNodes.push(initialGroupNode);
 
-  // x positions in groups depending on row length for (reversed) nodes
-  const positions: number[] = []; // TODO think about changing this again to allow large nodes
+  // TODO continue here
+  // isReversedStore to keep track of reversed nodes
+  const setIsReversedStore = useGraphStore.getState().setIsReversedStore;
+
+  // --- main layouting logic ---
+  // delay 500 ms to ensure that all nodes are loaded before layouting
+  nodes = sortNodesByPositionIndex();
 
   const layoutedNodes: SequenceNodeProps[] = nodes.map((node) => {
-    if (node.data.positionIndex === lastPositonIndex) {
+    if (node.data.positionIndex === previousPositionIndex) {
       // No new calculation if node is a sibling to previous
       if (node.id) {
         setIsReversedStore(node.id, isCurrentRowReversed);
@@ -63,8 +85,8 @@ export const applySnakeLayout = (
       return {
         ...node,
         position: {
-          x: xOffset,
-          y: node.position.y + yOffset + groupHeight / 2,
+          x: xPosition,
+          y: node.position.y + groupHeight / 2,
         },
         data: {
           ...node.data,
@@ -75,17 +97,20 @@ export const applySnakeLayout = (
       } as SequenceNodeProps;
     }
 
-    nodesInCurrentRow++;
+    // width in row as metric to determine if a new row is needed
+    const measuredWidth = getMeasuredWidth(node);
+    widthInCurrentRow += measuredWidth;
 
-    if (nodesInCurrentRow > theme.layout.snake.maxNodesPerRow) {
+    // --- new row ---
+    if (widthInCurrentRow > theme.layout.snake.maxWidthPerRow) {
       if (theme.layout.snake.splitLargeNodes) {
         // TODO split if not collapsed
       }
       // Start a new row with current node
       isCurrentRowReversed = !isCurrentRowReversed;
-      nodesInCurrentRow = 1;
+      nodesInCurrentRow = 0;
+      widthInCurrentRow = measuredWidth; // reset to current node width
       rowCount++;
-      yOffset = 0;
 
       rowId = `group-${rowCount}`;
       const newGroupNode: Node = {
@@ -104,18 +129,17 @@ export const applySnakeLayout = (
     }
 
     // handle nodes with same positionIndex with the same offsets
-    lastPositonIndex = node.data.positionIndex as number;
+    previousPositionIndex = node.data.positionIndex as number;
 
-    // fill x positions array for first row only and then use
-    if (rowCount === 1) {
-      positions.push(node.position.x + 25);
-      xOffset = node.position.x + 25;
-    }
-    xOffset = isCurrentRowReversed
-      ? positions[
-          theme.layout.snake.maxNodesPerRow - (nodesInCurrentRow - 1) - 1
-        ]
-      : positions[nodesInCurrentRow - 1];
+    xPosition = isCurrentRowReversed
+      ? theme.layout.snake.maxWidthPerRow * 2 -
+        widthInCurrentRow -
+        100 * nodesInCurrentRow +
+        measuredWidth / 2 +
+        150
+      : widthInCurrentRow + 100 * nodesInCurrentRow - measuredWidth / 2;
+
+    nodesInCurrentRow++;
 
     // update isReversedStore
     if (node.id) {
@@ -125,8 +149,8 @@ export const applySnakeLayout = (
     return {
       ...node,
       position: {
-        x: xOffset,
-        y: node.position.y + yOffset + groupHeight / 2,
+        x: xPosition,
+        y: node.position.y + groupHeight / 2,
       },
       parentId: rowId,
       extent: "parent",

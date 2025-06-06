@@ -3,6 +3,7 @@ import {
   applyNodeChanges,
   type Edge,
   type EdgeChange,
+  type InternalNode,
   type Node,
   type NodeChange,
   type OnEdgesChange,
@@ -24,6 +25,10 @@ import { applyLayout } from "./layout/layout.tsx";
 export type RFState = {
   nodes: Node[];
   edges: Edge[];
+  getInternalNodeFn: ((id: string) => InternalNode | undefined) | null;
+  setInternalNodeGetter: (
+    getter: (id: string) => InternalNode | undefined,
+  ) => void;
   onNodesChange: OnNodesChange;
   onEdgesChange: OnEdgesChange;
   nodeWidthMode: nodeWidthModes;
@@ -61,8 +66,10 @@ const customEdges: Edge[] = edges;
 const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
   nodes: customNodes,
   edges: customEdges,
-  nodeWidthMode: theme.layout.nodeWidthMode,
-  layoutMode: theme.layout.mode,
+  getInternalNodeFn: null,
+  setInternalNodeGetter: (getter) => {
+    set({ getInternalNodeFn: getter });
+  },
   onNodesChange: (changes: NodeChange[]) => {
     set({
       nodes: applyNodeChanges(changes, get().nodes),
@@ -73,17 +80,18 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
       edges: applyEdgeChanges(changes, get().edges),
     });
   },
+  layoutMode: theme.layout.mode,
   setLayoutMode: (layoutMode: layoutModes) => {
     set({ layoutMode });
 
-    const { nodes, edges } = get();
-    const state = get();
+    const { nodes, edges, getInternalNodeFn, nodeWidthMode } = get();
 
     const [layoutedNodes, layoutedEdges] = applyLayout(
       nodes,
       edges,
-      state.nodeWidthMode,
+      nodeWidthMode,
       layoutMode,
+      getInternalNodeFn,
     );
 
     set({
@@ -91,18 +99,20 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
       edges: layoutedEdges,
     });
   },
+  nodeWidthMode: theme.layout.nodeWidthMode,
   setNodeWidthMode: (nodeWidthMode: nodeWidthModes) => {
-    set({
-      nodeWidthMode: nodeWidthMode,
-    });
-    const { nodes, edges } = get();
-    const state = get();
+    set({ nodeWidthMode });
+
+    const { nodes, edges, getInternalNodeFn, layoutMode } = get();
+
     const [layoutedNodes, layoutedEdges] = applyLayout(
       nodes,
       edges,
-      state.nodeWidthMode,
-      state.layoutMode,
+      nodeWidthMode,
+      layoutMode,
+      getInternalNodeFn,
     );
+
     set({
       nodes: layoutedNodes,
       edges: layoutedEdges,

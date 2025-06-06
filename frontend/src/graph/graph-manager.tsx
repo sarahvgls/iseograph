@@ -3,6 +3,7 @@ import {
   type NodeOrigin,
   Panel,
   type NodeMouseHandler,
+  useReactFlow,
 } from "@xyflow/react";
 import DevTools from "./devtools/devtools.tsx";
 
@@ -37,6 +38,7 @@ const myNodeTypes = {
 };
 
 const Flow = () => {
+  const { getInternalNode } = useReactFlow();
   const {
     nodes,
     edges,
@@ -68,6 +70,7 @@ const Flow = () => {
       edges,
       nodeWidthMode,
       layoutMode,
+      getInternalNode,
     );
     useGraphStore.setState({
       nodes: layoutedNodes,
@@ -77,6 +80,10 @@ const Flow = () => {
       focusWithDelay(layoutedNodes[0] as SequenceNodeProps);
     }
   }, []);
+
+  useEffect(() => {
+    useGraphStore.getState().setInternalNodeGetter(getInternalNode);
+  }, [getInternalNode]);
 
   const toggleNodeWidthMode = () => {
     setNodeWidthMode(

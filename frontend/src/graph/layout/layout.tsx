@@ -1,5 +1,5 @@
 // ----- functions for layouting nodes and edges -----
-import { type Edge } from "@xyflow/react";
+import { type Edge, type InternalNode } from "@xyflow/react";
 import {
   layoutModes,
   nodeTypes,
@@ -52,25 +52,15 @@ const applyBasicLayoutDagre = (
         return node;
       }
       const position = g.node(node.id);
-      let sequence = "";
+      //let sequence = "";
 
       try {
         // take the x coordinate from dagre layout but adjust y coordinate later
-        sequence = node.data.sequence as string;
+        //sequence = node.data.sequence as string;
       } catch (error) {
         console.error("Error in layouting node:", node.id, error);
         return node; // return original node if layout fails
       }
-      const sequenceLength = sequence.length * 12 + 100; // 12 is the approximated width of each character, plus 50px on each side
-
-      console.log(
-        "node is collapsed?",
-        nodeWidthMode === nodeWidthModes.Collapsed,
-        " now it has width:",
-        nodeWidthMode === nodeWidthModes.Collapsed
-          ? theme.offsets.defaultLength
-          : sequenceLength,
-      );
 
       return {
         ...node,
@@ -127,14 +117,6 @@ function addSymmetricalOffsetForVariations(
         if (!parentIdStack.includes(childId)) {
           parentIdStack.push(childId);
         }
-        if (childId === "n45" || childId === "n76" || childId === "n15") {
-          console.log(
-            "Child node ",
-            childId,
-            " found, positionId:",
-            sourceToTargets[childId].positionId,
-          );
-        }
       }
     }
   }
@@ -179,7 +161,9 @@ export const applyLayout = (
   edges: Edge[],
   nodeWidthMode: nodeWidthModes,
   layoutMode: layoutModes,
+  getInternalNode: ((id: string) => InternalNode | undefined) | null,
 ): [NodeTypes[], Edge[]] => {
+  console.log("Applying layout with ndoe mode:", nodeWidthMode);
   useGraphStore.getState().resetIsReversedStore();
 
   // remove groups and reset layouting properties
@@ -210,11 +194,13 @@ export const applyLayout = (
     layoutedNodes,
     layoutedEdges,
   );
+  console.log("Layouted nodes after basic layout:", layoutedNodes);
 
   if (layoutMode == layoutModes.Snake) {
     [layoutedNodes, layoutedEdges] = applySnakeLayout(
       layoutedNodes,
       layoutedEdges,
+      getInternalNode,
     );
   }
 

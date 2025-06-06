@@ -5,8 +5,6 @@ import { focusNextNode, focusPreviousNode } from "./index.tsx";
 import { theme } from "../../theme";
 import { nodeTypes, type NodeTypes } from "../../theme/types.tsx";
 
-// TODO think about using "origin x" to not have moved nodes alter the result
-
 export const useFocusHandlers = (
   nodes: NodeTypes[],
   setFocusedNode: (node: SequenceNodeProps) => void,

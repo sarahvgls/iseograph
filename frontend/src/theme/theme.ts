@@ -21,8 +21,8 @@ export const theme = {
     snake: {
       yOffsetBetweenRows: 300,
       maxAAsPerRow: 60, //not used
-      maxWidthPerRow: 1000, //not used
-      maxNodesPerRow: 11,
+      maxWidthPerRow: 1000,
+      maxNodesPerRow: 11, // not used
       splitLargeNodes: false, // if true, large nodes will be split into smaller nodes when reaching the end of a line
     },
   },
