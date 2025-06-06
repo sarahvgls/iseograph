@@ -3,6 +3,7 @@ import {
   applyNodeChanges,
   type Edge,
   type EdgeChange,
+  type InternalNode,
   type Node,
   type NodeChange,
   type OnEdgesChange,
@@ -14,12 +15,20 @@ import nodes from "../../../generated/nodes.json";
 import edges from "../../../generated/edges.json";
 import type { SequenceNodeProps } from "../components/sequence-node/sequence-node.props.tsx";
 import { theme } from "../theme";
-import { type layoutModes, nodeWidthModes } from "../theme/types.tsx";
-import { applyLayout } from "./layout.tsx";
+import {
+  type layoutModes,
+  nodeTypes,
+  nodeWidthModes,
+} from "../theme/types.tsx";
+import { applyLayout } from "./layout/layout.tsx";
 
 export type RFState = {
   nodes: Node[];
   edges: Edge[];
+  getInternalNodeFn: ((id: string) => InternalNode | undefined) | null;
+  setInternalNodeGetter: (
+    getter: (id: string) => InternalNode | undefined,
+  ) => void;
   onNodesChange: OnNodesChange;
   onEdgesChange: OnEdgesChange;
   nodeWidthMode: nodeWidthModes;
@@ -32,11 +41,14 @@ export type RFState = {
 const createNodes = (nodes: SequenceNodeProps[]): SequenceNodeProps[] => {
   return nodes.map((node) => ({
     ...node,
-    type: "custom",
+    type: nodeTypes.SequenceNode,
     data: {
       sequence: node.data.sequence,
       intensity: node.data.intensity,
       feature: node.data.feature,
+      visualWidth: node.data.visualWidth || 0, // default to 0 if not provided
+      positionIndex: 0,
+      intensityRank: 0,
     },
   }));
 };
@@ -47,17 +59,13 @@ const customNodes: SequenceNodeProps[] = createNodes(
 );
 const customEdges: Edge[] = edges;
 
-const [layoutedNodes, layoutedEdges] = applyLayout(
-  customNodes,
-  customEdges,
-  theme.layout.nodeWidthMode,
-);
-
 const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
-  nodes: layoutedNodes,
-  edges: layoutedEdges,
-  nodeWidthMode: theme.layout.nodeWidthMode,
-  layoutMode: theme.layout.mode,
+  nodes: customNodes,
+  edges: customEdges,
+  getInternalNodeFn: null,
+  setInternalNodeGetter: (getter) => {
+    set({ getInternalNodeFn: getter });
+  },
   onNodesChange: (changes: NodeChange[]) => {
     set({
       nodes: applyNodeChanges(changes, get().nodes),
@@ -68,28 +76,42 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
       edges: applyEdgeChanges(changes, get().edges),
     });
   },
-  setNodeWidthMode: (nodeWidthMode: nodeWidthModes) => {
-    set({
-      nodeWidthMode: nodeWidthMode,
-    });
-    const { nodes, edges } = get();
-    const customNodes: SequenceNodeProps[] = createNodes(
-      nodes as SequenceNodeProps[],
-    );
-    const state = get();
-    const [offsetNodes, offsetEdges] = applyLayout(
-      customNodes,
+  layoutMode: theme.layout.mode,
+  setLayoutMode: async (layoutMode: layoutModes) => {
+    set({ layoutMode });
+
+    const { nodes, edges, getInternalNodeFn, nodeWidthMode } = get();
+
+    const [layoutedNodes, layoutedEdges] = await applyLayout(
+      nodes,
       edges,
-      state.nodeWidthMode,
+      nodeWidthMode,
+      layoutMode,
+      getInternalNodeFn,
     );
+
     set({
-      nodes: offsetNodes,
-      edges: offsetEdges,
+      nodes: layoutedNodes,
+      edges: layoutedEdges,
     });
   },
-  setLayoutMode: (layoutMode: layoutModes) => {
-    set({
+  nodeWidthMode: theme.layout.nodeWidthMode,
+  setNodeWidthMode: async (nodeWidthMode: nodeWidthModes) => {
+    set({ nodeWidthMode });
+
+    const { nodes, edges, getInternalNodeFn, layoutMode } = get();
+
+    const [layoutedNodes, layoutedEdges] = await applyLayout(
+      nodes,
+      edges,
+      nodeWidthMode,
       layoutMode,
+      getInternalNodeFn,
+    );
+
+    set({
+      nodes: layoutedNodes,
+      edges: layoutedEdges,
     });
   },
 }));

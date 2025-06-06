@@ -1,28 +1,30 @@
 import type { SequenceNodeProps } from "../../components/sequence-node/sequence-node.props.tsx";
+import { nodeTypes, type NodeTypes } from "../../theme/types.tsx";
 
 const focusNeighborNode = (
   forward: boolean,
   focusedNode: SequenceNodeProps,
-  nodes: SequenceNodeProps[],
-  viewport: { x: number; y: number; zoom: number },
+  nodes: NodeTypes[],
 ) => {
-  const screenWidth = window.innerWidth;
-  const currentX = focusedNode
-    ? focusedNode.position.x
-    : viewport.x + screenWidth / 2;
-  let minDistance = forward ? 1000000 : -1000000;
   let nextNode = focusedNode;
   for (const node of nodes) {
-    if (focusedNode && node.id === focusedNode.id) {
+    if (
+      (focusedNode &&
+        node.id === focusedNode.id &&
+        node.type === nodeTypes.SequenceNode) ||
+      node.type !== nodeTypes.SequenceNode
+    ) {
       continue;
     }
-    const distance = node.position.x - currentX;
-    if (
-      (forward ? distance < minDistance : distance > minDistance) &&
-      (forward ? distance > 0 : distance < 0)
-    ) {
-      minDistance = distance;
-      nextNode = node as SequenceNodeProps;
+    const currentPositionIndex = focusedNode.data.positionIndex;
+    for (const node of nodes) {
+      if (
+        node.type == nodeTypes.SequenceNode &&
+        node.data.positionIndex ===
+          (forward ? currentPositionIndex + 1 : currentPositionIndex - 1)
+      ) {
+        nextNode = node as SequenceNodeProps;
+      }
     }
   }
   return nextNode;
@@ -30,16 +32,14 @@ const focusNeighborNode = (
 
 export const focusNextNode = (
   focusedNode: SequenceNodeProps,
-  nodes: SequenceNodeProps[],
-  viewport: { x: number; y: number; zoom: number },
+  nodes: NodeTypes[],
 ) => {
-  return focusNeighborNode(true, focusedNode, nodes, viewport);
+  return focusNeighborNode(true, focusedNode, nodes);
 };
 
 export const focusPreviousNode = (
   focusedNode: SequenceNodeProps,
-  nodes: SequenceNodeProps[],
-  viewport: { x: number; y: number; zoom: number },
+  nodes: NodeTypes[],
 ) => {
-  return focusNeighborNode(false, focusedNode, nodes, viewport);
+  return focusNeighborNode(false, focusedNode, nodes);
 };

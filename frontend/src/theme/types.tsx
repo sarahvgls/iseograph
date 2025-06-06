@@ -1,3 +1,13 @@
+import type { SequenceNodeProps } from "../components/sequence-node/sequence-node.props.tsx";
+import type { Node } from "@xyflow/react";
+
+export type NodeTypes = SequenceNodeProps | Node;
+
+export const nodeTypes = {
+  SequenceNode: "custom",
+  RowNode: "row",
+} as const;
+
 export const nodeWidthModes = {
   Collapsed: "collapsed",
   Expanded: "expanded",

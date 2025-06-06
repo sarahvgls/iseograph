@@ -4,6 +4,7 @@ import {
   NodeToolbar,
   Position,
   useStore,
+  useUpdateNodeInternals,
 } from "@xyflow/react"; //changed to type NodeProps? is that correct?
 import styled from "styled-components";
 import type { SequenceNodeProps } from "./sequence-node.props.tsx";
@@ -12,6 +13,7 @@ import { SequenceContainer } from "./sequence-container/sequence-container.tsx";
 import useGraphStore, { type RFState } from "../../graph/store.ts";
 import { shallow } from "zustand/vanilla/shallow";
 import { nodeWidthModes } from "../../theme/types.tsx";
+import { memo, useEffect } from "react";
 
 const selector = (state: RFState) => ({
   nodeWidthMode: state.nodeWidthMode,
@@ -57,9 +59,13 @@ const StyledHandle = styled(Handle)`
 
 const useZoom = () => useStore((store) => store.transform[2]); // [x, y, zoom]
 
-function SequenceNode({ data }: NodeProps<SequenceNodeProps>) {
+const SequenceNode = memo(function SequenceNode({
+  id,
+  data,
+}: NodeProps<SequenceNodeProps>) {
   const { nodeWidthMode } = useGraphStore(selector, shallow);
-  const width = theme.offsets.defaultWidthCollapsed
+  const updateNodeInternals = useUpdateNodeInternals();
+  const width = theme.offsets.defaultWidthCollapsed // TODO what happens here
     ? data.sequence.length * 10 + 100
     : theme.offsets.defaultLength; // 10 is the approximated width of each character, plus 50px on each side
 
@@ -69,6 +75,11 @@ function SequenceNode({ data }: NodeProps<SequenceNodeProps>) {
   const size = 50;
   const hitboxHeight = size * scale * 2;
   const hitboxWidth = width;
+
+  // Update node internals when isReversed changes DO NOT DELETE
+  useEffect(() => {
+    updateNodeInternals(id);
+  }, [id, data.isReversed, updateNodeInternals]);
 
   return (
     <div>
@@ -92,17 +103,23 @@ function SequenceNode({ data }: NodeProps<SequenceNodeProps>) {
       </NodeToolbar>
 
       <NodeWrapper>
-        <StyledHandle type="target" position={Position.Left} />
+        <StyledHandle
+          type={data.isReversed ? "source" : "target"}
+          position={Position.Left}
+        />
         <StyledNode>
           <SequenceContainer
             sequence={data.sequence}
             collapsed={nodeWidthMode == nodeWidthModes.Collapsed}
           />
         </StyledNode>
-        <StyledHandle type="source" position={Position.Right} />
+        <StyledHandle
+          type={data.isReversed ? "target" : "source"}
+          position={Position.Right}
+        />
       </NodeWrapper>
     </div>
   );
-}
+});
 
 export default SequenceNode;
