@@ -168,7 +168,6 @@ const Flow = () => {
       <Panel position="top-right">
         Proteoform graph visualization with React Flow library
       </Panel>
-      {/* TODO add Zoom settings here after tailwind and shadcn configuration*/}
     </ReactFlow>
   );
 };
