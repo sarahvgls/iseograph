@@ -65,7 +65,7 @@ const Flow = () => {
     return () => clearTimeout(timer);
   };
 
-  // Initial render
+  // --- Initial render ---
   useEffect(() => {
     let mounted = true;
 
@@ -87,7 +87,10 @@ const Flow = () => {
           });
 
           if (layoutedNodes.length > 0) {
-            focusWithDelay(layoutedNodes[0] as SequenceNodeProps);
+            const firstSequenceNode = layoutedNodes.find(
+              (node) => node.type === nodeTypes.SequenceNode,
+            ) as SequenceNodeProps | undefined;
+            focusWithDelay(firstSequenceNode as SequenceNodeProps);
           }
         }
       } catch (error) {
@@ -108,11 +111,14 @@ const Flow = () => {
   }, [getInternalNode]);
 
   const toggleNodeWidthMode = () => {
-    setNodeWidthMode(
+    // collapsed -> small -> expanded
+    const nextMode =
       nodeWidthMode === nodeWidthModes.Collapsed
-        ? nodeWidthModes.Expanded
-        : nodeWidthModes.Collapsed,
-    );
+        ? nodeWidthModes.Small
+        : nodeWidthMode === nodeWidthModes.Small
+          ? nodeWidthModes.Expanded
+          : nodeWidthModes.Collapsed;
+    setNodeWidthMode(nextMode);
   };
 
   const toggleSnakeLayout = () => {

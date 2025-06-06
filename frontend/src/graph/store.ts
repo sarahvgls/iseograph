@@ -95,7 +95,7 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
       edges: layoutedEdges,
     });
   },
-  nodeWidthMode: theme.layout.nodeWidthMode,
+  nodeWidthMode: theme.layout.defaultNodeWidthMode,
   setNodeWidthMode: async (nodeWidthMode: nodeWidthModes) => {
     set({ nodeWidthMode });
 

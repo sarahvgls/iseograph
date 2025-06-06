@@ -9,8 +9,9 @@ export const nodeTypes = {
 } as const;
 
 export const nodeWidthModes = {
-  Collapsed: "collapsed",
-  Expanded: "expanded",
+  Collapsed: "collapsed", // no sequence visible
+  Small: "small", // long nodes become scrollable
+  Expanded: "expanded", // all sequence visible
 } as const;
 
 export type nodeWidthModes =

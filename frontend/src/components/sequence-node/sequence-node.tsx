@@ -12,7 +12,6 @@ import { theme } from "../../theme";
 import { SequenceContainer } from "./sequence-container/sequence-container.tsx";
 import useGraphStore, { type RFState } from "../../graph/store.ts";
 import { shallow } from "zustand/vanilla/shallow";
-import { nodeWidthModes } from "../../theme/types.tsx";
 import { memo, useEffect } from "react";
 
 const selector = (state: RFState) => ({
@@ -110,7 +109,7 @@ const SequenceNode = memo(function SequenceNode({
         <StyledNode>
           <SequenceContainer
             sequence={data.sequence}
-            collapsed={nodeWidthMode == nodeWidthModes.Collapsed}
+            nodeWidthMode={nodeWidthMode}
           />
         </StyledNode>
         <StyledHandle

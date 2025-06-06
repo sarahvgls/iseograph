@@ -36,9 +36,9 @@ const applyBasicLayoutDagre = (
     g.setNode(node.id, {
       ...node,
       width:
-        nodeWidthMode === nodeWidthModes.Collapsed
-          ? theme.offsets.largeWidth
-          : sequenceLength,
+        nodeWidthMode === nodeWidthModes.Expanded
+          ? sequenceLength
+          : theme.offsets.largeWidth,
       height: theme.offsets.defaultLength,
     });
   });

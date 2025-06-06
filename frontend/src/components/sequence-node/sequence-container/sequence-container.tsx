@@ -1,7 +1,8 @@
 import styled from "styled-components";
+import { nodeWidthModes } from "../../../theme/types.tsx";
 
 interface SequenceContainerProps {
-  collapsed?: boolean;
+  nodeWidthMode?: nodeWidthModes;
   sequence: string;
 }
 
@@ -32,15 +33,17 @@ const Sequence = styled.div`
 `;
 
 export const SequenceContainer: React.FC<SequenceContainerProps> = ({
-  collapsed,
+  nodeWidthMode,
   sequence,
 }) => {
   return (
     <div>
-      {collapsed ? (
+      {nodeWidthMode === nodeWidthModes.Expanded ? (
+        <Sequence>{sequence}</Sequence>
+      ) : nodeWidthMode === nodeWidthModes.Small ? (
         <CollapsedSequence>{sequence}</CollapsedSequence>
       ) : (
-        <Sequence>{sequence}</Sequence>
+        <div></div>
       )}
     </div>
   );
