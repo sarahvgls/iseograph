@@ -1,5 +1,5 @@
 import type { NodeProps } from "@xyflow/react";
-import { nodeTypes } from "../../theme/types.tsx";
+import { nodeTypes, type nodeWidthModes } from "../../theme/types.tsx";
 
 export interface SequenceNodeProps extends NodeProps {
   label: string;
@@ -7,11 +7,11 @@ export interface SequenceNodeProps extends NodeProps {
   data: {
     sequence: string;
     intensity: number;
-    visualWidth: number; // grows with each amino acid, is limited if nodes are collapsed
     feature: string;
     positionIndex: number;
     intensityRank: number;
     isReversed?: boolean;
+    nodeWidthMode: nodeWidthModes; // mode for this node, can be overridden by the store
   };
   id: string;
   type: typeof nodeTypes.SequenceNode;

@@ -20,6 +20,8 @@ import { layoutModes, nodeTypes, nodeWidthModes } from "../theme/types.tsx";
 import { applyLayout } from "./layout";
 import { theme } from "../theme";
 import RowNode from "../components/row-node.tsx";
+import store from "./store.ts";
+import { toggleNodeWidthMode } from "./layout/helper.tsx";
 
 const selector = (state: RFState) => ({
   nodes: state.nodes,
@@ -27,7 +29,7 @@ const selector = (state: RFState) => ({
   onNodesChange: state.onNodesChange,
   onEdgesChange: state.onEdgesChange,
   nodeWidthMode: state.nodeWidthMode,
-  setNodeWidthMode: state.setNodeWidthMode,
+  setNodeWidthMode: state.setGlobalNodeWidthMode,
   layoutMode: state.layoutMode,
   setLayoutMode: state.setLayoutMode,
 });
@@ -74,7 +76,6 @@ const Flow = () => {
         const [layoutedNodes, layoutedEdges] = await applyLayout(
           nodes,
           edges,
-          nodeWidthMode,
           layoutMode,
           getInternalNode,
         );
@@ -110,15 +111,8 @@ const Flow = () => {
     useGraphStore.getState().setInternalNodeGetter(getInternalNode);
   }, [getInternalNode]);
 
-  const toggleNodeWidthMode = () => {
-    // collapsed -> small -> expanded
-    const nextMode =
-      nodeWidthMode === nodeWidthModes.Collapsed
-        ? nodeWidthModes.Small
-        : nodeWidthMode === nodeWidthModes.Small
-          ? nodeWidthModes.Expanded
-          : nodeWidthModes.Collapsed;
-    setNodeWidthMode(nextMode);
+  const toggleGlobalNodeWidthMode = () => {
+    setNodeWidthMode(toggleNodeWidthMode(nodeWidthMode));
   };
 
   const toggleSnakeLayout = () => {
@@ -150,14 +144,18 @@ const Flow = () => {
 
         clickTimerRef.current = window.setTimeout(() => {
           if (lastClickTimeRef.current > 0) {
-            // TODO only toggle selected node
-            toggleNodeWidthMode();
+            store
+              .getState()
+              .setNodeWidthMode(
+                node.id,
+                toggleNodeWidthMode(node.data.nodeWidthMode as nodeWidthModes),
+              );
           }
           clickTimerRef.current = null;
         }, 300);
       }
     },
-    [focusNode, toggleNodeWidthMode],
+    [focusNode, toggleGlobalNodeWidthMode],
   );
 
   const fitViewOptions = {
@@ -193,7 +191,7 @@ const Flow = () => {
           }
         }}
         toggleNodeWidthMode={() => {
-          void toggleNodeWidthMode();
+          void toggleGlobalNodeWidthMode();
         }}
         toggleSnakeLayout={() => {
           void toggleSnakeLayout();

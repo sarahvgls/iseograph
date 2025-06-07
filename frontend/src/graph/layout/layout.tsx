@@ -14,7 +14,6 @@ import { applySnakeLayout } from "./snake-layout.tsx";
 const applyBasicLayoutDagre = (
   nodes: NodeTypes[],
   edges: Edge[],
-  nodeWidthMode: nodeWidthModes,
   options: { direction: string },
 ): [NodeTypes[], Edge[]] => {
   const g = new Dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
@@ -36,7 +35,7 @@ const applyBasicLayoutDagre = (
     g.setNode(node.id, {
       ...node,
       width:
-        nodeWidthMode === nodeWidthModes.Expanded
+        node.data.nodeWidthMode === nodeWidthModes.Expanded
           ? sequenceLength
           : theme.offsets.largeWidth,
       height: theme.offsets.defaultLength,
@@ -149,7 +148,6 @@ function addSymmetricalOffsetForVariations(
 export const applyLayout = (
   nodes: NodeTypes[],
   edges: Edge[],
-  nodeWidthMode: nodeWidthModes,
   layoutMode: layoutModes,
   getInternalNode: ((id: string) => InternalNode | undefined) | null,
 ): Promise<[NodeTypes[], Edge[]]> => {
@@ -165,6 +163,7 @@ export const applyLayout = (
         positionIndex: 0,
         intensityRank: 0,
         isReversed: false, // Reset isReversed
+        nodeWidthMode: node.data.nodeWidthMode || nodeWidthModes.Collapsed, // Use provided mode or default to Collapsed
       },
     }));
 
@@ -172,7 +171,6 @@ export const applyLayout = (
     let [layoutedNodes, layoutedEdges] = applyBasicLayoutDagre(
       filteredNodes,
       edges,
-      nodeWidthMode,
       {
         direction: theme.layout.basic.direction,
       },

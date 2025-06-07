@@ -70,7 +70,6 @@ export const applySnakeLayout = (
       } as SequenceNodeProps;
     }
 
-    // handle nodes with same positionIndex with the same offsets
     previousPositionIndex = node.data.positionIndex as number;
 
     // width in row as metric to determine if a new row is needed
@@ -89,7 +88,7 @@ export const applySnakeLayout = (
       groupNodes.push(GroupNode.create(rowId, rowCount, isCurrentRowReversed));
     }
 
-    // --- calculate x position ---
+    // calculate x position
     xPosition = isCurrentRowReversed
       ? theme.layout.snake.maxWidthPerRow -
         widthInCurrentRow +
