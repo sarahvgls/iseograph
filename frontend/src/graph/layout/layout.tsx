@@ -153,7 +153,7 @@ export const applyLayout = (
   getInternalNode: ((id: string) => InternalNode | undefined) | null,
 ): Promise<[NodeTypes[], Edge[]]> => {
   // remove groups and reset layouting properties
-  let filteredNodes = nodes
+  const filteredNodes = nodes
     .filter((node) => node.type === nodeTypes.SequenceNode)
     .map((node) => ({
       ...node,

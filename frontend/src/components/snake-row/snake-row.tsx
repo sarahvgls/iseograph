@@ -6,8 +6,14 @@ const RowDiv = styled.div`
   display: inline-block;
 `;
 
-function SnakeRow({}: NodeProps<SnakeRowProps>) {
-  // adapt width to content of group-node
+function SnakeRow({ id }: NodeProps<SnakeRowProps>) {
+  return (
+    <RowDiv className={"snake-row-" + id}>
+      <div className="snake-row__content">
+        {/* Content of the snake row can be added here */}
+      </div>
+    </RowDiv>
+  );
 }
 
 export default SnakeRow;

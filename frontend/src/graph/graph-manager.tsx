@@ -105,6 +105,7 @@ const Flow = () => {
     return () => {
       mounted = false;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -155,7 +156,7 @@ const Flow = () => {
         }, 300);
       }
     },
-    [focusNode, toggleGlobalNodeWidthMode],
+    [focusNode],
   );
 
   const fitViewOptions = {
