@@ -4,6 +4,7 @@ import {
   Panel,
   type NodeMouseHandler,
   useReactFlow,
+  MiniMap,
 } from "@xyflow/react";
 import DevTools from "./devtools/devtools.tsx";
 
@@ -22,6 +23,7 @@ import { theme } from "../theme";
 import RowNode from "../components/row-node.tsx";
 import store from "./store.ts";
 import { toggleNodeWidthMode } from "./layout/helper.tsx";
+import DirectionMiniMapNode from "../components/minimap/direction-minimap-node.tsx";
 
 const selector = (state: RFState) => ({
   nodes: state.nodes,
@@ -201,6 +203,15 @@ const Flow = () => {
       <Panel position="top-right">
         Proteoform graph visualization with React Flow library
       </Panel>
+      <MiniMap
+        style={{ width: 350, height: 200 }}
+        nodeComponent={DirectionMiniMapNode}
+        maskColor={"rgba(240, 240, 240, 0.6)"}
+        nodeStrokeWidth={8}
+        zoomable
+        pannable
+        inversePan={false}
+      />
     </ReactFlow>
   );
 };
