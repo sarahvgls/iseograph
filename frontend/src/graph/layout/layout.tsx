@@ -67,6 +67,7 @@ function addSymmetricalOffsetForVariations(
   const spacing = theme.debugMode
     ? theme.offsets.debugYSpacingBetweenNodes
     : theme.offsets.defaultYSpacingBetweenNodes; // vertical distance between variations
+  // Create a map to track the parent nodes and their children with correct index
   const sourceToTargets: Record<
     string,
     { positionId: number; targets: string[] }

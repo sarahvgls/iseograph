@@ -27,6 +27,18 @@ export const applySnakeLayout = (
     return internalNode?.measured.width ?? 0;
   };
 
+  const getMeasuredWidthPerIndex = (node: Node): number => {
+    if (getInternalNode) {
+      const siblings = nodes.filter(
+        (n) => n.data.positionIndex === node.data.positionIndex,
+      );
+      return Math.max(...siblings.map((sibling) => getMeasuredWidth(sibling)));
+    } else {
+      console.warn("getInternalNode is not defined, cannot measure width.");
+      return 0;
+    }
+  };
+
   // Function that sorts nodes by their positionIndex
   const sortNodesByPositionIndex = () => {
     return nodes.sort((a, b) => {
@@ -73,7 +85,7 @@ export const applySnakeLayout = (
     previousPositionIndex = node.data.positionIndex as number;
 
     // width in row as metric to determine if a new row is needed
-    const measuredWidth = getMeasuredWidth(node);
+    const measuredWidth = getMeasuredWidthPerIndex(node);
     widthInCurrentRow += measuredWidth + theme.layout.snake.xOffsetBetweenNodes; // 100px offset between nodes
 
     // --- new row ---
