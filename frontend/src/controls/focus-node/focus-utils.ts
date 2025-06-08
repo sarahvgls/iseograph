@@ -40,7 +40,7 @@ export const useFocusHandlers = (
         console.log("Set center to:", correctedPosition);
       }
     },
-    [setCenter, setFocusedNode],
+    [setCenter, setFocusedNode, getInternalNode],
   );
 
   const onFocusNextNode = useCallback(

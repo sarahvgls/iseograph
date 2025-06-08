@@ -10,14 +10,7 @@ import styled from "styled-components";
 import type { SequenceNodeProps } from "./sequence-node.props.tsx";
 import { theme } from "../../theme";
 import { SequenceContainer } from "./sequence-container/sequence-container.tsx";
-import useGraphStore, { type RFState } from "../../graph/store.ts";
-import { shallow } from "zustand/vanilla/shallow";
-import { nodeWidthModes } from "../../theme/types.tsx";
 import { memo, useEffect } from "react";
-
-const selector = (state: RFState) => ({
-  nodeWidthMode: state.nodeWidthMode,
-});
 
 const NodeWrapper = styled.div`
   display: flex;
@@ -63,7 +56,6 @@ const SequenceNode = memo(function SequenceNode({
   id,
   data,
 }: NodeProps<SequenceNodeProps>) {
-  const { nodeWidthMode } = useGraphStore(selector, shallow);
   const updateNodeInternals = useUpdateNodeInternals();
   const width = theme.offsets.defaultWidthCollapsed // TODO what happens here
     ? data.sequence.length * 10 + 100
@@ -95,7 +87,7 @@ const SequenceNode = memo(function SequenceNode({
         }}
       />
 
-      <NodeToolbar isVisible={true} position={Position.Top}>
+      <NodeToolbar isVisible={false} position={Position.Top}>
         <div
           style={{ backgroundColor: "#000", width: "10px", height: "10px" }}
         ></div>
@@ -110,7 +102,7 @@ const SequenceNode = memo(function SequenceNode({
         <StyledNode>
           <SequenceContainer
             sequence={data.sequence}
-            collapsed={nodeWidthMode == nodeWidthModes.Collapsed}
+            nodeWidthMode={data.nodeWidthMode}
           />
         </StyledNode>
         <StyledHandle

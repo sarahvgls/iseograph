@@ -7,7 +7,6 @@ export const lookup =
   <TK extends keyof Theme>(themeKey: TK) =>
   <VK extends keyof Theme[TK]>(valueKey: VK) =>
   ({ theme }: { theme: Theme }): Theme[TK][VK] | VK => {
-     
     if (!theme) return valueKey;
 
     const values = theme[themeKey];

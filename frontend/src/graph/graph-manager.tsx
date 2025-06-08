@@ -12,7 +12,7 @@ import useGraphStore, { type RFState } from "./store.ts";
 import { shallow } from "zustand/vanilla/shallow";
 
 import SequenceNode from "../components/sequence-node/sequence-node.tsx";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { SequenceNodeProps } from "../components/sequence-node/sequence-node.props.tsx";
 import GraphControls from "./controls.tsx";
 import { useFocusHandlers } from "../controls/focus-node/focus-utils.ts";
@@ -20,6 +20,8 @@ import { layoutModes, nodeTypes, nodeWidthModes } from "../theme/types.tsx";
 import { applyLayout } from "./layout";
 import { theme } from "../theme";
 import RowNode from "../components/row-node.tsx";
+import store from "./store.ts";
+import { toggleNodeWidthMode } from "./layout/helper.tsx";
 
 const selector = (state: RFState) => ({
   nodes: state.nodes,
@@ -27,7 +29,7 @@ const selector = (state: RFState) => ({
   onNodesChange: state.onNodesChange,
   onEdgesChange: state.onEdgesChange,
   nodeWidthMode: state.nodeWidthMode,
-  setNodeWidthMode: state.setNodeWidthMode,
+  setNodeWidthMode: state.setGlobalNodeWidthMode,
   layoutMode: state.layoutMode,
   setLayoutMode: state.setLayoutMode,
 });
@@ -65,7 +67,7 @@ const Flow = () => {
     return () => clearTimeout(timer);
   };
 
-  // Initial render
+  // --- Initial render ---
   useEffect(() => {
     let mounted = true;
 
@@ -74,7 +76,6 @@ const Flow = () => {
         const [layoutedNodes, layoutedEdges] = await applyLayout(
           nodes,
           edges,
-          nodeWidthMode,
           layoutMode,
           getInternalNode,
         );
@@ -87,7 +88,10 @@ const Flow = () => {
           });
 
           if (layoutedNodes.length > 0) {
-            focusWithDelay(layoutedNodes[0] as SequenceNodeProps);
+            const firstSequenceNode = layoutedNodes.find(
+              (node) => node.type === nodeTypes.SequenceNode,
+            ) as SequenceNodeProps | undefined;
+            focusWithDelay(firstSequenceNode as SequenceNodeProps);
           }
         }
       } catch (error) {
@@ -101,18 +105,15 @@ const Flow = () => {
     return () => {
       mounted = false;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     useGraphStore.getState().setInternalNodeGetter(getInternalNode);
   }, [getInternalNode]);
 
-  const toggleNodeWidthMode = () => {
-    setNodeWidthMode(
-      nodeWidthMode === nodeWidthModes.Collapsed
-        ? nodeWidthModes.Expanded
-        : nodeWidthModes.Collapsed,
-    );
+  const toggleGlobalNodeWidthMode = () => {
+    setNodeWidthMode(toggleNodeWidthMode(nodeWidthMode));
   };
 
   const toggleSnakeLayout = () => {
@@ -122,9 +123,38 @@ const Flow = () => {
     focusWithDelay(focusedNode as SequenceNodeProps);
   };
 
+  const lastClickTimeRef = useRef<number>(0);
+  const clickTimerRef = useRef<number | null>(null);
+
   const onNodeClick: NodeMouseHandler = useCallback(
     (_event, node) => {
-      focusNode(node as SequenceNodeProps);
+      const currentTime = new Date().getTime();
+      const timeSinceLastClick = currentTime - lastClickTimeRef.current;
+
+      if (timeSinceLastClick < 300 && lastClickTimeRef.current > 0) {
+        if (node.type === nodeTypes.SequenceNode) {
+          focusNode(node as SequenceNodeProps);
+        }
+        lastClickTimeRef.current = 0;
+      } else {
+        lastClickTimeRef.current = currentTime;
+
+        if (clickTimerRef.current !== null) {
+          clearTimeout(clickTimerRef.current);
+        }
+
+        clickTimerRef.current = window.setTimeout(() => {
+          if (lastClickTimeRef.current > 0) {
+            store
+              .getState()
+              .setNodeWidthMode(
+                node.id,
+                toggleNodeWidthMode(node.data.nodeWidthMode as nodeWidthModes),
+              );
+          }
+          clickTimerRef.current = null;
+        }, 300);
+      }
     },
     [focusNode],
   );
@@ -144,6 +174,7 @@ const Flow = () => {
       onEdgesChange={onEdgesChange}
       nodeOrigin={nodeOrigin}
       minZoom={0.05}
+      zoomOnDoubleClick={false}
       width={100}
       onNodeClick={onNodeClick}
       fitView
@@ -161,7 +192,7 @@ const Flow = () => {
           }
         }}
         toggleNodeWidthMode={() => {
-          void toggleNodeWidthMode();
+          void toggleGlobalNodeWidthMode();
         }}
         toggleSnakeLayout={() => {
           void toggleSnakeLayout();

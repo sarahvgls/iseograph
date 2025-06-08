@@ -14,7 +14,6 @@ import { applySnakeLayout } from "./snake-layout.tsx";
 const applyBasicLayoutDagre = (
   nodes: NodeTypes[],
   edges: Edge[],
-  nodeWidthMode: nodeWidthModes,
   options: { direction: string },
 ): [NodeTypes[], Edge[]] => {
   const g = new Dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
@@ -36,9 +35,9 @@ const applyBasicLayoutDagre = (
     g.setNode(node.id, {
       ...node,
       width:
-        nodeWidthMode === nodeWidthModes.Collapsed
-          ? theme.offsets.largeWidth
-          : sequenceLength,
+        node.data.nodeWidthMode === nodeWidthModes.Expanded
+          ? sequenceLength
+          : theme.offsets.largeWidth,
       height: theme.offsets.defaultLength,
     });
   });
@@ -68,6 +67,7 @@ function addSymmetricalOffsetForVariations(
   const spacing = theme.debugMode
     ? theme.offsets.debugYSpacingBetweenNodes
     : theme.offsets.defaultYSpacingBetweenNodes; // vertical distance between variations
+  // Create a map to track the parent nodes and their children with correct index
   const sourceToTargets: Record<
     string,
     { positionId: number; targets: string[] }
@@ -149,12 +149,11 @@ function addSymmetricalOffsetForVariations(
 export const applyLayout = (
   nodes: NodeTypes[],
   edges: Edge[],
-  nodeWidthMode: nodeWidthModes,
   layoutMode: layoutModes,
   getInternalNode: ((id: string) => InternalNode | undefined) | null,
 ): Promise<[NodeTypes[], Edge[]]> => {
   // remove groups and reset layouting properties
-  let filteredNodes = nodes
+  const filteredNodes = nodes
     .filter((node) => node.type === nodeTypes.SequenceNode)
     .map((node) => ({
       ...node,
@@ -165,6 +164,7 @@ export const applyLayout = (
         positionIndex: 0,
         intensityRank: 0,
         isReversed: false, // Reset isReversed
+        nodeWidthMode: node.data.nodeWidthMode || nodeWidthModes.Collapsed, // Use provided mode or default to Collapsed
       },
     }));
 
@@ -172,7 +172,6 @@ export const applyLayout = (
     let [layoutedNodes, layoutedEdges] = applyBasicLayoutDagre(
       filteredNodes,
       edges,
-      nodeWidthMode,
       {
         direction: theme.layout.basic.direction,
       },

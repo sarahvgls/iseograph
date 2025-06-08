@@ -7,11 +7,7 @@ export class GroupNode {
     border: "none",
     backgroundColor: "transparent",
     height: theme.rowNode.height,
-    width:
-      theme.layout.snake.maxWidthPerRow +
-      2 * //twice the xOffsetBetweenNodes as buffer for large nodes
-        theme.layout.snake.xOffsetBetweenNodes *
-        (theme.layout.snake.maxWidthPerRow / theme.offsets.defaultLength),
+    width: theme.layout.snake.maxWidthPerRow,
     borderRadius: 0,
   };
 

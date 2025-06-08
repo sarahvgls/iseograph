@@ -3,7 +3,7 @@ import { layoutModes, nodeWidthModes } from "./types.tsx";
 //TODO refactor: what is still needed
 
 export const theme = {
-  debugMode: true,
+  debugMode: false,
   offsets: {
     defaultWidthCollapsed: false,
     defaultLength: 100,
@@ -13,8 +13,8 @@ export const theme = {
     useXOffset: false, // TODO decide if xOffset is needed
   },
   layout: {
-    mode: layoutModes.Basic,
-    nodeWidthMode: nodeWidthModes.Collapsed,
+    mode: layoutModes.Snake,
+    defaultNodeWidthMode: nodeWidthModes.Collapsed,
     basic: {
       direction: "LR",
     },
@@ -22,7 +22,7 @@ export const theme = {
       yOffsetBetweenRows: 300,
       xOffsetBetweenNodes: 100,
       maxAAsPerRow: 60, //not used
-      maxWidthPerRow: 1200,
+      maxWidthPerRow: 3000,
       maxNodesPerRow: 11, // not used
       // TODO decide if feature needed
       splitLargeNodes: false, // if true, large nodes will be split into smaller nodes when reaching the end of a line

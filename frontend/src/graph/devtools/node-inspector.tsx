@@ -30,7 +30,6 @@ export default function NodeInspector() {
               absPosition={absPosition}
               width={node.measured?.width ?? 0}
               height={node.measured?.height ?? 0}
-              data={node.data}
             />
           );
         })}
@@ -47,7 +46,6 @@ type NodeInfoProps = {
   absPosition: XYPosition;
   width?: number;
   height?: number;
-  data: any;
 };
 
 function NodeInfo({

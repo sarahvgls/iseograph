@@ -27,6 +27,18 @@ export const applySnakeLayout = (
     return internalNode?.measured.width ?? 0;
   };
 
+  const getMeasuredWidthPerIndex = (node: Node): number => {
+    if (getInternalNode) {
+      const siblings = nodes.filter(
+        (n) => n.data.positionIndex === node.data.positionIndex,
+      );
+      return Math.max(...siblings.map((sibling) => getMeasuredWidth(sibling)));
+    } else {
+      console.warn("getInternalNode is not defined, cannot measure width.");
+      return 0;
+    }
+  };
+
   // Function that sorts nodes by their positionIndex
   const sortNodesByPositionIndex = () => {
     return nodes.sort((a, b) => {
@@ -37,7 +49,6 @@ export const applySnakeLayout = (
   };
 
   // --- constants and initializations ---
-  let nodesInCurrentRow = 0; // var to count the number of nodes in the current row for calculation of x position
   let widthInCurrentRow = 0; // var to keep track of the width of the current row to limit it
   let previousPositionIndex = -1; // var to track the positionIndex of the previous node to handle siblings correctly
   let xPosition = 0; // var to calculate the x position of the current node and make it available to siblings as well
@@ -71,34 +82,31 @@ export const applySnakeLayout = (
       } as SequenceNodeProps;
     }
 
-    // handle nodes with same positionIndex with the same offsets
     previousPositionIndex = node.data.positionIndex as number;
 
     // width in row as metric to determine if a new row is needed
-    const measuredWidth = getMeasuredWidth(node);
-    widthInCurrentRow += measuredWidth;
+    const measuredWidth = getMeasuredWidthPerIndex(node);
+    widthInCurrentRow += measuredWidth + theme.layout.snake.xOffsetBetweenNodes; // 100px offset between nodes
 
     // --- new row ---
-    if (widthInCurrentRow > theme.layout.snake.maxWidthPerRow) {
+    if (widthInCurrentRow > 0.95 * theme.layout.snake.maxWidthPerRow) {
+      // 95% to not overflow the row
       isCurrentRowReversed = !isCurrentRowReversed;
-      nodesInCurrentRow = 0;
-      widthInCurrentRow = measuredWidth; // reset to current node width
+      widthInCurrentRow =
+        measuredWidth + theme.layout.snake.xOffsetBetweenNodes; // reset to current node width
       rowCount++;
 
       rowId = `group-${rowCount}`;
       groupNodes.push(GroupNode.create(rowId, rowCount, isCurrentRowReversed));
     }
 
-    // --- calculate x position ---
+    // calculate x position
     xPosition = isCurrentRowReversed
-      ? theme.layout.snake.maxWidthPerRow * 2 -
-        widthInCurrentRow -
-        theme.layout.snake.xOffsetBetweenNodes * nodesInCurrentRow +
-        measuredWidth / 2 +
-        theme.layout.snake.maxWidthPerRow / 3
-      : widthInCurrentRow + 100 * nodesInCurrentRow - measuredWidth / 2;
-
-    nodesInCurrentRow++;
+      ? theme.layout.snake.maxWidthPerRow -
+        widthInCurrentRow +
+        measuredWidth / 2 -
+        theme.layout.snake.xOffsetBetweenNodes
+      : widthInCurrentRow - measuredWidth / 2;
 
     return {
       ...node,
