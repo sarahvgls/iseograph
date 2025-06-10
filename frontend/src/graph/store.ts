@@ -54,11 +54,18 @@ const createNodes = (nodes: SequenceNodeProps[]): SequenceNodeProps[] => {
   }));
 };
 
+const createEdges = (edges: Edge[]): Edge[] => {
+  return edges.map((edge) => ({
+    ...edge,
+    type: "arrow",
+  }));
+};
+
 // ----- create nodes -----
 const customNodes: SequenceNodeProps[] = createNodes(
   nodes as SequenceNodeProps[],
 );
-const customEdges: Edge[] = edges;
+const customEdges: Edge[] = createEdges(edges as Edge[]);
 
 const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
   nodes: customNodes,
