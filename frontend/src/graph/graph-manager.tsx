@@ -24,6 +24,7 @@ import RowNode from "../components/row-node.tsx";
 import store from "./store.ts";
 import { toggleNodeWidthMode } from "./layout/helper.tsx";
 import DirectionMiniMapNode from "../components/minimap/direction-minimap-node.tsx";
+import ArrowEdge from "../components/arrow-edge/arrow-edge.tsx";
 
 const selector = (state: RFState) => ({
   nodes: state.nodes,
@@ -41,6 +42,9 @@ const nodeOrigin: NodeOrigin = [0.5, 0.5];
 const myNodeTypes = {
   [nodeTypes.SequenceNode]: SequenceNode,
   [nodeTypes.RowNode]: RowNode,
+};
+const edgeTypes = {
+  arrow: ArrowEdge,
 };
 
 const Flow = () => {
@@ -172,10 +176,12 @@ const Flow = () => {
       nodes={nodes}
       edges={edges}
       nodeTypes={myNodeTypes}
+      edgeTypes={edgeTypes}
       onNodesChange={onNodesChange}
       onEdgesChange={onEdgesChange}
       nodeOrigin={nodeOrigin}
       minZoom={0.05}
+      maxZoom={5}
       zoomOnDoubleClick={false}
       width={100}
       onNodeClick={onNodeClick}
