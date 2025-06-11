@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { css, styled } from "styled-components";
 
-import type { IconButtonProps, IconProps } from "./icon.props";
+import type { IconButtonProps, IconProps } from "./icon.props.ts";
 import * as icons from "./icons";
-import { type Color, color, opacity, size } from "../../theme";
+import { type Color, color, opacity, size } from "../../../theme";
 
 /** Icon color mixin. */
 

@@ -1,5 +1,5 @@
-import { Icon } from "./icon";
-import type { IconProps } from "./icon.props";
+import { Icon } from "./icon.tsx";
+import type { IconProps } from "./icon.props.ts";
 
 export default {
   component: Icon,

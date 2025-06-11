@@ -1,5 +1,5 @@
 import { Controls, ControlButton } from "@xyflow/react";
-import { Icon } from "../components/icon";
+import { Icon } from "../components/core/icon";
 
 interface GraphControlsProps {
   onFocusNextNode: () => void;
