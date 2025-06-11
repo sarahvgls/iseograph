@@ -1,9 +1,4 @@
-import {
-  BaseEdge,
-  type EdgeProps,
-  getBezierPath,
-  MarkerType,
-} from "@xyflow/react";
+import { BaseEdge, type EdgeProps, getBezierPath } from "@xyflow/react";
 import { useMemo } from "react";
 
 export default function ArrowEdge({
@@ -15,9 +10,9 @@ export default function ArrowEdge({
   sourcePosition,
   targetPosition,
   style = {},
-  markerEnd,
 }: EdgeProps) {
-  const [edgePath, labelX, labelY] = getBezierPath({
+  const [edgePath] = getBezierPath({
+    // labelX and labelY can be used here too
     sourceX,
     sourceY,
     sourcePosition,
@@ -38,14 +33,23 @@ export default function ArrowEdge({
       <defs>
         <marker
           id={markerId}
-          markerWidth="10"
-          markerHeight="10"
-          refX="6"
-          refY="3"
+          markerWidth="15"
+          markerHeight="15"
+          refX="9.8"
+          refY="5"
           orient="auto"
           markerUnits="strokeWidth"
         >
-          <path d="M0,0 L0,6 L6,3 z" fill={color} stroke="none" />
+          <path
+            d="M1,1
+              L1,9
+              L9.5,5
+              L1,1
+              Z"
+            fill={"#fff"}
+            stroke={"#000"}
+            strokeWidth={1}
+          />
         </marker>
       </defs>
       <BaseEdge

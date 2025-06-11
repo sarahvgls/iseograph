@@ -181,6 +181,7 @@ const Flow = () => {
       onEdgesChange={onEdgesChange}
       nodeOrigin={nodeOrigin}
       minZoom={0.05}
+      maxZoom={5}
       zoomOnDoubleClick={false}
       width={100}
       onNodeClick={onNodeClick}
