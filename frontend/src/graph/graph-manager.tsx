@@ -25,6 +25,7 @@ import store from "./store.ts";
 import { toggleNodeWidthMode } from "./layout/helper.tsx";
 import DirectionMiniMapNode from "../components/minimap/direction-minimap-node.tsx";
 import ArrowEdge from "../components/arrow-edge/arrow-edge.tsx";
+import { callApi, callApiWithParameters } from "../helper/api-call.ts";
 
 const selector = (state: RFState) => ({
   nodes: state.nodes,
@@ -71,6 +72,50 @@ const Flow = () => {
     }, 500); // 500ms delay to allow React Flow to render the nodes and edges properly
 
     return () => clearTimeout(timer);
+  };
+
+  const [fileNames, setFileNames] = useState<string[]>([]);
+  const [selectedFile, setSelectedFile] = useState<string>("");
+
+  // get file names from the ./data directory
+  useEffect(() => {
+    // get file names from ./../data directory
+    const getFileNames = async () => {
+      const response = await callApi("api/get_available_files/");
+      if (!response.success) {
+        console.error("Failed to fetch file names");
+        return;
+      } else {
+        const names = response.data || [];
+
+        setFileNames(names);
+        if (names.length > 0) {
+          setSelectedFile(names[0]); // Set the first file as selected by default
+        }
+      }
+    };
+
+    void getFileNames();
+  }, []);
+
+  const handleSubmit = async () => {
+    if (!selectedFile) {
+      alert("Please select a file.");
+      return;
+    }
+
+    try {
+      const response = await callApiWithParameters("api/convert_file/", {
+        file_name: selectedFile,
+      });
+      console.log("Response from convert_file:", response);
+      if (!response.success) {
+        console.error("Failed to convert file:", response.error);
+        return;
+      }
+    } catch (error) {
+      console.error("Error executing script:", error);
+    }
   };
 
   // --- Initial render ---
@@ -206,8 +251,29 @@ const Flow = () => {
           void toggleSnakeLayout();
         }}
       />
-      <Panel position="top-right">
+      <Panel position="top-left">
         Proteoform graph visualization with React Flow library
+      </Panel>
+      <Panel position="top-right">
+        <div style={{ padding: "10px" }}>
+          <strong>Select file to process:</strong>
+          <br />
+          <select
+            value={selectedFile}
+            onChange={(e) => setSelectedFile(e.target.value)}
+          >
+            <option value="" disabled>
+              -- Select a file --
+            </option>
+            {fileNames.map((file) => (
+              <option key={file} value={file}>
+                {file}
+              </option>
+            ))}
+          </select>
+          <br />
+          <button onClick={handleSubmit}>Submit</button>
+        </div>
       </Panel>
       <MiniMap
         style={{ width: 350, height: 200 }}
