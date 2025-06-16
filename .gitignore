@@ -32,5 +32,4 @@ Thumbs.db
 .vscode-test/
 
 # Data
-*.graphml
 *.json
