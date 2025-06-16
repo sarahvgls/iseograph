@@ -15,12 +15,14 @@ import nodes from "../../../generated/nodes.json";
 import edges from "../../../generated/edges.json";
 import type { SequenceNodeProps } from "../components/sequence-node/sequence-node.props.tsx";
 import { theme } from "../theme";
-import {
-  type layoutModes,
-  nodeTypes,
-  nodeWidthModes,
-} from "../theme/types.tsx";
+import { type layoutModes, nodeWidthModes } from "../theme/types.tsx";
 import { applyLayout } from "./layout/layout.tsx";
+import type { ArrowEdgeProps } from "../components/arrow-edge/arrow-edge.props.tsx";
+import {
+  createEdges,
+  createNodes,
+  generateIsoformColorMatching,
+} from "./helper/generate-utils.tsx";
 
 export type RFState = {
   nodes: Node[];
@@ -36,36 +38,14 @@ export type RFState = {
   layoutMode: layoutModes;
   setLayoutMode: (layoutMode: layoutModes) => void;
   setNodeWidthMode: (nodeId: string, mode: nodeWidthModes) => void;
+  isoformColorMapping: Record<string, string>;
 };
 
-// create nodes of type sequence node for each node in the nodes.json file
-const createNodes = (nodes: SequenceNodeProps[]): SequenceNodeProps[] => {
-  return nodes.map((node) => ({
-    ...node,
-    type: nodeTypes.SequenceNode,
-    data: {
-      sequence: node.data.sequence,
-      intensity: node.data.intensity,
-      feature: node.data.feature,
-      nodeWidthMode: node.data.nodeWidthMode || nodeWidthModes.Collapsed, // default to Collapsed if not provided
-      positionIndex: 0,
-      intensityRank: 0,
-    },
-  }));
-};
-
-const createEdges = (edges: Edge[]): Edge[] => {
-  return edges.map((edge) => ({
-    ...edge,
-    type: "arrow",
-  }));
-};
-
-// ----- create nodes -----
+// ----- create nodes and edges -----
 const customNodes: SequenceNodeProps[] = createNodes(
   nodes as SequenceNodeProps[],
 );
-const customEdges: Edge[] = createEdges(edges as Edge[]);
+const customEdges: ArrowEdgeProps[] = createEdges(edges as ArrowEdgeProps[]);
 
 const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
   nodes: customNodes,
@@ -159,6 +139,9 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
       });
     });
   },
+  isoformColorMapping: generateIsoformColorMatching(
+    customEdges as ArrowEdgeProps[],
+  ),
 }));
 
 export default useGraphStore;

@@ -36,6 +36,7 @@ const selector = (state: RFState) => ({
   setNodeWidthMode: state.setGlobalNodeWidthMode,
   layoutMode: state.layoutMode,
   setLayoutMode: state.setLayoutMode,
+  isoformColorMapping: state.isoformColorMapping,
 });
 
 // this places the node origin in the center of a node
@@ -59,6 +60,7 @@ const Flow = () => {
     setNodeWidthMode,
     layoutMode,
     setLayoutMode,
+    isoformColorMapping,
   } = useGraphStore(selector, shallow); // using shallow to make sure the component only re-renders when one of the values changes
   const [focusedNode, setFocusedNode] = useState<SequenceNodeProps>();
   const { focusNode, onFocusNextNode, onFocusPreviousNode } = useFocusHandlers(
@@ -276,14 +278,46 @@ const Flow = () => {
         </div>
       </Panel>
       <MiniMap
-        style={{ width: 350, height: 200 }}
+        style={{
+          width: 350,
+          height: 200,
+          borderRadius: 10,
+          border: "1px solid #ccc",
+          boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
+          transform: "translate(10%, 0%)",
+        }}
         nodeComponent={DirectionMiniMapNode}
         maskColor={"rgba(240, 240, 240, 0.6)"}
         nodeStrokeWidth={8}
         zoomable
         pannable
         inversePan={false}
+        position={"bottom-left"}
       />
+      <Panel position="bottom-center">
+        <div style={{ padding: "10px" }}>
+          <strong>Layout Mode:</strong> {layoutMode}
+          <br />
+          <strong>Node Width Mode:</strong> {nodeWidthMode}
+          <br />
+          <button onClick={toggleGlobalNodeWidthMode}>
+            Toggle Node Width Mode
+          </button>
+          <button onClick={toggleSnakeLayout}>Toggle Layout Mode</button>
+        </div>
+      </Panel>
+      <Panel position="bottom-right">
+        <div style={{ padding: "10px" }}>
+          <strong>Isoforms mapped to color:</strong>
+          <br />
+          {Object.entries(isoformColorMapping).map(([isoform, color]) => (
+            <span key={isoform} style={{ color }}>
+              {isoform}
+              <br />
+            </span>
+          ))}
+        </div>
+      </Panel>
     </ReactFlow>
   );
 };

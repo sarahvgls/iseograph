@@ -1,6 +1,7 @@
 import type { SequenceNodeProps } from "../components/sequence-node/sequence-node.props.tsx";
 import type { Node } from "@xyflow/react";
 
+// --- settings ---
 export type NodeTypes = SequenceNodeProps | Node;
 
 export const nodeTypes = {
@@ -23,3 +24,12 @@ export const layoutModes = {
 };
 
 export type layoutModes = (typeof layoutModes)[keyof typeof layoutModes];
+
+// --- edge related ---
+export const Generic = {
+  variant: "VARIANT",
+  mutagen: "MUTAGEN",
+  conflict: "CONFLICT",
+};
+
+export type Generic = (typeof Generic)[keyof typeof Generic];
