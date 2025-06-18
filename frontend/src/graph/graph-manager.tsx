@@ -26,6 +26,7 @@ import DirectionMiniMapNode from "../components/minimap/direction-minimap-node.t
 import ArrowEdge from "../components/arrow-edge/arrow-edge.tsx";
 import { SettingsMenu } from "../components/settings-menu/settings-menu.tsx";
 import { Icon } from "../components/icon";
+import { OnScreenMenu } from "../components/on-screen-menu/on-screen-menu.tsx";
 
 const selector = (state: RFState) => ({
   nodes: state.nodes,
@@ -270,29 +271,32 @@ const Flow = () => {
           inversePan={false}
           position={"bottom-left"}
         />
-        <Panel position="bottom-center">
-          <div style={{ padding: "10px" }}>
-            <strong>Layout Mode:</strong> {layoutMode}
-            <br />
-            <strong>Node Width Mode:</strong> {nodeWidthMode}
-            <br />
-            <button onClick={toggleGlobalNodeWidthMode}>
-              Toggle Node Width Mode
-            </button>
-            <button onClick={toggleSnakeLayout}>Toggle Layout Mode</button>
-          </div>
-        </Panel>
-        <Panel position="bottom-right">
-          <div style={{ padding: "10px" }}>
-            <strong>Isoforms mapped to color:</strong>
-            <br />
-            {Object.entries(isoformColorMapping).map(([isoform, color]) => (
-              <span key={isoform} style={{ color }}>
-                {isoform}
-                <br />
-              </span>
-            ))}
-          </div>
+        {/*<Panel position="bottom-center">*/}
+        {/*  <div style={{ padding: "10px" }}>*/}
+        {/*    <strong>Layout Mode:</strong> {layoutMode}*/}
+        {/*    <br />*/}
+        {/*    <strong>Node Width Mode:</strong> {nodeWidthMode}*/}
+        {/*    <br />*/}
+        {/*    <button onClick={toggleGlobalNodeWidthMode}>*/}
+        {/*      Toggle Node Width Mode*/}
+        {/*    </button>*/}
+        {/*    <button onClick={toggleSnakeLayout}>Toggle Layout Mode</button>*/}
+        {/*  </div>*/}
+        {/*</Panel>*/}
+        {/*<Panel position="bottom-right">*/}
+        {/*  <div style={{ padding: "10px" }}>*/}
+        {/*    <strong>Isoforms mapped to color:</strong>*/}
+        {/*    <br />*/}
+        {/*    {Object.entries(isoformColorMapping).map(([isoform, color]) => (*/}
+        {/*      <span key={isoform} style={{ color }}>*/}
+        {/*        {isoform}*/}
+        {/*        <br />*/}
+        {/*      </span>*/}
+        {/*    ))}*/}
+        {/*  </div>*/}
+        {/*</Panel>*/}
+        <Panel position={"bottom-right"}>
+          <OnScreenMenu isoformColorMapping={isoformColorMapping} />
         </Panel>
       </ReactFlow>
 

@@ -1,71 +1,16 @@
 import { layoutModes, nodeWidthModes } from "../../theme/types.tsx";
 import { useEffect, useState } from "react";
 import { callApi, callApiWithParameters } from "../../helper/api-call.ts";
-
-// Reusable styling objects
-const styles = {
-  section: {
-    marginBottom: "24px",
-    padding: "16px",
-    backgroundColor: "#f8f9fa",
-    borderRadius: "8px",
-    boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
-  },
-  sectionTitle: {
-    fontSize: "16px",
-    fontWeight: "bold",
-    marginBottom: "12px",
-    color: "#333",
-    borderBottom: "1px solid #e1e4e8",
-    paddingBottom: "8px",
-  },
-  select: {
-    width: "100%",
-    padding: "10px",
-    borderRadius: "6px",
-    border: "1px solid #ddd",
-    backgroundColor: "white",
-    boxShadow: "inset 0 1px 2px rgba(0,0,0,0.05)",
-    fontSize: "14px",
-  },
-  input: {
-    width: "100%",
-    padding: "10px",
-    borderRadius: "6px",
-    border: "1px solid #ddd",
-    backgroundColor: "white",
-    boxShadow: "inset 0 1px 2px rgba(0,0,0,0.05)",
-    fontSize: "14px",
-  },
-  primaryButton: {
-    padding: "10px 16px",
-    backgroundColor: "#4361ee",
-    color: "white",
-    border: "none",
-    borderRadius: "6px",
-    cursor: "pointer",
-    fontWeight: "500",
-    transition: "background-color 0.2s",
-    fontSize: "14px",
-    width: "100%",
-  },
-  secondaryButton: {
-    padding: "8px 12px",
-    backgroundColor: "#e9ecef",
-    color: "#495057",
-    border: "none",
-    borderRadius: "6px",
-    cursor: "pointer",
-    fontWeight: "500",
-    transition: "background-color 0.2s",
-    fontSize: "14px",
-  },
-  flexRow: {
-    display: "flex",
-    alignItems: "center",
-    gap: "8px",
-  },
-};
+import {
+  FlexRow,
+  PrimaryButton,
+  SecondaryButton,
+  StyledDropdown,
+  StyledInputTextField,
+  StyledLabel,
+  StyledSection,
+  StyledSectionTitle,
+} from "../base-components";
 
 export const SettingsMenu = ({
   isOpen,
@@ -229,23 +174,13 @@ export const SettingsMenu = ({
         </button>
       </div>
 
-      <div style={styles.section}>
-        <h3 style={styles.sectionTitle}>Protein Selection</h3>
+      <StyledSection>
+        <StyledSectionTitle>Protein Selection</StyledSectionTitle>
 
         <div style={{ marginBottom: "16px" }}>
-          <label
-            style={{
-              display: "block",
-              marginBottom: "8px",
-              fontSize: "14px",
-              color: "#555",
-            }}
-          >
-            Select protein from recently used:
-          </label>
-          <div style={styles.flexRow}>
-            <select
-              style={styles.select}
+          <StyledLabel>Select protein from recently used:</StyledLabel>
+          <FlexRow>
+            <StyledDropdown
               value={selectedFile}
               onChange={(e) => {
                 setSelectedFile(e.target.value);
@@ -259,124 +194,67 @@ export const SettingsMenu = ({
                   {file}
                 </option>
               ))}
-            </select>
-            <button
-              style={styles.secondaryButton}
-              onClick={handleRecentFileSubmit}
-              onMouseOver={(e) =>
-                (e.currentTarget.style.backgroundColor = "#dee2e6")
-              }
-              onMouseOut={(e) =>
-                (e.currentTarget.style.backgroundColor = "#e9ecef")
-              }
-            >
+            </StyledDropdown>
+            <SecondaryButton onClick={handleRecentFileSubmit}>
               Load
-            </button>
-          </div>
+            </SecondaryButton>
+          </FlexRow>
         </div>
 
         <div>
-          <label
-            style={{
-              display: "block",
-              marginBottom: "8px",
-              fontSize: "14px",
-              color: "#555",
-            }}
-          >
-            Add new protein:
-          </label>
-          <div style={styles.flexRow}>
-            <input
+          <StyledLabel>Add new protein:</StyledLabel>
+          <FlexRow>
+            <StyledInputTextField
               type="text"
               placeholder="Enter protein name"
-              style={styles.input}
               value={newProteinName}
               onChange={(e) => setNewProteinName(e.target.value)}
             />
-            <button
-              style={styles.secondaryButton}
-              onClick={handleAddProtein}
-              onMouseOver={(e) =>
-                (e.currentTarget.style.backgroundColor = "#dee2e6")
-              }
-              onMouseOut={(e) =>
-                (e.currentTarget.style.backgroundColor = "#e9ecef")
-              }
-            >
-              Add
-            </button>
-          </div>
+            <SecondaryButton onClick={handleAddProtein}>Add</SecondaryButton>
+          </FlexRow>
         </div>
-      </div>
+      </StyledSection>
 
-      <div style={styles.section}>
-        <h3 style={styles.sectionTitle}>Display Settings</h3>
+      <StyledSection>
+        <StyledSectionTitle>Display Settings</StyledSectionTitle>
 
         <div style={{ marginBottom: "16px" }}>
-          <label
-            style={{
-              display: "block",
-              marginBottom: "8px",
-              fontSize: "14px",
-              color: "#555",
-            }}
-          >
-            Default Node Width Mode:
-          </label>
-          <select
+          <StyledLabel>Default Node Width Mode:</StyledLabel>
+          <StyledDropdown
             value={selectedNodeWidthMode}
             onChange={(e) =>
               setSelectedNodeWidthMode(e.target.value as nodeWidthModes)
             }
-            style={styles.select}
           >
             {Object.values(nodeWidthModes).map((mode) => (
               <option key={mode} value={mode}>
                 {mode}
               </option>
             ))}
-          </select>
+          </StyledDropdown>
         </div>
 
         <div>
-          <label
-            style={{
-              display: "block",
-              marginBottom: "8px",
-              fontSize: "14px",
-              color: "#555",
-            }}
-          >
-            Default Layout Mode:
-          </label>
-          <select
+          <StyledLabel>Default Layout Mode:</StyledLabel>
+          <StyledDropdown
             value={selectedLayoutMode}
             onChange={(e) =>
               setSelectedLayoutMode(e.target.value as layoutModes)
             }
-            style={styles.select}
           >
             {Object.values(layoutModes).map((mode) => (
               <option key={mode} value={mode}>
                 {mode}
               </option>
             ))}
-          </select>
+          </StyledDropdown>
         </div>
-      </div>
+      </StyledSection>
 
-      <button
-        onClick={handleSave}
-        style={styles.primaryButton}
-        onMouseOver={(e) => (e.currentTarget.style.backgroundColor = "#3a56d4")}
-        onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "#4361ee")}
-      >
-        Save Settings
-      </button>
+      <PrimaryButton onClick={handleSave}>Save Settings</PrimaryButton>
 
-      <div style={{ ...styles.section, marginTop: "24px" }}>
-        <h3 style={styles.sectionTitle}>User Guide</h3>
+      <StyledSection style={{ marginTop: "24px" }}>
+        <StyledSectionTitle>User Guide</StyledSectionTitle>
         <ul
           style={{
             margin: "0",
@@ -393,7 +271,7 @@ export const SettingsMenu = ({
           </li>
           <li>Use arrow keys to navigate between nodes</li>
         </ul>
-      </div>
+      </StyledSection>
     </div>
   );
 };
