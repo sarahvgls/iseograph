@@ -18,14 +18,14 @@ import type { SequenceNodeProps } from "../components/sequence-node/sequence-nod
 import GraphControls from "./controls.tsx";
 import { useFocusHandlers } from "../controls/focus-node/focus-utils.ts";
 import { layoutModes, nodeTypes, nodeWidthModes } from "../theme/types.tsx";
-import { applyLayout } from "./layout";
 import { theme } from "../theme";
 import RowNode from "../components/row-node.tsx";
 import store from "./store.ts";
 import { toggleNodeWidthMode } from "./layout/helper.tsx";
 import DirectionMiniMapNode from "../components/minimap/direction-minimap-node.tsx";
 import ArrowEdge from "../components/arrow-edge/arrow-edge.tsx";
-import { callApi, callApiWithParameters } from "../helper/api-call.ts";
+import { SettingsMenu } from "../components/settings-menu/settings-menu.tsx";
+import { Icon } from "../components/icon";
 
 const selector = (state: RFState) => ({
   nodes: state.nodes,
@@ -67,6 +67,7 @@ const Flow = () => {
     nodes,
     setFocusedNode,
   );
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   const focusWithDelay = (nodeToBeFocused: SequenceNodeProps) => {
     const timer = setTimeout(() => {
@@ -76,90 +77,37 @@ const Flow = () => {
     return () => clearTimeout(timer);
   };
 
-  const [fileNames, setFileNames] = useState<string[]>([]);
-  const [selectedFile, setSelectedFile] = useState<string>("");
-
-  // get file names from the ./data directory
+  // Load saved settings from localStorage
   useEffect(() => {
-    // get file names from ./../data directory
-    const getFileNames = async () => {
-      const response = await callApi("api/get_available_files/");
-      if (!response.success) {
-        console.error("Failed to fetch file names");
-        return;
-      } else {
-        const names = response.data || [];
+    const savedNodeWidthMode = localStorage.getItem(
+      "defaultNodeWidthMode",
+    ) as nodeWidthModes;
+    const savedLayoutMode = localStorage.getItem(
+      "defaultLayoutMode",
+    ) as layoutModes;
 
-        setFileNames(names);
-        if (names.length > 0) {
-          setSelectedFile(names[0]); // Set the first file as selected by default
-        }
-      }
-    };
-
-    void getFileNames();
-  }, []);
-
-  const handleSubmit = async () => {
-    if (!selectedFile) {
-      alert("Please select a file.");
-      return;
+    if (
+      savedLayoutMode &&
+      Object.values(layoutModes).includes(savedLayoutMode)
+    ) {
+      setLayoutMode(savedLayoutMode);
     }
 
-    try {
-      const response = await callApiWithParameters("api/convert_file/", {
-        file_name: selectedFile,
-      });
-      console.log("Response from convert_file:", response);
-      if (!response.success) {
-        console.error("Failed to convert file:", response.error);
-        return;
-      }
-    } catch (error) {
-      console.error("Error executing script:", error);
+    if (
+      savedNodeWidthMode &&
+      Object.values(nodeWidthModes).includes(savedNodeWidthMode)
+    ) {
+      setNodeWidthMode(savedNodeWidthMode);
     }
-  };
 
-  // --- Initial render ---
-  useEffect(() => {
-    let mounted = true;
-
-    const applyInitialLayout = async () => {
-      try {
-        const [layoutedNodes, layoutedEdges] = await applyLayout(
-          nodes,
-          edges,
-          layoutMode,
-          getInternalNode,
-        );
-
-        // Only update state if component is still mounted
-        if (mounted) {
-          useGraphStore.setState({
-            nodes: layoutedNodes,
-            edges: layoutedEdges,
-          });
-
-          if (layoutedNodes.length > 0) {
-            const firstSequenceNode = layoutedNodes.find(
-              (node) => node.type === nodeTypes.SequenceNode,
-            ) as SequenceNodeProps | undefined;
-            focusWithDelay(firstSequenceNode as SequenceNodeProps);
-          }
-        }
-      } catch (error) {
-        console.error("Error applying layout:", error);
-      }
-    };
-
-    void applyInitialLayout();
-
-    // Cleanup function to prevent state updates if component unmounts
-    return () => {
-      mounted = false;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    const layoutedNodes = useGraphStore.getState().nodes;
+    if (layoutedNodes.length > 0) {
+      const firstSequenceNode = layoutedNodes.find(
+        (node) => node.type === nodeTypes.SequenceNode,
+      ) as SequenceNodeProps | undefined;
+      focusWithDelay(firstSequenceNode as SequenceNodeProps);
+    }
+  }, [setNodeWidthMode, setLayoutMode]);
 
   useEffect(() => {
     useGraphStore.getState().setInternalNodeGetter(getInternalNode);
@@ -219,106 +167,136 @@ const Flow = () => {
   };
 
   return (
-    <ReactFlow
-      nodes={nodes}
-      edges={edges}
-      nodeTypes={myNodeTypes}
-      edgeTypes={edgeTypes}
-      onNodesChange={onNodesChange}
-      onEdgesChange={onEdgesChange}
-      nodeOrigin={nodeOrigin}
-      minZoom={0.05}
-      maxZoom={5}
-      zoomOnDoubleClick={false}
-      width={100}
-      onNodeClick={onNodeClick}
-      fitView
-      fitViewOptions={fitViewOptions}
-      nodesDraggable={false}
-      nodesConnectable={false}
-    >
-      {theme.debugMode && <DevTools />}
-      <GraphControls
-        onFocusNextNode={() => onFocusNextNode(focusedNode)}
-        onFocusPreviousNode={() => onFocusPreviousNode(focusedNode)}
-        onFocusCurrentNode={() => {
-          if (focusedNode) {
-            focusNode(focusedNode);
-          }
-        }}
-        toggleNodeWidthMode={() => {
-          void toggleGlobalNodeWidthMode();
-        }}
-        toggleSnakeLayout={() => {
-          void toggleSnakeLayout();
-        }}
-      />
-      <Panel position="top-left">
-        Proteoform graph visualization with React Flow library
-      </Panel>
-      <Panel position="top-right">
-        <div style={{ padding: "10px" }}>
-          <strong>Select file to process:</strong>
-          <br />
-          <select
-            value={selectedFile}
-            onChange={(e) => setSelectedFile(e.target.value)}
+    <>
+      <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        nodeTypes={myNodeTypes}
+        edgeTypes={edgeTypes}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        nodeOrigin={nodeOrigin}
+        minZoom={0.05}
+        maxZoom={5}
+        zoomOnDoubleClick={false}
+        width={100}
+        onNodeClick={onNodeClick}
+        fitView
+        fitViewOptions={fitViewOptions}
+        nodesDraggable={false}
+        nodesConnectable={false}
+      >
+        {theme.debugMode && <DevTools />}
+        <GraphControls
+          onFocusNextNode={() => onFocusNextNode(focusedNode)}
+          onFocusPreviousNode={() => onFocusPreviousNode(focusedNode)}
+          onFocusCurrentNode={() => {
+            if (focusedNode) {
+              focusNode(focusedNode);
+            }
+          }}
+          toggleNodeWidthMode={() => {
+            void toggleGlobalNodeWidthMode();
+          }}
+          toggleSnakeLayout={() => {
+            void toggleSnakeLayout();
+          }}
+        />
+        <Panel position="top-left">
+          Proteoform graph visualization with React Flow library
+        </Panel>
+        <Panel position="top-right">
+          <div
+            style={{
+              padding: "10px",
+              display: "flex",
+              gap: "10px",
+              alignItems: "center",
+            }}
           >
-            <option value="" disabled>
-              -- Select a file --
-            </option>
-            {fileNames.map((file) => (
-              <option key={file} value={file}>
-                {file}
-              </option>
+            <button
+              onClick={() => setIsSettingsOpen(true)}
+              style={{
+                padding: "8px 12px",
+                color: "gray",
+                border: "none",
+                borderRadius: "4px",
+                cursor: "pointer",
+                fontSize: "20px",
+              }}
+            >
+              <Icon icon={"settings"} />
+            </button>
+          </div>
+        </Panel>
+        <MiniMap
+          style={{
+            width: 350,
+            height: 200,
+            borderRadius: 10,
+            border: "1px solid #ccc",
+            boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
+            transform: "translate(10%, 0%)",
+          }}
+          nodeComponent={DirectionMiniMapNode}
+          maskColor={"rgba(240, 240, 240, 0.6)"}
+          nodeStrokeWidth={8}
+          zoomable
+          pannable
+          inversePan={false}
+          position={"bottom-left"}
+        />
+        <Panel position="bottom-center">
+          <div style={{ padding: "10px" }}>
+            <strong>Layout Mode:</strong> {layoutMode}
+            <br />
+            <strong>Node Width Mode:</strong> {nodeWidthMode}
+            <br />
+            <button onClick={toggleGlobalNodeWidthMode}>
+              Toggle Node Width Mode
+            </button>
+            <button onClick={toggleSnakeLayout}>Toggle Layout Mode</button>
+          </div>
+        </Panel>
+        <Panel position="bottom-right">
+          <div style={{ padding: "10px" }}>
+            <strong>Isoforms mapped to color:</strong>
+            <br />
+            {Object.entries(isoformColorMapping).map(([isoform, color]) => (
+              <span key={isoform} style={{ color }}>
+                {isoform}
+                <br />
+              </span>
             ))}
-          </select>
-          <br />
-          <button onClick={handleSubmit}>Submit</button>
-        </div>
-      </Panel>
-      <MiniMap
-        style={{
-          width: 350,
-          height: 200,
-          borderRadius: 10,
-          border: "1px solid #ccc",
-          boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
-          transform: "translate(10%, 0%)",
-        }}
-        nodeComponent={DirectionMiniMapNode}
-        maskColor={"rgba(240, 240, 240, 0.6)"}
-        nodeStrokeWidth={8}
-        zoomable
-        pannable
-        inversePan={false}
-        position={"bottom-left"}
+          </div>
+        </Panel>
+      </ReactFlow>
+
+      <SettingsMenu
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+        nodeWidthMode={nodeWidthMode}
+        setNodeWidthMode={setNodeWidthMode}
+        layoutMode={layoutMode}
+        setLayoutMode={setLayoutMode}
       />
-      <Panel position="bottom-center">
-        <div style={{ padding: "10px" }}>
-          <strong>Layout Mode:</strong> {layoutMode}
-          <br />
-          <strong>Node Width Mode:</strong> {nodeWidthMode}
-          <br />
-          <button onClick={toggleGlobalNodeWidthMode}>
-            Toggle Node Width Mode
-          </button>
-          <button onClick={toggleSnakeLayout}>Toggle Layout Mode</button>
-        </div>
-      </Panel>
-      <Panel position="bottom-right">
-        <div style={{ padding: "10px" }}>
-          <strong>Isoforms mapped to color:</strong>
-          <br />
-          {Object.entries(isoformColorMapping).map(([isoform, color]) => (
-            <span key={isoform} style={{ color }}>
-              {isoform}
-              <br />
-            </span>
-          ))}
-        </div>
-      </Panel>
-    </ReactFlow>
+
+      {/* Backdrop for settings menu */}
+      {isSettingsOpen && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0, 0, 0, 0.3)",
+            zIndex: 999,
+          }}
+          onClick={() => setIsSettingsOpen(false)}
+        />
+      )}
+    </>
   );
 };
 
