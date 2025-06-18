@@ -42,7 +42,8 @@ const Bar = styled.div<{ $intensity: number }>`
 `;
 
 const StyledHandleRight = styled(Handle)`
-  background: #fff;
+  background: transparent;
+  border-color: transparent;
   position: relative;
   z-index: 1;
   top: 50%;
@@ -50,7 +51,8 @@ const StyledHandleRight = styled(Handle)`
 `;
 
 const StyledHandleLeft = styled(Handle)`
-  background: #fff;
+  background: transparent;
+  border-color: transparent;
   position: relative;
   z-index: 1;
   top: 50%;
@@ -62,6 +64,7 @@ const useZoom = () => useStore((store) => store.transform[2]); // [x, y, zoom]
 const SequenceNode = memo(function SequenceNode({
   id,
   data,
+  selected,
 }: NodeProps<SequenceNodeProps>) {
   const updateNodeInternals = useUpdateNodeInternals();
   const width = theme.offsets.defaultWidthCollapsed // TODO what happens here
@@ -106,7 +109,7 @@ const SequenceNode = memo(function SequenceNode({
           type={data.isReversed ? "source" : "target"}
           position={Position.Left}
         />
-        <StyledNode>
+        <StyledNode style={{ borderWidth: selected ? 5 : 1 }}>
           <SequenceContainer
             sequence={data.sequence}
             nodeWidthMode={data.nodeWidthMode}
