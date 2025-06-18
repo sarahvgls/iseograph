@@ -50,6 +50,7 @@ const edgeTypes = {
 };
 
 const Flow = () => {
+  const [isInitializing, setIsInitializing] = useState(false);
   const { getInternalNode } = useReactFlow();
   const {
     nodes,
@@ -72,13 +73,17 @@ const Flow = () => {
   const focusWithDelay = (nodeToBeFocused: SequenceNodeProps) => {
     const timer = setTimeout(() => {
       focusNode(nodeToBeFocused);
-    }, 500); // 500ms delay to allow React Flow to render the nodes and edges properly
+    }, 500);
 
     return () => clearTimeout(timer);
   };
 
-  // Load saved settings from localStorage
+  // Initialize graph
   useEffect(() => {
+    if (isInitializing) return;
+    setIsInitializing(true);
+    useGraphStore.getState().setInternalNodeGetter(getInternalNode);
+
     const savedNodeWidthMode = localStorage.getItem(
       "defaultNodeWidthMode",
     ) as nodeWidthModes;
@@ -90,28 +95,44 @@ const Flow = () => {
       savedLayoutMode &&
       Object.values(layoutModes).includes(savedLayoutMode)
     ) {
-      setLayoutMode(savedLayoutMode);
+      useGraphStore.setState({ layoutMode: savedLayoutMode });
     }
 
     if (
       savedNodeWidthMode &&
       Object.values(nodeWidthModes).includes(savedNodeWidthMode)
     ) {
-      setNodeWidthMode(savedNodeWidthMode);
+      useGraphStore.setState({ nodeWidthMode: savedNodeWidthMode });
     }
-
-    const layoutedNodes = useGraphStore.getState().nodes;
-    if (layoutedNodes.length > 0) {
-      const firstSequenceNode = layoutedNodes.find(
-        (node) => node.type === nodeTypes.SequenceNode,
-      ) as SequenceNodeProps | undefined;
-      focusWithDelay(firstSequenceNode as SequenceNodeProps);
-    }
-  }, [setNodeWidthMode, setLayoutMode]);
+  }, [getInternalNode]);
 
   useEffect(() => {
-    useGraphStore.getState().setInternalNodeGetter(getInternalNode);
-  }, [getInternalNode]);
+    if (!isInitializing) return;
+
+    const nodes = useGraphStore.getState().nodes;
+    const layoutMode = useGraphStore.getState().layoutMode;
+    const nodeWidthMode = useGraphStore.getState().nodeWidthMode;
+
+    setTimeout(() => {
+      setLayoutMode(layoutMode);
+      setNodeWidthMode(nodeWidthMode);
+
+      // Focus first node
+      if (nodes.length > 0) {
+        const firstSequenceNode = nodes.find(
+          (node) => node.type === nodeTypes.SequenceNode,
+        ) as SequenceNodeProps | undefined;
+
+        if (firstSequenceNode) {
+          focusWithDelay(firstSequenceNode);
+        }
+      }
+    }, 500);
+
+    setTimeout(() => {
+      setIsInitializing(false);
+    }, 1500);
+  }, [isInitializing]);
 
   const toggleGlobalNodeWidthMode = () => {
     setNodeWidthMode(toggleNodeWidthMode(nodeWidthMode));
@@ -295,6 +316,26 @@ const Flow = () => {
           }}
           onClick={() => setIsSettingsOpen(false)}
         />
+      )}
+
+      {/* Backdrop when initializing */}
+      {isInitializing && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(255, 255, 255, 0.95)",
+            zIndex: 999,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <h1>Initializing...</h1>
+        </div>
       )}
     </>
   );
