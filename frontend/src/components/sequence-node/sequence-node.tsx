@@ -41,13 +41,20 @@ const Bar = styled.div<{ $intensity: number }>`
   transition: height 0.3s ease-in-out;
 `;
 
-const StyledHandle = styled(Handle)`
-  background: #222;
-  width: 3px;
-  height: 3px;
+const StyledHandleRight = styled(Handle)`
+  background: #fff;
   position: relative;
   z-index: 1;
   top: 50%;
+  transform: translateX(-115%);
+`;
+
+const StyledHandleLeft = styled(Handle)`
+  background: #fff;
+  position: relative;
+  z-index: 1;
+  top: 50%;
+  transform: translateX(+115%);
 `;
 
 const useZoom = () => useStore((store) => store.transform[2]); // [x, y, zoom]
@@ -95,7 +102,7 @@ const SequenceNode = memo(function SequenceNode({
       </NodeToolbar>
 
       <NodeWrapper>
-        <StyledHandle
+        <StyledHandleLeft
           type={data.isReversed ? "source" : "target"}
           position={Position.Left}
         />
@@ -105,7 +112,7 @@ const SequenceNode = memo(function SequenceNode({
             nodeWidthMode={data.nodeWidthMode}
           />
         </StyledNode>
-        <StyledHandle
+        <StyledHandleRight
           type={data.isReversed ? "target" : "source"}
           position={Position.Right}
         />

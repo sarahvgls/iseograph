@@ -19,7 +19,7 @@ export default function ArrowEdge({
   label,
   data = {},
 }: EdgeProps<ArrowEdgeProps>) {
-  const [edgePath, labelX, labelY] = getBezierPath({
+  const [, labelX, labelY] = getBezierPath({
     sourceX,
     sourceY,
     sourcePosition,
@@ -28,17 +28,15 @@ export default function ArrowEdge({
     targetPosition,
   });
 
-  // Edge color depending on isoforms
-  let edgeColor = "#000"; // default color
-  if (data.isoforms) {
-    const isoformsToColors = data.isoformsToColors || {};
-    if (data.isoforms.includes("Canonical")) {
-      edgeColor = isoformsToColors["Canonical"];
-    } else {
-      // it is expected that there is only one isoform if "Canonical" is not in array
-      edgeColor = isoformsToColors[data.isoforms[0]];
-    }
-  }
+  const isoforms =
+    data.isoforms?.length || 0 > 0 ? (data.isoforms as string[]) : ["Unknown"];
+
+  const isoformsToColors =
+    Object.keys(data.isoformsToColors || {}).length > 0
+      ? data.isoformsToColors
+      : {
+          Unknown: "#000",
+        };
 
   // Valid label that is not none or None
   let labelValid: string | undefined;
@@ -48,11 +46,89 @@ export default function ArrowEdge({
     labelValid = undefined;
   }
 
-  // Generate a unique marker ID for this edge
   const markerId = useMemo(() => `arrow-${id}`, [id]);
+  const centerIndex = Math.floor(isoforms.length / 2);
+  const defaultColor = isoforms.includes("Canonical")
+    ? isoformsToColors!["Canonical"]
+    : isoforms.length > 0
+      ? isoformsToColors![isoforms[0]]
+      : "#000";
 
-  // Define the marker's color, using the style color or default black
-  const strokeWidth = style.strokeWidth || 2;
+  // prepare path elements to be rendered in the correct order
+  const pathElements = [];
+
+  isoforms.map((isoform, index) => {
+    if (index === centerIndex) return; // Skip the center isoform for now
+    const color = isoformsToColors![isoform] || "#000";
+    const offset = index - (isoforms.length - 1) / 2;
+    const offsetDistance = 2; // Distance between parallel lines in pixels
+
+    // Calculate perpendicular offset
+    const dx = targetX - sourceX;
+    const dy = targetY - sourceY;
+    const length = Math.sqrt(dx * dx + dy * dy);
+    const offsetX = (-dy / length) * offset * offsetDistance;
+    const offsetY = (dx / length) * offset * offsetDistance;
+
+    // Get path with offset
+    const [offsetPath] = getBezierPath({
+      sourceX: sourceX + offsetX,
+      sourceY: sourceY + offsetY,
+      sourcePosition,
+      targetX: targetX + offsetX,
+      targetY: targetY + offsetY,
+      targetPosition,
+    });
+
+    pathElements.push(
+      <BaseEdge
+        key={`${id}-${isoform}`}
+        path={offsetPath}
+        style={{
+          stroke: color,
+          strokeWidth: style.strokeWidth || 2,
+          ...style,
+        }}
+        id={`${id}-${isoform}`}
+      />,
+    );
+  });
+
+  if (isoforms.length > 0) {
+    const centerIsoform = isoforms[centerIndex];
+    const color = isoformsToColors![centerIsoform] || "#000";
+    const offset = centerIndex - (isoforms.length - 1) / 2;
+    const offsetDistance = 2;
+
+    const dx = targetX - sourceX;
+    const dy = targetY - sourceY;
+    const length = Math.sqrt(dx * dx + dy * dy);
+    const offsetX = (-dy / length) * offset * offsetDistance;
+    const offsetY = (dx / length) * offset * offsetDistance;
+
+    const [offsetPath] = getBezierPath({
+      sourceX: sourceX + offsetX,
+      sourceY: sourceY + offsetY,
+      sourcePosition,
+      targetX: targetX + offsetX,
+      targetY: targetY + offsetY,
+      targetPosition,
+    });
+
+    pathElements.push(
+      <BaseEdge
+        key={`${id}-${centerIsoform}-marker`}
+        path={offsetPath}
+        markerEnd={`url(#${markerId})`}
+        style={{
+          stroke: color,
+          strokeWidth: style.strokeWidth || 2,
+          ...style,
+        }}
+        id={`${id}-${centerIsoform}`}
+      />,
+    );
+  }
 
   return (
     <>
@@ -67,41 +143,32 @@ export default function ArrowEdge({
           markerUnits="strokeWidth"
         >
           <path
-            d="M1,1
-              L1,9
-              L9.5,5
-              L1,1
-              Z"
+            d="M1,1 L1,9 L9.5,5 L1,1 Z"
             fill={"#fff"}
-            stroke={edgeColor}
+            stroke={"#000"}
             strokeWidth={1}
           />
         </marker>
       </defs>
-      <BaseEdge
-        path={edgePath}
-        markerEnd={`url(#${markerId})`}
-        style={{
-          stroke: edgeColor,
-          strokeWidth,
-          ...style,
-        }}
-        id={id}
-      />
+
+      {/* Render multiple parallel paths for each isoform */}
+      {pathElements}
+
       {labelValid && (
         <EdgeLabelRenderer>
           <div
             style={{
               position: "absolute",
               transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
-              background: edgeColor,
+              background: defaultColor,
+              color: "#000000",
               padding: "4px 8px",
               borderRadius: "4px",
               fontSize: 12,
               fontWeight: 500,
               pointerEvents: "all",
+              border: "1px solid #ccc",
             }}
-            className="nodrag nopan"
           >
             {labelValid}
           </div>
