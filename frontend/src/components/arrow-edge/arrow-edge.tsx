@@ -88,6 +88,7 @@ export default function ArrowEdge({
       <BaseEdge
         id={id}
         path={defaultPath}
+        markerEnd={`url(#${markerId})`}
         style={{
           stroke: "black",
           strokeWidth: style.strokeWidth || 2,
