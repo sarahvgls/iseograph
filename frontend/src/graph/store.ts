@@ -39,6 +39,9 @@ export type RFState = {
   setLayoutMode: (layoutMode: layoutModes) => void;
   setNodeWidthMode: (nodeId: string, mode: nodeWidthModes) => void;
   isoformColorMapping: Record<string, string>;
+  selectedIsoforms: string[];
+  toggleIsoformSelection: (isoform: string) => void;
+  updateIsoformColor: (isoform: string, color: string) => void;
 };
 
 // ----- create nodes and edges -----
@@ -46,6 +49,24 @@ const customNodes: SequenceNodeProps[] = createNodes(
   nodes as SequenceNodeProps[],
 );
 const customEdges: ArrowEdgeProps[] = createEdges(edges as ArrowEdgeProps[]);
+
+// Generate color mapping for isoforms
+const initialIsoformColorMapping = generateIsoformColorMatching(
+  customEdges as ArrowEdgeProps[],
+);
+
+// Load selected isoforms from localStorage if available
+const loadSelectedIsoforms = (): string[] => {
+  try {
+    const savedSelection = localStorage.getItem("selectedIsoforms");
+    return savedSelection
+      ? JSON.parse(savedSelection)
+      : Object.keys(initialIsoformColorMapping);
+  } catch (error) {
+    console.error("Error loading selected isoforms", error);
+    return Object.keys(initialIsoformColorMapping);
+  }
+};
 
 const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
   nodes: customNodes,
@@ -139,9 +160,29 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
       });
     });
   },
-  isoformColorMapping: generateIsoformColorMatching(
-    customEdges as ArrowEdgeProps[],
-  ),
+  isoformColorMapping: initialIsoformColorMapping,
+  selectedIsoforms: loadSelectedIsoforms(),
+  toggleIsoformSelection: (isoform: string) => {
+    const { selectedIsoforms } = get();
+    const newSelection = selectedIsoforms.includes(isoform)
+      ? selectedIsoforms.filter((iso) => iso !== isoform)
+      : [...selectedIsoforms, isoform];
+
+    set({ selectedIsoforms: newSelection });
+
+    localStorage.setItem("selectedIsoforms", JSON.stringify(newSelection));
+  },
+  updateIsoformColor: (isoform: string, color: string) => {
+    const { isoformColorMapping } = get();
+    const updatedMapping = {
+      ...isoformColorMapping,
+      [isoform]: color,
+    };
+
+    set({ isoformColorMapping: updatedMapping });
+
+    localStorage.setItem("isoformColorMapping", JSON.stringify(updatedMapping));
+  },
 }));
 
 export default useGraphStore;

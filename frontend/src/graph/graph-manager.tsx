@@ -37,7 +37,6 @@ const selector = (state: RFState) => ({
   setNodeWidthMode: state.setGlobalNodeWidthMode,
   layoutMode: state.layoutMode,
   setLayoutMode: state.setLayoutMode,
-  isoformColorMapping: state.isoformColorMapping,
 });
 
 // this places the node origin in the center of a node
@@ -62,7 +61,6 @@ const Flow = () => {
     setNodeWidthMode,
     layoutMode,
     setLayoutMode,
-    isoformColorMapping,
   } = useGraphStore(selector, shallow); // using shallow to make sure the component only re-renders when one of the values changes
   const [focusedNode, setFocusedNode] = useState<SequenceNodeProps>();
   const { focusNode, onFocusNextNode, onFocusPreviousNode } = useFocusHandlers(
@@ -91,6 +89,8 @@ const Flow = () => {
     const savedLayoutMode = localStorage.getItem(
       "defaultLayoutMode",
     ) as layoutModes;
+    const selectedIsoforms = localStorage.getItem("selectedIsoforms");
+    const isoformColorMapping = localStorage.getItem("isoformColorMapping");
 
     if (
       savedLayoutMode &&
@@ -104,6 +104,24 @@ const Flow = () => {
       Object.values(nodeWidthModes).includes(savedNodeWidthMode)
     ) {
       useGraphStore.setState({ nodeWidthMode: savedNodeWidthMode });
+    }
+
+    if (selectedIsoforms) {
+      try {
+        const parsedSelection = JSON.parse(selectedIsoforms);
+        useGraphStore.setState({ selectedIsoforms: parsedSelection });
+      } catch (error) {
+        console.error("Error parsing selected isoforms", error);
+      }
+    }
+
+    if (isoformColorMapping) {
+      try {
+        const parsedColorMapping = JSON.parse(isoformColorMapping);
+        useGraphStore.setState({ isoformColorMapping: parsedColorMapping });
+      } catch (error) {
+        console.error("Error parsing isoform color mapping", error);
+      }
     }
   }, [getInternalNode]);
 
@@ -271,32 +289,8 @@ const Flow = () => {
           inversePan={false}
           position={"bottom-left"}
         />
-        {/*<Panel position="bottom-center">*/}
-        {/*  <div style={{ padding: "10px" }}>*/}
-        {/*    <strong>Layout Mode:</strong> {layoutMode}*/}
-        {/*    <br />*/}
-        {/*    <strong>Node Width Mode:</strong> {nodeWidthMode}*/}
-        {/*    <br />*/}
-        {/*    <button onClick={toggleGlobalNodeWidthMode}>*/}
-        {/*      Toggle Node Width Mode*/}
-        {/*    </button>*/}
-        {/*    <button onClick={toggleSnakeLayout}>Toggle Layout Mode</button>*/}
-        {/*  </div>*/}
-        {/*</Panel>*/}
-        {/*<Panel position="bottom-right">*/}
-        {/*  <div style={{ padding: "10px" }}>*/}
-        {/*    <strong>Isoforms mapped to color:</strong>*/}
-        {/*    <br />*/}
-        {/*    {Object.entries(isoformColorMapping).map(([isoform, color]) => (*/}
-        {/*      <span key={isoform} style={{ color }}>*/}
-        {/*        {isoform}*/}
-        {/*        <br />*/}
-        {/*      </span>*/}
-        {/*    ))}*/}
-        {/*  </div>*/}
-        {/*</Panel>*/}
         <Panel position={"bottom-right"}>
-          <OnScreenMenu isoformColorMapping={isoformColorMapping} />
+          <OnScreenMenu />
         </Panel>
       </ReactFlow>
 
