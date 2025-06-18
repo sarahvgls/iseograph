@@ -154,6 +154,7 @@ const Flow = () => {
       const timeSinceLastClick = currentTime - lastClickTimeRef.current;
 
       if (timeSinceLastClick < 300 && lastClickTimeRef.current > 0) {
+        // double click
         if (node.type === nodeTypes.SequenceNode) {
           focusNode(node as SequenceNodeProps);
         }
@@ -165,6 +166,7 @@ const Flow = () => {
           clearTimeout(clickTimerRef.current);
         }
 
+        // single click
         clickTimerRef.current = window.setTimeout(() => {
           if (lastClickTimeRef.current > 0) {
             store
@@ -173,6 +175,7 @@ const Flow = () => {
                 node.id,
                 toggleNodeWidthMode(node.data.nodeWidthMode as nodeWidthModes),
               );
+            setFocusedNode(node as SequenceNodeProps);
           }
           clickTimerRef.current = null;
         }, 300);
