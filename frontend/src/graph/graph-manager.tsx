@@ -69,7 +69,7 @@ const Flow = () => {
   );
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
-  const focusWithDelay = (nodeToBeFocused: SequenceNodeProps) => {
+  const focusNodeWithDelay = (nodeToBeFocused: SequenceNodeProps) => {
     const timer = setTimeout(() => {
       focusNode(nodeToBeFocused);
     }, 500);
@@ -143,7 +143,7 @@ const Flow = () => {
         ) as SequenceNodeProps | undefined;
 
         if (firstSequenceNode) {
-          focusWithDelay(firstSequenceNode);
+          focusNodeWithDelay(firstSequenceNode);
         }
       }
     }, 500);
@@ -161,7 +161,7 @@ const Flow = () => {
     setLayoutMode(
       layoutMode === layoutModes.Basic ? layoutModes.Snake : layoutModes.Basic,
     );
-    focusWithDelay(focusedNode as SequenceNodeProps);
+    focusNodeWithDelay(focusedNode as SequenceNodeProps);
   };
 
   const lastClickTimeRef = useRef<number>(0);
@@ -185,16 +185,16 @@ const Flow = () => {
           clearTimeout(clickTimerRef.current);
         }
 
-        // single click
         clickTimerRef.current = window.setTimeout(() => {
           if (lastClickTimeRef.current > 0) {
+            // single click
             store
               .getState()
               .setNodeWidthMode(
                 node.id,
                 toggleNodeWidthMode(node.data.nodeWidthMode as nodeWidthModes),
               );
-            setFocusedNode(node as SequenceNodeProps);
+            focusNodeWithDelay(node as SequenceNodeProps);
           }
           clickTimerRef.current = null;
         }, 300);
