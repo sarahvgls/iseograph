@@ -45,7 +45,6 @@ export const useFocusHandlers = (
 
   const onFocusNextNode = useCallback(
     (focusedNode: SequenceNodeProps | undefined) => {
-      console.log("onFocusNextNode called with:", focusedNode);
       const nextNode = focusNextNode(focusedNode as SequenceNodeProps, nodes);
       if (nextNode) {
         setNodes(

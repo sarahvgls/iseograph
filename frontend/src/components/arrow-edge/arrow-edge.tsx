@@ -50,7 +50,7 @@ export default function ArrowEdge({
   const markerId = useMemo(() => `arrow-${id}`, [id]);
   const markerColor = isoforms.includes("Canonical")
     ? isoformColorMapping["Canonical"]
-    : isoforms.length > 0
+    : isoforms.length > 0 && isoforms[0] in isoformColorMapping
       ? isoformColorMapping[isoforms[0]]
       : "#c8c8c8";
   // get marker label color based on the label color to have much contrast
