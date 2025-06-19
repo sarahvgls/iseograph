@@ -9,7 +9,7 @@ export const useFocusHandlers = (
   nodes: NodeTypes[],
   setFocusedNode: (node: SequenceNodeProps) => void,
 ) => {
-  const { setCenter, getInternalNode } = useReactFlow();
+  const { setCenter, getInternalNode, setNodes, getNodes } = useReactFlow();
 
   const focusNode = useCallback(
     (node: NodeTypes) => {
@@ -45,12 +45,20 @@ export const useFocusHandlers = (
 
   const onFocusNextNode = useCallback(
     (focusedNode: SequenceNodeProps | undefined) => {
+      console.log("onFocusNextNode called with:", focusedNode);
       const nextNode = focusNextNode(focusedNode as SequenceNodeProps, nodes);
       if (nextNode) {
+        setNodes(
+          getNodes().map((node) => {
+            node.selected = node.id === nextNode.id;
+            return node;
+          }),
+        );
+
         focusNode(nextNode);
       }
     },
-    [nodes, focusNode],
+    [nodes, focusNode, getInternalNode],
   );
 
   const onFocusPreviousNode = useCallback(
@@ -60,6 +68,13 @@ export const useFocusHandlers = (
         nodes,
       );
       if (prevNode) {
+        setNodes(
+          getNodes().map((node) => {
+            node.selected = node.id === prevNode.id;
+            return node;
+          }),
+        );
+
         focusNode(prevNode);
       }
     },
