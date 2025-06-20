@@ -109,12 +109,13 @@ export const theme = {
     defaultPalette.yellow,
     defaultPalette.blue,
     defaultPalette.red,
-    defaultPalette.gray,
+    defaultPalette.protzillaDarkBlue,
     defaultPalette.blueHover,
     defaultPalette.greenHover,
     defaultPalette.yellowHover,
     defaultPalette.redHover,
   ],
+  defaultColor: "#9e9e9e",
 };
 
 export const baseTheme = {

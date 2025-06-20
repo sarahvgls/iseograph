@@ -64,6 +64,23 @@ export const OnScreenMenu = () => {
     false,
   );
 
+  const resetColors = () => {
+    const defaultColors = theme.colors;
+    Object.keys(isoformColorMapping).forEach((isoform, index) => {
+      const defaultColor =
+        Object.values(defaultColors)[
+          index % Object.values(defaultColors).length
+        ];
+      updateIsoformColor(isoform, defaultColor);
+    });
+    updateIsoformColor("Default", theme.defaultColor);
+  };
+
+  const toggleAllSelection = () => {
+    setActiveColorPicker(null);
+    toggleCompleteIsoformSelection();
+  };
+
   return (
     <StyledSection
       style={{
@@ -157,28 +174,12 @@ export const OnScreenMenu = () => {
         ))}
       </div>
       <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
-        <SecondaryButton
-          onClick={() => {
-            const defaultColors = theme.colors;
-            Object.keys(isoformColorMapping).forEach((isoform, index) => {
-              const defaultColor =
-                Object.values(defaultColors)[
-                  index % Object.values(defaultColors).length
-                ];
-              updateIsoformColor(isoform, defaultColor);
-            });
-          }}
-        >
-          Reset colors
-        </SecondaryButton>
+        <SecondaryButton onClick={resetColors}>Reset colors</SecondaryButton>
         <SecondaryButton
           style={{
             width: "100px",
           }}
-          onClick={() => {
-            setActiveColorPicker(null);
-            toggleCompleteIsoformSelection();
-          }}
+          onClick={toggleAllSelection}
         >
           {areAllSelected ? "Deselect All" : "Select All"}
         </SecondaryButton>

@@ -8,6 +8,7 @@ import { useMemo } from "react";
 import type { ArrowEdgeProps } from "./arrow-edge.props.tsx";
 import useGraphStore from "../../graph/store.ts";
 import { shallow } from "zustand/shallow";
+import { theme } from "../../theme";
 
 export default function ArrowEdge({
   id,
@@ -46,13 +47,17 @@ export default function ArrowEdge({
   // prepare path elements to be rendered in the correct order
   const pathElements = [];
 
+  const hasSelectedIsoform = isoforms.some((isoform) =>
+    selectedIsoforms.includes(isoform),
+  );
+
   // prepare marker ID and color
   const markerId = useMemo(() => `arrow-${id}`, [id]);
   const markerColor = isoforms.includes("Canonical")
     ? isoformColorMapping["Canonical"]
-    : isoforms.length > 0 && isoforms[0] in isoformColorMapping
-      ? isoformColorMapping[isoforms[0]]
-      : "#c8c8c8";
+    : hasSelectedIsoform
+      ? isoformColorMapping[isoforms[0]] || theme.defaultColor
+      : isoformColorMapping["Default"] || theme.defaultColor;
   // get marker label color based on the label color to have much contrast
   const markerLabelColor = useMemo(() => {
     const rgb = markerColor.match(/\d+/g);
@@ -69,10 +74,6 @@ export default function ArrowEdge({
   } else {
     labelValid = undefined;
   }
-
-  const hasSelectedIsoform = isoforms.some((isoform) =>
-    selectedIsoforms.includes(isoform),
-  );
 
   // If no isoforms are selected, render simple black edge
   if (!hasSelectedIsoform) {
@@ -91,9 +92,8 @@ export default function ArrowEdge({
         path={defaultPath}
         markerEnd={`url(#${markerId})`}
         style={{
-          stroke: "black",
+          stroke: isoformColorMapping["Default"] || theme.defaultColor,
           strokeWidth: style.strokeWidth || 2,
-          opacity: 0.3,
           ...style,
         }}
       />,

@@ -46,6 +46,9 @@ export const generateIsoformColorMatching = (
     isoformsColors[isoform] = colors[colorIndex % colors.length];
     colorIndex++;
   });
+
+  // Add a default color for no isoform
+  isoformsColors["Default"] = theme.defaultColor;
   return isoformsColors;
 };
 
