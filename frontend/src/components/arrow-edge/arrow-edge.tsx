@@ -86,6 +86,7 @@ export default function ArrowEdge({
     });
     pathElements.push(
       <BaseEdge
+        key={`${id}-default`}
         id={id}
         path={defaultPath}
         markerEnd={`url(#${markerId})`}
