@@ -1,10 +1,15 @@
-import { StyledSection, StyledSectionTitle } from "../base-components";
+import {
+  SecondaryButton,
+  StyledSection,
+  StyledSectionTitle,
+} from "../base-components";
 import { HexColorPicker } from "react-colorful";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import useGraphStore from "../../graph/store";
 import { shallow } from "zustand/shallow";
 import { useOutsidePress } from "../../helper/outside-press.tsx";
 import styled from "styled-components";
+import { theme } from "../../theme";
 
 const ColorPickerBox = styled.div`
   position: absolute;
@@ -24,16 +29,28 @@ export const OnScreenMenu = () => {
     isoformColorMapping,
     selectedIsoforms,
     toggleIsoformSelection,
+    toggleCompleteIsoformSelection,
     updateIsoformColor,
   } = useGraphStore(
     (state) => ({
       isoformColorMapping: state.isoformColorMapping,
       selectedIsoforms: state.selectedIsoforms,
       toggleIsoformSelection: state.toggleIsoformSelection,
+      toggleCompleteIsoformSelection: state.toggleCompleteIsoformSelection,
       updateIsoformColor: state.updateIsoformColor,
     }),
     shallow,
   );
+
+  const [areAllSelected, setAreAllSelected] = useState<boolean>(false);
+
+  useEffect(() => {
+    setAreAllSelected(
+      Object.keys(isoformColorMapping).every((isoform) =>
+        selectedIsoforms.includes(isoform),
+      ),
+    );
+  }, [isoformColorMapping, selectedIsoforms]);
 
   const [activeColorPicker, setActiveColorPicker] = useState<string | null>(
     null,
@@ -51,13 +68,11 @@ export const OnScreenMenu = () => {
     <StyledSection
       style={{
         padding: "20px",
-        maxHeight: "300px",
-        overflowY: "auto",
         boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
       }}
     >
       <StyledSectionTitle>Isoforms and Colors</StyledSectionTitle>
-      <div style={{ marginTop: "15px" }}>
+      <div style={{ marginTop: "15px", maxHeight: "250px", overflowY: "auto" }}>
         {Object.entries(isoformColorMapping).map(([isoform, color]) => (
           <div
             key={isoform}
@@ -140,6 +155,33 @@ export const OnScreenMenu = () => {
             )}
           </div>
         ))}
+      </div>
+      <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
+        <SecondaryButton
+          onClick={() => {
+            const defaultColors = theme.colors;
+            Object.keys(isoformColorMapping).forEach((isoform, index) => {
+              const defaultColor =
+                Object.values(defaultColors)[
+                  index % Object.values(defaultColors).length
+                ];
+              updateIsoformColor(isoform, defaultColor);
+            });
+          }}
+        >
+          Reset colors
+        </SecondaryButton>
+        <SecondaryButton
+          style={{
+            width: "100px",
+          }}
+          onClick={() => {
+            setActiveColorPicker(null);
+            toggleCompleteIsoformSelection();
+          }}
+        >
+          {areAllSelected ? "Deselect All" : "Select All"}
+        </SecondaryButton>
       </div>
     </StyledSection>
   );
