@@ -42,6 +42,10 @@ export type RFState = {
   selectedIsoforms: string[];
   toggleIsoformSelection: (isoform: string) => void;
   updateIsoformColor: (isoform: string, color: string) => void;
+  isAnimated: boolean;
+  setIsAnimated: (isAnimated: boolean) => void;
+  allowInteraction: boolean;
+  setAllowInteraction: (allowInteraction: boolean) => void;
 };
 
 // ----- create nodes and edges -----
@@ -182,6 +186,17 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
     set({ isoformColorMapping: updatedMapping });
 
     localStorage.setItem("isoformColorMapping", JSON.stringify(updatedMapping));
+  },
+  isAnimated: theme.isAnimated,
+  setIsAnimated: (isAnimated: boolean) => {
+    set({ isAnimated });
+    set({
+      edges: get().edges.map((edge) => ({ ...edge, animated: isAnimated })),
+    });
+  },
+  allowInteraction: theme.allowInteraction,
+  setAllowInteraction: (allowInteraction: boolean) => {
+    set({ allowInteraction });
   },
 }));
 

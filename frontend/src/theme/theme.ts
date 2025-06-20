@@ -75,6 +75,8 @@ export const defaultPalette = {
 //TODO refactor: what is still needed
 export const theme = {
   debugMode: false,
+  isAnimated: false,
+  allowInteraction: false,
   offsets: {
     defaultWidthCollapsed: false,
     defaultLength: 100,

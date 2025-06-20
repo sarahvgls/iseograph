@@ -37,6 +37,10 @@ const selector = (state: RFState) => ({
   setNodeWidthMode: state.setGlobalNodeWidthMode,
   layoutMode: state.layoutMode,
   setLayoutMode: state.setLayoutMode,
+  isAnimated: state.isAnimated,
+  setIsAnimated: state.setIsAnimated,
+  allowInteraction: state.allowInteraction,
+  setAllowInteraction: state.setAllowInteraction,
 });
 
 // this places the node origin in the center of a node
@@ -61,6 +65,10 @@ const Flow = () => {
     setNodeWidthMode,
     layoutMode,
     setLayoutMode,
+    isAnimated,
+    setIsAnimated,
+    allowInteraction,
+    setAllowInteraction,
   } = useGraphStore(selector, shallow); // using shallow to make sure the component only re-renders when one of the values changes
   const [focusedNode, setFocusedNode] = useState<SequenceNodeProps>();
   const { focusNode, onFocusNextNode, onFocusPreviousNode } = useFocusHandlers(
@@ -89,6 +97,8 @@ const Flow = () => {
     const savedLayoutMode = localStorage.getItem(
       "defaultLayoutMode",
     ) as layoutModes;
+    const savedIsAnimated = localStorage.getItem("isAnimated");
+    const savedAllowInteraction = localStorage.getItem("allowInteraction");
     const selectedIsoforms = localStorage.getItem("selectedIsoforms");
     const isoformColorMapping = localStorage.getItem("isoformColorMapping");
 
@@ -104,6 +114,16 @@ const Flow = () => {
       Object.values(nodeWidthModes).includes(savedNodeWidthMode)
     ) {
       useGraphStore.setState({ nodeWidthMode: savedNodeWidthMode });
+    }
+
+    if (savedIsAnimated) {
+      useGraphStore.getState().setIsAnimated(savedIsAnimated === "true");
+    }
+
+    if (savedAllowInteraction) {
+      useGraphStore
+        .getState()
+        .setAllowInteraction(savedAllowInteraction === "true");
     }
 
     if (selectedIsoforms) {
@@ -226,11 +246,12 @@ const Flow = () => {
         onNodeClick={onNodeClick}
         fitView
         fitViewOptions={fitViewOptions}
-        nodesDraggable={false}
+        nodesDraggable={allowInteraction}
         nodesConnectable={false}
       >
         {theme.debugMode && <DevTools />}
         <GraphControls
+          allowInteraction={allowInteraction}
           onFocusNextNode={() => onFocusNextNode(focusedNode)}
           onFocusPreviousNode={() => onFocusPreviousNode(focusedNode)}
           onFocusCurrentNode={() => {
@@ -294,14 +315,20 @@ const Flow = () => {
         </Panel>
       </ReactFlow>
 
-      <SettingsMenu
-        isOpen={isSettingsOpen}
-        onClose={() => setIsSettingsOpen(false)}
-        nodeWidthMode={nodeWidthMode}
-        setNodeWidthMode={setNodeWidthMode}
-        layoutMode={layoutMode}
-        setLayoutMode={setLayoutMode}
-      />
+      {isSettingsOpen && (
+        <SettingsMenu
+          isOpen={isSettingsOpen}
+          onClose={() => setIsSettingsOpen(false)}
+          nodeWidthMode={nodeWidthMode}
+          setNodeWidthMode={setNodeWidthMode}
+          layoutMode={layoutMode}
+          setLayoutMode={setLayoutMode}
+          setStoreIsAnimated={setIsAnimated}
+          storeIsAnimated={isAnimated}
+          setStoreAllowInteraction={setAllowInteraction}
+          storeAllowInteraction={allowInteraction}
+        />
+      )}
 
       {/* Backdrop for settings menu */}
       {isSettingsOpen && (

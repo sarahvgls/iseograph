@@ -24,6 +24,7 @@ export class GroupNode {
         isReversed,
       },
       style: GroupNode.style,
+      draggable: false,
     };
   }
 }

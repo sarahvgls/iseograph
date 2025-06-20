@@ -2,6 +2,7 @@ import { layoutModes, nodeWidthModes } from "../../theme/types.tsx";
 import { useEffect, useState } from "react";
 import { callApi, callApiWithParameters } from "../../helper/api-call.ts";
 import {
+  Checkbox,
   FlexRow,
   PrimaryButton,
   SecondaryButton,
@@ -19,6 +20,10 @@ export const SettingsMenu = ({
   setNodeWidthMode,
   layoutMode,
   setLayoutMode,
+  storeIsAnimated,
+  setStoreIsAnimated,
+  storeAllowInteraction,
+  setStoreAllowInteraction,
 }: {
   isOpen: boolean;
   onClose: () => void;
@@ -26,6 +31,10 @@ export const SettingsMenu = ({
   setNodeWidthMode: (mode: nodeWidthModes) => void;
   layoutMode: layoutModes;
   setLayoutMode: (mode: layoutModes) => void;
+  storeIsAnimated: boolean;
+  setStoreIsAnimated: (isAnimated: boolean) => void;
+  storeAllowInteraction: boolean;
+  setStoreAllowInteraction: (allowInteraction: boolean) => void;
 }) => {
   const [selectedNodeWidthMode, setSelectedNodeWidthMode] =
     useState<nodeWidthModes>(nodeWidthMode);
@@ -34,6 +43,10 @@ export const SettingsMenu = ({
   const [fileNames, setFileNames] = useState<string[]>([]);
   const [selectedFile, setSelectedFile] = useState<string>("");
   const [newProteinName, setNewProteinName] = useState<string>("");
+  const [allowInteraction, setAllowInteraction] = useState<boolean>(
+    storeAllowInteraction,
+  );
+  const [isAnimated, setIsAnimated] = useState<boolean>(storeIsAnimated);
 
   useEffect(() => {
     setSelectedNodeWidthMode(nodeWidthMode);
@@ -105,10 +118,16 @@ export const SettingsMenu = ({
     // Save to localStorage
     localStorage.setItem("defaultNodeWidthMode", selectedNodeWidthMode);
     localStorage.setItem("defaultLayoutMode", selectedLayoutMode);
+    localStorage.setItem("allowInteraction", String(allowInteraction));
+    localStorage.setItem("isAnimated", String(isAnimated));
 
     // Update global state
     setNodeWidthMode(selectedNodeWidthMode);
     setLayoutMode(selectedLayoutMode);
+    setTimeout(() => {
+      setStoreIsAnimated(isAnimated);
+      setStoreAllowInteraction(allowInteraction);
+    }, 500);
 
     onClose();
   };
@@ -248,6 +267,23 @@ export const SettingsMenu = ({
               </option>
             ))}
           </StyledDropdown>
+        </div>
+
+        <div>
+          <Checkbox
+            label={"Allow movement of nodes [not saved]"}
+            checked={allowInteraction}
+            onChange={(checked) => {
+              setAllowInteraction(checked);
+            }}
+          />
+          <Checkbox
+            label={"Show animated edges"}
+            checked={isAnimated}
+            onChange={(checked) => {
+              setIsAnimated(checked);
+            }}
+          />
         </div>
       </StyledSection>
 
