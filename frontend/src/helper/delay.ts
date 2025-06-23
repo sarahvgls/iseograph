@@ -11,13 +11,13 @@ export const useDelay = (
   callback: () => void,
   delay: number,
 ): [() => void, () => void] => {
-  // @ts-ignore
+  // @ts-expect-error TODO
   const timerRef = useRef<ReturnType<typeof setTimeout>>();
 
   const cancel = useCallback(() => {
     if (timerRef.current !== undefined) {
       clearTimeout(timerRef.current);
-      // @ts-ignore
+      // @ts-expect-error TODO
       timerRef.current = undefined;
     }
   }, []);
@@ -33,7 +33,7 @@ export const useDelay = (
     () => () => {
       if (timerRef.current !== undefined) {
         clearTimeout(timerRef.current);
-        // @ts-ignore
+        // @ts-expect-error TODO
         timerRef.current = undefined;
       }
     },

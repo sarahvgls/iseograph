@@ -10,7 +10,6 @@ const outsideCondition = <T extends HTMLElement>(
     ref.current &&
       !ref.current.contains(event.target as Node) &&
       document.body.contains(event.target as Node) &&
-      // eslint-disable-next-line @typescript-eslint/no-deprecated
       !event.cancelBubble,
   );
 

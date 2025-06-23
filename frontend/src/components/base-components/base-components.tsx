@@ -75,7 +75,7 @@ export const FlexRow = styled.div`
 `;
 
 interface CheckboxProps {
-  label: any;
+  label: string;
   checked: boolean;
   onChange: (checked: boolean) => void;
   className?: string;

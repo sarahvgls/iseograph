@@ -29,14 +29,14 @@ const DirectionMiniMapNode = ({
   const arrowWidthRow = width;
   const arrowHeightRow = height * 0.8;
 
-  let arrowWidth = isSequenceNode
+  const arrowWidth = isSequenceNode
     ? nodeWidthMode === nodeWidthModes.Collapsed
       ? arrowWidthCollapsed
       : nodeWidthMode === nodeWidthModes.Small
         ? arrowWidthSmall
         : arrowWidthExpanded
     : arrowWidthRow;
-  let arrowHeight = isSequenceNode
+  const arrowHeight = isSequenceNode
     ? nodeWidthMode === nodeWidthModes.Collapsed
       ? arrowHeightCollapsed
       : nodeWidthMode === nodeWidthModes.Small

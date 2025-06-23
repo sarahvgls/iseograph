@@ -57,7 +57,7 @@ export const useFocusHandlers = (
         focusNode(nextNode);
       }
     },
-    [nodes, focusNode, getInternalNode],
+    [nodes, focusNode, setNodes, getNodes],
   );
 
   const onFocusPreviousNode = useCallback(
@@ -77,7 +77,7 @@ export const useFocusHandlers = (
         focusNode(prevNode);
       }
     },
-    [nodes, focusNode],
+    [nodes, focusNode, getNodes, setNodes],
   );
 
   return { focusNode, onFocusNextNode, onFocusPreviousNode };

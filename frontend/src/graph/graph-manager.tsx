@@ -78,13 +78,16 @@ const Flow = () => {
   );
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
-  const focusNodeWithDelay = (nodeToBeFocused: SequenceNodeProps) => {
-    const timer = setTimeout(() => {
-      focusNode(nodeToBeFocused);
-    }, 500);
+  const focusNodeWithDelay = useCallback(
+    (nodeToBeFocused: SequenceNodeProps) => {
+      const timer = setTimeout(() => {
+        focusNode(nodeToBeFocused);
+      }, 500);
 
-    return () => clearTimeout(timer);
-  };
+      return () => clearTimeout(timer);
+    },
+    [focusNode],
+  );
 
   // Initialize graph
   useEffect(() => {
@@ -144,6 +147,7 @@ const Flow = () => {
         console.error("Error parsing isoform color mapping", error);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [getInternalNode]);
 
   useEffect(() => {
@@ -172,7 +176,7 @@ const Flow = () => {
     setTimeout(() => {
       setIsInitializing(false);
     }, 1500);
-  }, [isInitializing]);
+  }, [isInitializing, focusNodeWithDelay, setLayoutMode, setNodeWidthMode]);
 
   const toggleGlobalNodeWidthMode = () => {
     setNodeWidthMode(toggleNodeWidthMode(nodeWidthMode));
@@ -221,7 +225,7 @@ const Flow = () => {
         }, 300);
       }
     },
-    [focusNode],
+    [focusNode, focusNodeWithDelay],
   );
 
   const fitViewOptions = {
