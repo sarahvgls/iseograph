@@ -47,6 +47,25 @@ export type RFState = {
   setIsAnimated: (isAnimated: boolean) => void;
   allowInteraction: boolean;
   setAllowInteraction: (allowInteraction: boolean) => void;
+  labelPositions: LabelPosition[];
+  registerLabelPosition: (position: LabelPosition) => void;
+  unregisterLabelPosition: (id: string) => void;
+  getAdjustedLabelPosition: (
+    id: string,
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+  ) => { x: number; y: number };
+};
+
+type LabelPosition = {
+  id: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  knowsOverlap?: boolean; // Optional property to indicate if the position is known to overlap
 };
 
 // ----- create nodes and edges -----
@@ -206,6 +225,47 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
   allowInteraction: theme.allowInteraction,
   setAllowInteraction: (allowInteraction: boolean) => {
     set({ allowInteraction });
+  },
+  labelPositions: [],
+  registerLabelPosition: (position) =>
+    set((state) => {
+      // Remove existing position with same id if it exists
+      const filteredPositions = state.labelPositions.filter(
+        (p) => p.id !== position.id,
+      );
+      return { labelPositions: [...filteredPositions, position] };
+    }),
+  unregisterLabelPosition: (id) =>
+    set((state) => ({
+      labelPositions: state.labelPositions.filter((p) => p.id !== id),
+    })),
+  getAdjustedLabelPosition: (id, x, y) => {
+    const state = get();
+    let overlap = true;
+    let adjustedY = y;
+    let adjustedX = x;
+
+    // Check for overlaps and adjust position
+    while (overlap) {
+      overlap = false;
+
+      for (const pos of state.labelPositions) {
+        if (pos.id === id) continue; // Skip checking against self
+
+        // Check if labels would overlap
+        const xOverlap = Math.abs(pos.x - adjustedX) < pos.width / 2;
+        const yOverlap = Math.abs(pos.y - y) < pos.height / 2;
+
+        if (xOverlap && yOverlap) {
+          //adjustedY += pos.height;
+          adjustedX += pos.width / 2; // Adjust x to avoid horizontal overlap
+          overlap = true;
+          break;
+        }
+      }
+    }
+
+    return { x: adjustedX, y: y };
   },
 }));
 

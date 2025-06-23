@@ -9,6 +9,7 @@ import type { ArrowEdgeProps } from "./arrow-edge.props.tsx";
 import useGraphStore from "../../graph/store.ts";
 import { shallow } from "zustand/shallow";
 import { theme } from "../../theme";
+import useLabelPosition from "../../hooks/useLabelPosition.ts";
 
 export default function ArrowEdge({
   id,
@@ -74,6 +75,15 @@ export default function ArrowEdge({
   } else {
     labelValid = undefined;
   }
+
+  // Use the modified hook to get hover-dependent position
+  const {
+    ref: labelRef,
+    position,
+    hoverHandlers,
+  } = labelValid
+    ? useLabelPosition(`edge-label-${id}`, labelX, labelY)
+    : { ref: null, position: { x: labelX, y: labelY }, hoverHandlers: {} };
 
   // If no isoforms are selected, render simple black edge
   if (!hasSelectedIsoform) {
@@ -203,17 +213,22 @@ export default function ArrowEdge({
       {labelValid && (
         <EdgeLabelRenderer>
           <div
+            ref={labelRef}
+            {...hoverHandlers}
             style={{
               position: "absolute",
-              transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
+              transform: `translate(-50%, -50%) translate(${position.x}px,${position.y}px)`,
               background: markerColor,
               color: markerLabelColor,
               padding: "4px 8px",
               borderRadius: "4px",
               fontSize: 12,
               fontWeight: 500,
-              pointerEvents: "all",
+              pointerEvents: "all", // This is crucial for capturing mouse events
               border: "1px solid #ccc",
+              zIndex: 10, // Ensure the label is above other elements
+              cursor: "default", // Show default cursor to indicate interactivity
+              userSelect: "none", // Prevent text selection
             }}
           >
             {labelValid}
