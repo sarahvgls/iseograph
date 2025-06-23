@@ -27,6 +27,7 @@ import ArrowEdge from "../components/arrow-edge/arrow-edge.tsx";
 import { SettingsMenu } from "../components/settings-menu/settings-menu.tsx";
 import { Icon } from "../components/icon";
 import { OnScreenMenu } from "../components/on-screen-menu/on-screen-menu.tsx";
+import { StyledPanel } from "../components/base-components";
 
 const selector = (state: RFState) => ({
   nodes: state.nodes,
@@ -310,9 +311,9 @@ const Flow = () => {
           inversePan={false}
           position={"bottom-left"}
         />
-        <Panel position={"bottom-right"}>
+        <StyledPanel position={"bottom-right"}>
           <OnScreenMenu />
-        </Panel>
+        </StyledPanel>
       </ReactFlow>
 
       {isSettingsOpen && (

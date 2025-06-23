@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { Panel } from "@xyflow/react";
 
 export const StyledSection = styled.div`
   margin-bottom: 24px;
@@ -147,4 +148,8 @@ const CheckboxLabel = styled.span`
 
 export const StyledCheckbox = styled(Checkbox)`
   margin-top: 10px;
+`;
+
+export const StyledPanel = styled(Panel)`
+  pointer-events: none !important;
 `;
