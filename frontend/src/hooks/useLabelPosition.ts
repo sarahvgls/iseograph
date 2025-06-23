@@ -12,18 +12,26 @@ export default function useLabelPosition(
     x: initialX,
     y: initialY,
   });
-  const [isHovered, setIsHovered] = useState(false);
-  const [isOverlapping, setIsOverlapping] = useState(false);
+  const hoverTimeoutRef = useRef<number | null>(null);
+  const [overlappingLabels, setOverlappingLabels] = useState<string[]>([]);
+  const [stackIndex, setStackIndex] = useState(0);
 
   const {
     registerLabelPosition,
     unregisterLabelPosition,
-    getAdjustedLabelPosition,
+    labelPositions,
+    activeHoveredLabel,
+    setActiveHoveredLabel,
   } = useGraphStore((state) => ({
     registerLabelPosition: state.registerLabelPosition,
     unregisterLabelPosition: state.unregisterLabelPosition,
-    getAdjustedLabelPosition: state.getAdjustedLabelPosition,
+    labelPositions: state.labelPositions,
+    activeHoveredLabel: state.activeHoveredLabel,
+    setActiveHoveredLabel: state.setActiveHoveredLabel,
   }));
+
+  // Check if this label is being actively hovered
+  const isHovered = activeHoveredLabel === id;
 
   // Measure the element after it renders
   useEffect(() => {
@@ -31,113 +39,157 @@ export default function useLabelPosition(
       const { width, height } = labelRef.current.getBoundingClientRect();
       setDimensions({ width, height });
     }
-  }, [labelRef.current, initialX, initialY]);
+  }, [labelRef.current]);
 
-  // Register position
+  // Find overlapping labels and determine stack index
   useEffect(() => {
     if (dimensions.width > 0 && dimensions.height > 0) {
-      // first check if the position is already registered
-      const existingPosition = useGraphStore.getState().labelPositions;
-      console.log(existingPosition);
-      // find entries with same position (id is irrelevant here) and count how many it occurs
-      const overlap = existingPosition.filter(
+      // Find overlapping labels
+      const overlaps = labelPositions.filter(
         (pos) =>
-          Math.abs(pos.x - initialX) < 15 &&
-          Math.abs(pos.y - initialY) < 15 &&
           pos.id !== id &&
-          !pos.knowsOverlap,
+          Math.abs(pos.x - initialX) < 10 &&
+          Math.abs(pos.y - initialY) < 10,
       );
-      // If there are overlaps, adjust position
-      if (overlap.length > 0) {
-        console.log("found overlap for label:", id);
-        setIsOverlapping(true);
-        const adjustedPosition = {
-          x: initialX + 15,
-          y: initialY + 15,
-        };
-        setPosition(adjustedPosition);
-        registerLabelPosition({
-          id,
-          x: adjustedPosition.x,
-          y: adjustedPosition.y,
-          width: dimensions.width,
-          height: dimensions.height,
-          knowsOverlap: true, // Mark this position as knowing about overlap
-        });
+
+      const overlappingIds = overlaps.map((pos) => pos.id);
+      setOverlappingLabels(overlappingIds);
+
+      // Determine stack index - position in the overlap group
+      if (overlappingIds.length > 0) {
+        // Sort overlapping IDs to ensure consistent ordering
+        const allIds = [...overlappingIds, id].sort();
+        const index = allIds.indexOf(id);
+        setStackIndex(index);
       } else {
-        setIsOverlapping(false);
-        registerLabelPosition({
-          id,
-          x: initialX,
-          y: initialY,
-          width: dimensions.width,
-          height: dimensions.height,
-          knowsOverlap: false, // Mark this position as not knowing about overlap
-        });
+        setStackIndex(0);
       }
+
+      // Register our position
+      registerLabelPosition({
+        id,
+        x: initialX,
+        y: initialY,
+        width: dimensions.width,
+        height: dimensions.height,
+        knowsOverlap: overlappingIds.length > 0,
+      });
     }
 
     return () => {
       unregisterLabelPosition(id);
     };
-  }, [id, initialX, initialY, dimensions.width, dimensions.height]);
+  }, [
+    id,
+    initialX,
+    initialY,
+    dimensions.width,
+    dimensions.height,
+    labelPositions.length,
+  ]);
 
-  // Update position when hover state changes
+  // Clean up timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (hoverTimeoutRef.current !== null) {
+        window.clearTimeout(hoverTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  // Update position based on hover state and stack index
   useEffect(() => {
     if (dimensions.width > 0 && dimensions.height > 0) {
-      if (isHovered && isOverlapping) {
-        console.log("Hovering over label with overlap, adjusting position");
-        // // check if label position is registered twice
-        // const existingPosition = useGraphStore.getState().labelPositions;
-        // console.log(existingPosition);
-        // // find entries with same position (id is irrelevant here) and count how many it occurs
-        // const overlap = existingPosition.filter(
-        //   (pos) =>
-        //     Math.abs(pos.x - initialX) < 25 &&
-        //     Math.abs(pos.y - initialY) < 25 &&
-        //     pos.id !== id,
-        // );
-        // console.log(
-        //   "Duplicate position found for x:",
-        //   initialX,
-        //   "y:",
-        //   initialY,
-        //   "Count:",
-        //   overlap.length,
-        // );
-        // // If there are overlaps, adjust position
-        // if (overlap.length > 0) {
-        const adjustedPosition = {
-          x: initialX + dimensions.width,
-          y: initialY,
-        };
-        console.log("adjusted position on hover:", adjustedPosition);
-        setPosition(adjustedPosition);
-        // } else {
-        //   setPosition({ x: initialX, y: initialY });
-        // }
+      const hasOverlap = overlappingLabels.length > 0;
+
+      if (hasOverlap) {
+        if (isHovered) {
+          // When hovered, move label to the side
+          const sideOffset = dimensions.width;
+          setPosition({
+            x: initialX + sideOffset,
+            y: initialY,
+          });
+        } else {
+          // Check if any label in our overlap group is being hovered
+          const groupIsHovered =
+            activeHoveredLabel !== null &&
+            overlappingLabels.includes(activeHoveredLabel);
+
+          if (groupIsHovered) {
+            // If another label in our group is hovered, maintain our stacked position
+            const offsetX = stackIndex * 5;
+            const offsetY = stackIndex * 5;
+            setPosition({
+              x: initialX + offsetX,
+              y: initialY + offsetY,
+            });
+          } else {
+            // Normal stacked position when nothing is hovered
+            const offsetX = stackIndex * 5;
+            const offsetY = stackIndex * 5;
+            setPosition({
+              x: initialX + offsetX,
+              y: initialY + offsetY,
+            });
+          }
+        }
       } else {
-        setPosition({ x: initialX, y: initialY });
+        // No overlap, use initial position
+        setPosition({
+          x: initialX,
+          y: initialY,
+        });
       }
     }
-  }, [isHovered, initialX, initialY, dimensions, id]);
+  }, [
+    isHovered,
+    activeHoveredLabel,
+    initialX,
+    initialY,
+    dimensions,
+    stackIndex,
+    overlappingLabels,
+  ]);
 
   const hoverHandlers = {
     onMouseEnter: (e: React.MouseEvent) => {
-      e.stopPropagation(); // Prevent event bubbling
-      e.preventDefault();
-      setIsHovered(true);
+      e.stopPropagation();
+
+      // Clear any existing timeout
+      if (hoverTimeoutRef.current !== null) {
+        window.clearTimeout(hoverTimeoutRef.current);
+      }
+
+      // Set a small delay before activating hover to prevent flickering
+      hoverTimeoutRef.current = window.setTimeout(() => {
+        setActiveHoveredLabel(id);
+      }, 50);
     },
     onMouseLeave: (e: React.MouseEvent) => {
-      e.stopPropagation(); // Prevent event bubbling
-      e.preventDefault();
-      setIsHovered(false);
+      e.stopPropagation();
+
+      // Clear any existing timeout
+      if (hoverTimeoutRef.current !== null) {
+        window.clearTimeout(hoverTimeoutRef.current);
+      }
+
+      // Set a small delay before deactivating hover
+      hoverTimeoutRef.current = window.setTimeout(() => {
+        if (activeHoveredLabel === id) {
+          setActiveHoveredLabel(null);
+        }
+      }, 50);
     },
     onClick: (e: React.MouseEvent) => {
-      // Ensure clicks are captured
       e.stopPropagation();
     },
   };
 
-  return { ref: labelRef, position, hoverHandlers };
+  return {
+    ref: labelRef,
+    position,
+    hoverHandlers,
+    isOverlapping: overlappingLabels.length > 0,
+  };
 }

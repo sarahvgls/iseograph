@@ -50,13 +50,8 @@ export type RFState = {
   labelPositions: LabelPosition[];
   registerLabelPosition: (position: LabelPosition) => void;
   unregisterLabelPosition: (id: string) => void;
-  getAdjustedLabelPosition: (
-    id: string,
-    x: number,
-    y: number,
-    width: number,
-    height: number,
-  ) => { x: number; y: number };
+  activeHoveredLabel: string | null;
+  setActiveHoveredLabel: (id: string | null) => void;
 };
 
 type LabelPosition = {
@@ -238,34 +233,13 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
   unregisterLabelPosition: (id) =>
     set((state) => ({
       labelPositions: state.labelPositions.filter((p) => p.id !== id),
+      // Clear active hover if this label was being hovered
+      activeHoveredLabel:
+        state.activeHoveredLabel === id ? null : state.activeHoveredLabel,
     })),
-  getAdjustedLabelPosition: (id, x, y) => {
-    const state = get();
-    let overlap = true;
-    let adjustedY = y;
-    let adjustedX = x;
-
-    // Check for overlaps and adjust position
-    while (overlap) {
-      overlap = false;
-
-      for (const pos of state.labelPositions) {
-        if (pos.id === id) continue; // Skip checking against self
-
-        // Check if labels would overlap
-        const xOverlap = Math.abs(pos.x - adjustedX) < pos.width / 2;
-        const yOverlap = Math.abs(pos.y - y) < pos.height / 2;
-
-        if (xOverlap && yOverlap) {
-          //adjustedY += pos.height;
-          adjustedX += pos.width / 2; // Adjust x to avoid horizontal overlap
-          overlap = true;
-          break;
-        }
-      }
-    }
-
-    return { x: adjustedX, y: y };
+  activeHoveredLabel: null,
+  setActiveHoveredLabel: (id) => {
+    set({ activeHoveredLabel: id });
   },
 }));
 

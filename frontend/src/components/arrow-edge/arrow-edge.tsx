@@ -81,9 +81,15 @@ export default function ArrowEdge({
     ref: labelRef,
     position,
     hoverHandlers,
+    isOverlapping,
   } = labelValid
     ? useLabelPosition(`edge-label-${id}`, labelX, labelY)
-    : { ref: null, position: { x: labelX, y: labelY }, hoverHandlers: {} };
+    : {
+        ref: null,
+        position: { x: labelX, y: labelY },
+        hoverHandlers: {},
+        isOverlapping: false,
+      };
 
   // If no isoforms are selected, render simple black edge
   if (!hasSelectedIsoform) {
@@ -224,11 +230,13 @@ export default function ArrowEdge({
               borderRadius: "4px",
               fontSize: 12,
               fontWeight: 500,
-              pointerEvents: "all", // This is crucial for capturing mouse events
+              pointerEvents: "all",
               border: "1px solid #ccc",
-              zIndex: 10, // Ensure the label is above other elements
-              cursor: "default", // Show default cursor to indicate interactivity
-              userSelect: "none", // Prevent text selection
+              zIndex: isOverlapping ? 20 : 10, // Higher z-index for overlapping labels
+              cursor: "default",
+              userSelect: "none",
+              boxShadow: isOverlapping ? "0 2px 4px rgba(0,0,0,0.2)" : "none",
+              transition: "transform 0.2s ease, box-shadow 0.2s ease", // Smooth transition for position changes
             }}
           >
             {labelValid}
