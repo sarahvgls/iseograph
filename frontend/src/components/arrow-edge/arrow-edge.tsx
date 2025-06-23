@@ -80,14 +80,12 @@ export default function ArrowEdge({
   const {
     ref: labelRef,
     position,
-    hoverHandlers,
     isOverlapping,
   } = labelValid
     ? useLabelPosition(`edge-label-${id}`, labelX, labelY)
     : {
         ref: null,
         position: { x: labelX, y: labelY },
-        hoverHandlers: {},
         isOverlapping: false,
       };
 
@@ -220,7 +218,6 @@ export default function ArrowEdge({
         <EdgeLabelRenderer>
           <div
             ref={labelRef}
-            {...hoverHandlers}
             style={{
               position: "absolute",
               transform: `translate(-50%, -50%) translate(${position.x}px,${position.y}px)`,
@@ -236,7 +233,6 @@ export default function ArrowEdge({
               cursor: "default",
               userSelect: "none",
               boxShadow: isOverlapping ? "0 2px 4px rgba(0,0,0,0.2)" : "none",
-              transition: "transform 0.2s ease, box-shadow 0.2s ease", // Smooth transition for position changes
             }}
           >
             {labelValid}

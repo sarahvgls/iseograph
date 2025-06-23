@@ -16,22 +16,12 @@ export default function useLabelPosition(
   const [overlappingLabels, setOverlappingLabels] = useState<string[]>([]);
   const [stackIndex, setStackIndex] = useState(0);
 
-  const {
-    registerLabelPosition,
-    unregisterLabelPosition,
-    labelPositions,
-    activeHoveredLabel,
-    setActiveHoveredLabel,
-  } = useGraphStore((state) => ({
-    registerLabelPosition: state.registerLabelPosition,
-    unregisterLabelPosition: state.unregisterLabelPosition,
-    labelPositions: state.labelPositions,
-    activeHoveredLabel: state.activeHoveredLabel,
-    setActiveHoveredLabel: state.setActiveHoveredLabel,
-  }));
-
-  // Check if this label is being actively hovered
-  const isHovered = activeHoveredLabel === id;
+  const { registerLabelPosition, unregisterLabelPosition, labelPositions } =
+    useGraphStore((state) => ({
+      registerLabelPosition: state.registerLabelPosition,
+      unregisterLabelPosition: state.unregisterLabelPosition,
+      labelPositions: state.labelPositions,
+    }));
 
   // Measure the element after it renders
   useEffect(() => {
@@ -48,12 +38,13 @@ export default function useLabelPosition(
       const overlaps = labelPositions.filter(
         (pos) =>
           pos.id !== id &&
-          Math.abs(pos.x - initialX) < 10 &&
-          Math.abs(pos.y - initialY) < 10,
+          Math.abs(pos.x - initialX) < 25 &&
+          Math.abs(pos.y - initialY) < 25,
       );
 
       const overlappingIds = overlaps.map((pos) => pos.id);
       setOverlappingLabels(overlappingIds);
+      console.log(overlappingIds);
 
       // Determine stack index - position in the overlap group
       if (overlappingIds.length > 0) {
@@ -103,37 +94,13 @@ export default function useLabelPosition(
       const hasOverlap = overlappingLabels.length > 0;
 
       if (hasOverlap) {
-        if (isHovered) {
-          // When hovered, move label to the side
-          const sideOffset = dimensions.width;
-          setPosition({
-            x: initialX + sideOffset,
-            y: initialY,
-          });
-        } else {
-          // Check if any label in our overlap group is being hovered
-          const groupIsHovered =
-            activeHoveredLabel !== null &&
-            overlappingLabels.includes(activeHoveredLabel);
-
-          if (groupIsHovered) {
-            // If another label in our group is hovered, maintain our stacked position
-            const offsetX = stackIndex * 5;
-            const offsetY = stackIndex * 5;
-            setPosition({
-              x: initialX + offsetX,
-              y: initialY + offsetY,
-            });
-          } else {
-            // Normal stacked position when nothing is hovered
-            const offsetX = stackIndex * 5;
-            const offsetY = stackIndex * 5;
-            setPosition({
-              x: initialX + offsetX,
-              y: initialY + offsetY,
-            });
-          }
-        }
+        // Normal stacked position when nothing is hovered
+        const offsetX = stackIndex * 5;
+        const offsetY = stackIndex * 5;
+        setPosition({
+          x: initialX + offsetX,
+          y: initialY + offsetY,
+        });
       } else {
         // No overlap, use initial position
         setPosition({
@@ -142,54 +109,11 @@ export default function useLabelPosition(
         });
       }
     }
-  }, [
-    isHovered,
-    activeHoveredLabel,
-    initialX,
-    initialY,
-    dimensions,
-    stackIndex,
-    overlappingLabels,
-  ]);
-
-  const hoverHandlers = {
-    onMouseEnter: (e: React.MouseEvent) => {
-      e.stopPropagation();
-
-      // Clear any existing timeout
-      if (hoverTimeoutRef.current !== null) {
-        window.clearTimeout(hoverTimeoutRef.current);
-      }
-
-      // Set a small delay before activating hover to prevent flickering
-      hoverTimeoutRef.current = window.setTimeout(() => {
-        setActiveHoveredLabel(id);
-      }, 50);
-    },
-    onMouseLeave: (e: React.MouseEvent) => {
-      e.stopPropagation();
-
-      // Clear any existing timeout
-      if (hoverTimeoutRef.current !== null) {
-        window.clearTimeout(hoverTimeoutRef.current);
-      }
-
-      // Set a small delay before deactivating hover
-      hoverTimeoutRef.current = window.setTimeout(() => {
-        if (activeHoveredLabel === id) {
-          setActiveHoveredLabel(null);
-        }
-      }, 50);
-    },
-    onClick: (e: React.MouseEvent) => {
-      e.stopPropagation();
-    },
-  };
+  }, [initialX, initialY, dimensions, stackIndex, overlappingLabels]);
 
   return {
     ref: labelRef,
     position,
-    hoverHandlers,
     isOverlapping: overlappingLabels.length > 0,
   };
 }

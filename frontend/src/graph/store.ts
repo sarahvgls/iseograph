@@ -50,8 +50,6 @@ export type RFState = {
   labelPositions: LabelPosition[];
   registerLabelPosition: (position: LabelPosition) => void;
   unregisterLabelPosition: (id: string) => void;
-  activeHoveredLabel: string | null;
-  setActiveHoveredLabel: (id: string | null) => void;
 };
 
 type LabelPosition = {
@@ -237,10 +235,6 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
       activeHoveredLabel:
         state.activeHoveredLabel === id ? null : state.activeHoveredLabel,
     })),
-  activeHoveredLabel: null,
-  setActiveHoveredLabel: (id) => {
-    set({ activeHoveredLabel: id });
-  },
 }));
 
 export default useGraphStore;
