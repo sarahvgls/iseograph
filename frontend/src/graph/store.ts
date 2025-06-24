@@ -15,8 +15,12 @@ import nodes from "../../../generated/nodes.json";
 import edges from "../../../generated/edges.json";
 import type { SequenceNodeProps } from "../components/sequence-node/sequence-node.props.tsx";
 import { theme } from "../theme";
-import { type layoutModes, nodeWidthModes } from "../theme/types.tsx";
-import { applyLayout } from "./layout/layout.tsx";
+import {
+  type layoutModes,
+  localStorageKeys,
+  nodeWidthModes,
+} from "../theme/types.tsx";
+import { applyLayout } from "./layout";
 import type { ArrowEdgeProps } from "../components/arrow-edge/arrow-edge.props.tsx";
 import {
   createEdges,
@@ -63,7 +67,9 @@ const initialIsoformColorMapping = generateIsoformColorMatching(
 // Load selected isoforms from localStorage if available
 const loadSelectedIsoforms = (): string[] => {
   try {
-    const savedSelection = localStorage.getItem("selectedIsoforms");
+    const savedSelection = localStorage.getItem(
+      localStorageKeys.selectedIsoforms,
+    );
     return savedSelection
       ? JSON.parse(savedSelection)
       : Object.keys(initialIsoformColorMapping);

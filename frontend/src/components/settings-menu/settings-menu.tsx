@@ -1,4 +1,8 @@
-import { layoutModes, nodeWidthModes } from "../../theme/types.tsx";
+import {
+  layoutModes,
+  localStorageKeys,
+  nodeWidthModes,
+} from "../../theme/types.tsx";
 import { useEffect, useState } from "react";
 import { callApi, callApiWithParameters } from "../../helper/api-call.ts";
 import {
@@ -15,6 +19,7 @@ import {
 
 export const SettingsMenu = ({
   isOpen,
+  previousSelectedFile,
   onClose,
   nodeWidthMode,
   setNodeWidthMode,
@@ -26,6 +31,7 @@ export const SettingsMenu = ({
   setStoreAllowInteraction,
 }: {
   isOpen: boolean;
+  previousSelectedFile: string;
   onClose: () => void;
   nodeWidthMode: nodeWidthModes;
   setNodeWidthMode: (mode: nodeWidthModes) => void;
@@ -41,7 +47,8 @@ export const SettingsMenu = ({
   const [selectedLayoutMode, setSelectedLayoutMode] =
     useState<layoutModes>(layoutMode);
   const [fileNames, setFileNames] = useState<string[]>([]);
-  const [selectedFile, setSelectedFile] = useState<string>("");
+  const [selectedFile, setSelectedFile] =
+    useState<string>(previousSelectedFile);
   const [newProteinName, setNewProteinName] = useState<string>("");
   const [allowInteraction, setAllowInteraction] = useState<boolean>(
     storeAllowInteraction,
@@ -63,9 +70,6 @@ export const SettingsMenu = ({
         const names = response.data || [];
 
         setFileNames(names);
-        if (names.length > 0) {
-          setSelectedFile(names[0]); // Set the first file as selected by default
-        }
       }
     };
 
@@ -82,10 +86,14 @@ export const SettingsMenu = ({
       const response = await callApiWithParameters("api/convert_file/", {
         file_name: selectedFile,
       });
-      console.log("Response from convert_file:", response);
       if (!response.success) {
         console.error("Failed to convert file:", response.error);
         return;
+      } else {
+        // reset local storage
+        localStorage.setItem(localStorageKeys.selectedFile, selectedFile);
+        localStorage.removeItem(localStorageKeys.selectedIsoforms);
+        localStorage.removeItem(localStorageKeys.isoformColorMapping);
       }
     } catch (error) {
       console.error("Error executing script:", error);
@@ -97,6 +105,9 @@ export const SettingsMenu = ({
       alert("Please enter a protein name.");
       return;
     }
+
+    // clear dropdown
+    setSelectedFile("");
 
     alert("not implemented yet. Protein: " + newProteinName);
     // try {

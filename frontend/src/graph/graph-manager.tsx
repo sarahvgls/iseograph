@@ -17,7 +17,12 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { SequenceNodeProps } from "../components/sequence-node/sequence-node.props.tsx";
 import GraphControls from "./controls.tsx";
 import { useFocusHandlers } from "../controls/focus-node/focus-utils.ts";
-import { layoutModes, nodeTypes, nodeWidthModes } from "../theme/types.tsx";
+import {
+  layoutModes,
+  localStorageKeys,
+  nodeTypes,
+  nodeWidthModes,
+} from "../theme/types.tsx";
 import { theme } from "../theme";
 import RowNode from "../components/row-node.tsx";
 import store from "./store.ts";
@@ -76,6 +81,7 @@ const Flow = () => {
     nodes,
     setFocusedNode,
   );
+  const [selectedFile, setSelectedFile] = useState<string>("");
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   const focusNodeWithDelay = useCallback(
@@ -101,10 +107,17 @@ const Flow = () => {
     const savedLayoutMode = localStorage.getItem(
       "defaultLayoutMode",
     ) as layoutModes;
-    const savedIsAnimated = localStorage.getItem("isAnimated");
-    const savedAllowInteraction = localStorage.getItem("allowInteraction");
-    const selectedIsoforms = localStorage.getItem("selectedIsoforms");
-    const isoformColorMapping = localStorage.getItem("isoformColorMapping");
+    const savedIsAnimated = localStorage.getItem(localStorageKeys.isAnimated);
+    const savedAllowInteraction = localStorage.getItem(
+      localStorageKeys.allowInteraction,
+    );
+    const selectedIsoforms = localStorage.getItem(
+      localStorageKeys.selectedIsoforms,
+    );
+    const isoformColorMapping = localStorage.getItem(
+      localStorageKeys.isoformColorMapping,
+    );
+    setSelectedFile(localStorage.getItem(localStorageKeys.selectedFile) || "");
 
     if (
       savedLayoutMode &&
@@ -323,6 +336,7 @@ const Flow = () => {
       {isSettingsOpen && (
         <SettingsMenu
           isOpen={isSettingsOpen}
+          previousSelectedFile={selectedFile}
           onClose={() => setIsSettingsOpen(false)}
           nodeWidthMode={nodeWidthMode}
           setNodeWidthMode={setNodeWidthMode}

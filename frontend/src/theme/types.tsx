@@ -25,6 +25,17 @@ export const layoutModes = {
 
 export type layoutModes = (typeof layoutModes)[keyof typeof layoutModes];
 
+export const localStorageKeys = {
+  nodeWidthMode: "nodeWidthMode",
+  layoutMode: "layoutMode",
+  isAnimated: "isAnimated",
+  allowInteraction: "allowInteraction",
+  selectedIsoforms: "selectedIsoforms",
+  isoformColorMapping: "isoformColorMapping",
+  selectedFile: "selectedFile",
+  newProteinName: "newProteinName",
+};
+
 // --- edge related ---
 export const Generic = {
   variant: "VARIANT",
