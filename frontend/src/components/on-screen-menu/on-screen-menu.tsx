@@ -5,7 +5,7 @@ import {
   StyledSectionTitle,
 } from "../base-components";
 import { HexColorPicker } from "react-colorful";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import useGraphStore from "../../graph/store";
 import { shallow } from "zustand/shallow";
 import { useOutsidePress } from "../../helper/outside-press.tsx";
@@ -88,7 +88,7 @@ export const OnScreenMenu = () => {
     isoformColorMapping,
     selectedIsoforms,
     toggleIsoformSelection,
-    toggleCompleteIsoformSelection,
+    deselectAllIsoforms,
     updateIsoformColor,
     layoutMode,
     setLayoutMode,
@@ -99,7 +99,7 @@ export const OnScreenMenu = () => {
       isoformColorMapping: state.isoformColorMapping,
       selectedIsoforms: state.selectedIsoforms,
       toggleIsoformSelection: state.toggleIsoformSelection,
-      toggleCompleteIsoformSelection: state.toggleCompleteIsoformSelection,
+      deselectAllIsoforms: state.deselectAllIsoforms,
       updateIsoformColor: state.updateIsoformColor,
       layoutMode: state.layoutMode,
       setLayoutMode: state.setLayoutMode,
@@ -108,16 +108,6 @@ export const OnScreenMenu = () => {
     }),
     shallow,
   );
-
-  const [areAllSelected, setAreAllSelected] = useState<boolean>(false);
-
-  useEffect(() => {
-    setAreAllSelected(
-      Object.keys(isoformColorMapping).every((isoform) =>
-        selectedIsoforms.includes(isoform),
-      ),
-    );
-  }, [isoformColorMapping, selectedIsoforms]);
 
   const [activeColorPicker, setActiveColorPicker] = useState<string | null>(
     null,
@@ -143,9 +133,9 @@ export const OnScreenMenu = () => {
     updateIsoformColor("Default", theme.defaultColor);
   };
 
-  const toggleAllSelection = () => {
+  const deselectAll = () => {
     setActiveColorPicker(null);
-    toggleCompleteIsoformSelection();
+    deselectAllIsoforms();
   };
 
   const allLayoutModes = Object.values(layoutModes);
@@ -294,9 +284,9 @@ export const OnScreenMenu = () => {
             style={{
               width: "100px",
             }}
-            onClick={toggleAllSelection}
+            onClick={deselectAll}
           >
-            {areAllSelected ? "Deselect All" : "Select All"}
+            Deselect All
           </SecondaryButton>
         </div>
       </StyledSection>

@@ -45,7 +45,7 @@ export type RFState = {
   isoformColorMapping: Record<string, string>;
   selectedIsoforms: string[];
   toggleIsoformSelection: (isoform: string) => void;
-  toggleCompleteIsoformSelection: () => void;
+  deselectAllIsoforms: () => void;
   updateIsoformColor: (isoform: string, color: string) => void;
   isAnimated: boolean;
   setIsAnimated: (isAnimated: boolean) => void;
@@ -177,19 +177,16 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
     const { selectedIsoforms } = get();
     const newSelection = selectedIsoforms.includes(isoform)
       ? selectedIsoforms.filter((iso) => iso !== isoform)
-      : [...selectedIsoforms, isoform];
+      : selectedIsoforms.length >= theme.numberOfAllowedIsoforms
+        ? selectedIsoforms
+        : [...selectedIsoforms, isoform];
 
     set({ selectedIsoforms: newSelection });
 
     localStorage.setItem("selectedIsoforms", JSON.stringify(newSelection));
   },
-  toggleCompleteIsoformSelection: () => {
-    const newSelection =
-      get().selectedIsoforms.length ===
-      Object.keys(get().isoformColorMapping).length
-        ? []
-        : Object.keys(get().isoformColorMapping);
-    set({ selectedIsoforms: newSelection });
+  deselectAllIsoforms: () => {
+    set({ selectedIsoforms: [] });
   },
   updateIsoformColor: (isoform: string, color: string) => {
     const { isoformColorMapping } = get();

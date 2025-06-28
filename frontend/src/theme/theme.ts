@@ -77,6 +77,7 @@ export const theme = {
   debugMode: false,
   isAnimated: false,
   allowInteraction: false,
+  numberOfAllowedIsoforms: 4,
   offsets: {
     defaultWidthCollapsed: false,
     defaultLength: 100,
