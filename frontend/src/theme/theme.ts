@@ -1,37 +1,5 @@
 import { action, makeObservable, observable } from "mobx";
 import { layoutModes, nodeWidthModes } from "./types.tsx";
-//TODO refactor: what is still needed
-
-export const theme = {
-  debugMode: false,
-  offsets: {
-    defaultWidthCollapsed: false,
-    defaultLength: 100,
-    largeWidth: 150,
-    defaultYSpacingBetweenNodes: 100,
-    debugYSpacingBetweenNodes: 500,
-    useXOffset: false, // TODO decide if xOffset is needed
-  },
-  layout: {
-    mode: layoutModes.Snake,
-    defaultNodeWidthMode: nodeWidthModes.Collapsed,
-    basic: {
-      direction: "LR",
-    },
-    snake: {
-      yOffsetBetweenRows: 300,
-      xOffsetBetweenNodes: 100,
-      maxAAsPerRow: 60, //not used
-      maxWidthPerRow: 3000,
-      maxNodesPerRow: 11, // not used
-      // TODO decide if feature needed
-      splitLargeNodes: false, // if true, large nodes will be split into smaller nodes when reaching the end of a line
-    },
-  },
-  rowNode: {
-    height: 300,
-  },
-};
 
 export const defaultPalette = {
   mode: "light",
@@ -102,6 +70,53 @@ export const defaultPalette = {
   transparent: "rgba(0,0,0,0)",
   popUpBackdrop: "rgba(0, 0, 0, 0.5)",
   backdropLight: "rgba(255,255,255,0.10)",
+};
+
+//TODO refactor: what is still needed
+export const theme = {
+  debugMode: false,
+  isAnimated: false,
+  allowInteraction: false,
+  numberOfAllowedIsoforms: 4,
+  offsets: {
+    defaultWidthCollapsed: false,
+    defaultLength: 100,
+    largeWidth: 150,
+    defaultYSpacingBetweenNodes: 100,
+    debugYSpacingBetweenNodes: 500,
+    useXOffset: false, // TODO decide if xOffset is needed
+  },
+  layout: {
+    mode: layoutModes.Snake,
+    defaultNodeWidthMode: nodeWidthModes.Collapsed,
+    basic: {
+      direction: "LR",
+    },
+    snake: {
+      yOffsetBetweenRows: 300,
+      xOffsetBetweenNodes: 150,
+      maxAAsPerRow: 60, //not used
+      maxWidthPerRow: 3000,
+      maxNodesPerRow: 11, // not used
+      // TODO decide if feature needed
+      splitLargeNodes: false, // if true, large nodes will be split into smaller nodes when reaching the end of a line
+    },
+  },
+  rowNode: {
+    height: 300,
+  },
+  colors: [
+    defaultPalette.green,
+    defaultPalette.yellow,
+    defaultPalette.blue,
+    defaultPalette.red,
+    defaultPalette.protzillaDarkBlue,
+    defaultPalette.blueHover,
+    defaultPalette.greenHover,
+    defaultPalette.yellowHover,
+    defaultPalette.redHover,
+  ],
+  defaultColor: "#9e9e9e",
 };
 
 export const baseTheme = {

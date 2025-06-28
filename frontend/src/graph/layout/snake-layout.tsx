@@ -65,7 +65,6 @@ export const applySnakeLayout = (
 
   const layoutedNodes: SequenceNodeProps[] = nodes.map((node) => {
     // No new calculation if node is a sibling to previous
-    // TODO maybe calculate x position from width of widest sibling
     if (node.data.positionIndex === previousPositionIndex) {
       return {
         ...node,

@@ -1,6 +1,7 @@
 import type { SequenceNodeProps } from "../components/sequence-node/sequence-node.props.tsx";
 import type { Node } from "@xyflow/react";
 
+// --- settings ---
 export type NodeTypes = SequenceNodeProps | Node;
 
 export const nodeTypes = {
@@ -23,3 +24,23 @@ export const layoutModes = {
 };
 
 export type layoutModes = (typeof layoutModes)[keyof typeof layoutModes];
+
+export const localStorageKeys = {
+  nodeWidthMode: "nodeWidthMode",
+  layoutMode: "layoutMode",
+  isAnimated: "isAnimated",
+  allowInteraction: "allowInteraction",
+  selectedIsoforms: "selectedIsoforms",
+  isoformColorMapping: "isoformColorMapping",
+  selectedFile: "selectedFile",
+  newProteinName: "newProteinName",
+};
+
+// --- edge related ---
+export const Generic = {
+  variant: "VARIANT",
+  mutagen: "MUTAGEN",
+  conflict: "CONFLICT",
+};
+
+export type Generic = (typeof Generic)[keyof typeof Generic];

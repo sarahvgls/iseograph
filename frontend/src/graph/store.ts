@@ -17,10 +17,16 @@ import type { SequenceNodeProps } from "../components/sequence-node/sequence-nod
 import { theme } from "../theme";
 import {
   type layoutModes,
-  nodeTypes,
+  localStorageKeys,
   nodeWidthModes,
 } from "../theme/types.tsx";
-import { applyLayout } from "./layout/layout.tsx";
+import { applyLayout } from "./layout";
+import type { ArrowEdgeProps } from "../components/arrow-edge/arrow-edge.props.tsx";
+import {
+  createEdges,
+  createNodes,
+  generateIsoformColorMatching,
+} from "./helper/generate-utils.tsx";
 
 export type RFState = {
   nodes: Node[];
@@ -36,36 +42,42 @@ export type RFState = {
   layoutMode: layoutModes;
   setLayoutMode: (layoutMode: layoutModes) => void;
   setNodeWidthMode: (nodeId: string, mode: nodeWidthModes) => void;
+  isoformColorMapping: Record<string, string>;
+  selectedIsoforms: string[];
+  toggleIsoformSelection: (isoform: string) => void;
+  deselectAllIsoforms: () => void;
+  updateIsoformColor: (isoform: string, color: string) => void;
+  isAnimated: boolean;
+  setIsAnimated: (isAnimated: boolean) => void;
+  allowInteraction: boolean;
+  setAllowInteraction: (allowInteraction: boolean) => void;
 };
 
-// create nodes of type sequence node for each node in the nodes.json file
-const createNodes = (nodes: SequenceNodeProps[]): SequenceNodeProps[] => {
-  return nodes.map((node) => ({
-    ...node,
-    type: nodeTypes.SequenceNode,
-    data: {
-      sequence: node.data.sequence,
-      intensity: node.data.intensity,
-      feature: node.data.feature,
-      nodeWidthMode: node.data.nodeWidthMode || nodeWidthModes.Collapsed, // default to Collapsed if not provided
-      positionIndex: 0,
-      intensityRank: 0,
-    },
-  }));
-};
-
-const createEdges = (edges: Edge[]): Edge[] => {
-  return edges.map((edge) => ({
-    ...edge,
-    type: "arrow",
-  }));
-};
-
-// ----- create nodes -----
+// ----- create nodes and edges -----
 const customNodes: SequenceNodeProps[] = createNodes(
   nodes as SequenceNodeProps[],
 );
-const customEdges: Edge[] = createEdges(edges as Edge[]);
+const customEdges: ArrowEdgeProps[] = createEdges(edges as ArrowEdgeProps[]);
+
+// Generate color mapping for isoforms
+const initialIsoformColorMapping = generateIsoformColorMatching(
+  customEdges as ArrowEdgeProps[],
+);
+
+// Load selected isoforms from localStorage if available
+const loadSelectedIsoforms = (): string[] => {
+  try {
+    const savedSelection = localStorage.getItem(
+      localStorageKeys.selectedIsoforms,
+    );
+    return savedSelection
+      ? JSON.parse(savedSelection)
+      : Object.keys(initialIsoformColorMapping);
+  } catch (error) {
+    console.error("Error loading selected isoforms", error);
+    return Object.keys(initialIsoformColorMapping);
+  }
+};
 
 const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
   nodes: customNodes,
@@ -158,6 +170,45 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
         edges: layoutedEdges,
       });
     });
+  },
+  isoformColorMapping: initialIsoformColorMapping,
+  selectedIsoforms: loadSelectedIsoforms(),
+  toggleIsoformSelection: (isoform: string) => {
+    const { selectedIsoforms } = get();
+    const newSelection = selectedIsoforms.includes(isoform)
+      ? selectedIsoforms.filter((iso) => iso !== isoform)
+      : selectedIsoforms.length >= theme.numberOfAllowedIsoforms
+        ? selectedIsoforms
+        : [...selectedIsoforms, isoform];
+
+    set({ selectedIsoforms: newSelection });
+
+    localStorage.setItem("selectedIsoforms", JSON.stringify(newSelection));
+  },
+  deselectAllIsoforms: () => {
+    set({ selectedIsoforms: [] });
+  },
+  updateIsoformColor: (isoform: string, color: string) => {
+    const { isoformColorMapping } = get();
+    const updatedMapping = {
+      ...isoformColorMapping,
+      [isoform]: color,
+    };
+
+    set({ isoformColorMapping: updatedMapping });
+
+    localStorage.setItem("isoformColorMapping", JSON.stringify(updatedMapping));
+  },
+  isAnimated: theme.isAnimated,
+  setIsAnimated: (isAnimated: boolean) => {
+    set({ isAnimated });
+    set({
+      edges: get().edges.map((edge) => ({ ...edge, animated: isAnimated })),
+    });
+  },
+  allowInteraction: theme.allowInteraction,
+  setAllowInteraction: (allowInteraction: boolean) => {
+    set({ allowInteraction });
   },
 }));
 

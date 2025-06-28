@@ -10,17 +10,21 @@ interface GraphControlsProps {
 }
 
 const GraphControls = ({
+  allowInteraction = false,
   onFocusNextNode,
   onFocusPreviousNode,
   onFocusCurrentNode,
   toggleNodeWidthMode,
   toggleSnakeLayout,
-}: GraphControlsProps) => {
+}: GraphControlsProps & {
+  allowInteraction?: boolean;
+}) => {
   return (
-    <Controls showInteractive={false}>
+    <Controls showInteractive={allowInteraction}>
       <ControlButton onClick={onFocusNextNode}>→</ControlButton>
       <ControlButton onClick={onFocusPreviousNode}>←</ControlButton>
       <ControlButton onClick={onFocusCurrentNode}>→←</ControlButton>
+      {/*TODO: think about replacing the following with centered buttons*/}
       <ControlButton onClick={toggleNodeWidthMode}>
         <Icon icon={"compress"} />
       </ControlButton>
