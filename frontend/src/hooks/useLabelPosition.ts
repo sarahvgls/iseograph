@@ -31,39 +31,16 @@ export default function useLabelPosition(
     }
   }, [labelRef.current]);
 
-  // Find overlapping labels and determine stack index
+  // Register the label position on mount and when dimensions change
   useEffect(() => {
     if (dimensions.width > 0 && dimensions.height > 0) {
-      // Find overlapping labels
-      const overlaps = labelPositions.filter(
-        (pos) =>
-          pos.id !== id &&
-          Math.abs(pos.x - initialX) < 25 &&
-          Math.abs(pos.y - initialY) < 25,
-      );
-
-      const overlappingIds = overlaps.map((pos) => pos.id);
-      setOverlappingLabels(overlappingIds);
-      console.log(overlappingIds);
-
-      // Determine stack index - position in the overlap group
-      if (overlappingIds.length > 0) {
-        // Sort overlapping IDs to ensure consistent ordering
-        const allIds = [...overlappingIds, id].sort();
-        const index = allIds.indexOf(id);
-        setStackIndex(index);
-      } else {
-        setStackIndex(0);
-      }
-
-      // Register our position
       registerLabelPosition({
         id,
         x: initialX,
         y: initialY,
         width: dimensions.width,
         height: dimensions.height,
-        knowsOverlap: overlappingIds.length > 0,
+        knowsOverlap: false,
       });
     }
 
@@ -76,7 +53,41 @@ export default function useLabelPosition(
     initialY,
     dimensions.width,
     dimensions.height,
-    labelPositions.length,
+    registerLabelPosition,
+    unregisterLabelPosition,
+  ]);
+
+  // Detect overlaps separately from registration
+  useEffect(() => {
+    if (dimensions.width > 0 && dimensions.height > 0) {
+      // Find overlapping labels
+      const overlaps = labelPositions.filter(
+        (pos) =>
+          pos.id !== id &&
+          Math.abs(pos.x - initialX) < 25 &&
+          Math.abs(pos.y - initialY) < 25,
+      );
+
+      const overlappingIds = overlaps.map((pos) => pos.id);
+      setOverlappingLabels(overlappingIds);
+
+      // Determine stack index - position in the overlap group
+      if (overlappingIds.length > 0) {
+        // Sort overlapping IDs to ensure consistent ordering
+        const allIds = [...overlappingIds, id].sort();
+        const index = allIds.indexOf(id);
+        setStackIndex(index);
+      } else {
+        setStackIndex(0);
+      }
+    }
+  }, [
+    id,
+    initialX,
+    initialY,
+    dimensions.width,
+    dimensions.height,
+    labelPositions,
   ]);
 
   // Clean up timeout on unmount
