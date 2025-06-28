@@ -24,7 +24,7 @@ const MenuContainer = styled.div`
 const ColorPickerBox = styled.div`
   position: absolute;
   top: 10px;
-  left: -210px;
+  left: 375px;
   display: inline-block;
   width: 200px;
   height: 200px;
