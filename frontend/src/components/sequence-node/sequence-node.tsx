@@ -10,7 +10,7 @@ import styled from "styled-components";
 import type { SequenceNodeProps } from "./sequence-node.props.tsx";
 import { theme } from "../../theme";
 import { SequenceContainer } from "./sequence-container/sequence-container.tsx";
-import { memo, useEffect } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 
 const NodeWrapper = styled.div`
   display: flex;
@@ -41,6 +41,13 @@ const Bar = styled.div<{ $intensity: number }>`
   transition: height 0.3s ease-in-out;
 `;
 
+const DirectionArrow = styled.svg<{ $isReversed?: boolean }>`
+  width: 100%;
+  height: 10px;
+  margin-top: 5px;
+  transform: ${({ $isReversed }) => ($isReversed ? "rotate(180deg)" : "none")};
+`;
+
 const StyledHandleRight = styled(Handle)`
   background: transparent;
   border-color: transparent;
@@ -67,6 +74,9 @@ const SequenceNode = memo(function SequenceNode({
   selected,
 }: NodeProps<SequenceNodeProps>) {
   const updateNodeInternals = useUpdateNodeInternals();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [containerWidth, setContainerWidth] = useState(0);
+  const [sequence, setSequence] = useState<string>(data.sequence);
   const width = theme.offsets.defaultWidthCollapsed // TODO what happens here
     ? data.sequence.length * 10 + 100
     : theme.offsets.defaultLength; // 10 is the approximated width of each character, plus 50px on each side
@@ -82,6 +92,29 @@ const SequenceNode = memo(function SequenceNode({
   useEffect(() => {
     updateNodeInternals(id);
   }, [id, data.isReversed, updateNodeInternals]);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        setContainerWidth(entry.contentRect.width);
+      }
+    });
+
+    resizeObserver.observe(containerRef.current);
+    return () => resizeObserver.disconnect();
+  }, []);
+
+  useEffect(() => {
+    //reverse data.sequence string char by char when data.isReveresed
+    if (data.isReversed) {
+      const reversedSequence = data.sequence.split("").reverse().join("");
+      setSequence(reversedSequence);
+    } else {
+      setSequence(data.sequence);
+    }
+  }, [data.sequence, data.isReversed]);
 
   return (
     <div>
@@ -111,9 +144,28 @@ const SequenceNode = memo(function SequenceNode({
         />
         <StyledNode style={{ borderWidth: selected ? 5 : 1 }}>
           <SequenceContainer
-            sequence={data.sequence}
+            sequence={sequence}
             nodeWidthMode={data.nodeWidthMode}
+            containerWidthRef={containerRef! as React.RefObject<HTMLDivElement>}
           />
+          <DirectionArrow
+            $isReversed={data.isReversed}
+            viewBox={`0 0 ${Math.max(10, containerWidth)} 10`}
+            preserveAspectRatio="none"
+          >
+            <line
+              x1="0"
+              y1="5"
+              x2={Math.max(0, containerWidth - 5)}
+              y2="5"
+              stroke="#999"
+              strokeWidth="1"
+            />
+            <polygon
+              points={`${containerWidth - 5},5 ${containerWidth - 10},2 ${containerWidth - 10},8`}
+              fill="#999"
+            />
+          </DirectionArrow>
         </StyledNode>
         <StyledHandleRight
           type={data.isReversed ? "target" : "source"}

@@ -164,7 +164,8 @@ export const applyLayout = (
         positionIndex: 0,
         intensityRank: 0,
         isReversed: false, // Reset isReversed
-        nodeWidthMode: node.data.nodeWidthMode || nodeWidthModes.Collapsed, // Use provided mode or default to Collapsed
+        nodeWidthMode:
+          node.data.nodeWidthMode || theme.layout.defaultNodeWidthMode,
       },
     }));
 

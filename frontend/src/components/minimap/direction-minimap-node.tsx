@@ -20,12 +20,12 @@ const DirectionMiniMapNode = ({
   const nodeWidthMode = isSequenceNode ? node?.data?.nodeWidthMode : null;
 
   // Calculate dimensions for the arrow (slightly larger than original square)
-  const arrowWidthCollapsed = width * 2.5;
-  const arrowHeightCollapsed = height * 3.5;
+  const arrowWidthCollapsed = width * 2;
+  const arrowHeightCollapsed = height * 2.5;
   const arrowWidthSmall = width * 1.5;
-  const arrowHeightSmall = height * 1.7;
+  const arrowHeightSmall = height * 1.5;
   const arrowWidthExpanded = width > 200 ? width * 0.9 : width * 1.5;
-  const arrowHeightExpanded = height * 1.5;
+  const arrowHeightExpanded = height * 1.4;
   const arrowWidthRow = width;
   const arrowHeightRow = height * 0.8;
 

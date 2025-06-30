@@ -4,6 +4,7 @@ import { nodeWidthModes } from "../../../theme/types.tsx";
 interface SequenceContainerProps {
   nodeWidthMode?: nodeWidthModes;
   sequence: string;
+  containerWidthRef: React.RefObject<HTMLDivElement> | null;
 }
 
 const CollapsedSequence = styled.div`
@@ -35,9 +36,10 @@ const Sequence = styled.div`
 export const SequenceContainer: React.FC<SequenceContainerProps> = ({
   nodeWidthMode,
   sequence,
+  containerWidthRef,
 }) => {
   return (
-    <div>
+    <div ref={containerWidthRef}>
       {nodeWidthMode === nodeWidthModes.Expanded ? (
         <Sequence>{sequence}</Sequence>
       ) : nodeWidthMode === nodeWidthModes.Small ? (
