@@ -146,10 +146,32 @@ const CheckboxLabel = styled.span`
   margin-left: 8px;
 `;
 
-export const StyledCheckbox = styled(Checkbox)`
-  margin-top: 10px;
-`;
-
 export const StyledPanel = styled(Panel)`
   pointer-events: none !important;
 `;
+
+export const CloseButton = ({ onClose }: { onClose: () => void }) => {
+  return (
+    <button
+      onClick={onClose}
+      style={{
+        border: "none",
+        cursor: "pointer",
+        color: "#666",
+        borderRadius: "50%",
+        width: "32px",
+        height: "32px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        transition: "background-color 0.2s",
+      }}
+      onMouseOver={(e) => (e.currentTarget.style.backgroundColor = "#f5f5f5")}
+      onMouseOut={(e) =>
+        (e.currentTarget.style.backgroundColor = "transparent")
+      }
+    >
+      ✕
+    </button>
+  );
+};

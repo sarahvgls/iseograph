@@ -17,22 +17,22 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { SequenceNodeProps } from "../components/sequence-node/sequence-node.props.tsx";
 import GraphControls from "./controls.tsx";
 import { useFocusHandlers } from "../controls/focus-node/focus-utils.ts";
-import {
-  layoutModes,
-  localStorageKeys,
-  nodeTypes,
-  nodeWidthModes,
-} from "../theme/types.tsx";
+import { nodeTypes, nodeWidthModes } from "../theme/types.tsx";
 import { theme } from "../theme";
-import RowNode from "../components/row-node.tsx";
+import RowNode from "../components/row-node/row-node.tsx";
 import store from "./store.ts";
 import { toggleNodeWidthMode } from "./layout/helper.tsx";
 import DirectionMiniMapNode from "../components/minimap/direction-minimap-node.tsx";
 import ArrowEdge from "../components/arrow-edge/arrow-edge.tsx";
-import { SettingsMenu } from "../components/settings-menu/settings-menu.tsx";
-import { Icon } from "../components/icon";
+import { SideMenu } from "../components/side-menu/side-menu.tsx";
 import { OnScreenMenu } from "../components/on-screen-menu/on-screen-menu.tsx";
 import { StyledPanel } from "../components/base-components";
+import {
+  LoadingBackdrop,
+  SettingsBackdrop,
+} from "../components/backdrop/backdrop.tsx";
+import { SettingsButton } from "../components/side-menu/settings-button.tsx";
+import { applyLocalStorageValues } from "./helper/generate-utils.tsx";
 
 const selector = (state: RFState) => ({
   nodes: state.nodes,
@@ -101,65 +101,9 @@ const Flow = () => {
     setIsInitializing(true);
     useGraphStore.getState().setInternalNodeGetter(getInternalNode);
 
-    const savedNodeWidthMode = localStorage.getItem(
-      "defaultNodeWidthMode",
-    ) as nodeWidthModes;
-    const savedLayoutMode = localStorage.getItem(
-      "defaultLayoutMode",
-    ) as layoutModes;
-    const savedIsAnimated = localStorage.getItem(localStorageKeys.isAnimated);
-    const savedAllowInteraction = localStorage.getItem(
-      localStorageKeys.allowInteraction,
-    );
-    const selectedIsoforms = localStorage.getItem(
-      localStorageKeys.selectedIsoforms,
-    );
-    const isoformColorMapping = localStorage.getItem(
-      localStorageKeys.isoformColorMapping,
-    );
-    setSelectedFile(localStorage.getItem(localStorageKeys.selectedFile) || "");
+    // Apply any localStorage values immediately
+    applyLocalStorageValues(setSelectedFile);
 
-    if (
-      savedLayoutMode &&
-      Object.values(layoutModes).includes(savedLayoutMode)
-    ) {
-      useGraphStore.setState({ layoutMode: savedLayoutMode });
-    }
-
-    if (
-      savedNodeWidthMode &&
-      Object.values(nodeWidthModes).includes(savedNodeWidthMode)
-    ) {
-      useGraphStore.setState({ nodeWidthMode: savedNodeWidthMode });
-    }
-
-    if (savedIsAnimated) {
-      useGraphStore.getState().setIsAnimated(savedIsAnimated === "true");
-    }
-
-    if (savedAllowInteraction) {
-      useGraphStore
-        .getState()
-        .setAllowInteraction(savedAllowInteraction === "true");
-    }
-
-    if (selectedIsoforms) {
-      try {
-        const parsedSelection = JSON.parse(selectedIsoforms);
-        useGraphStore.setState({ selectedIsoforms: parsedSelection });
-      } catch (error) {
-        console.error("Error parsing selected isoforms", error);
-      }
-    }
-
-    if (isoformColorMapping) {
-      try {
-        const parsedColorMapping = JSON.parse(isoformColorMapping);
-        useGraphStore.setState({ isoformColorMapping: parsedColorMapping });
-      } catch (error) {
-        console.error("Error parsing isoform color mapping", error);
-      }
-    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [getInternalNode]);
 
@@ -190,17 +134,6 @@ const Flow = () => {
       setIsInitializing(false);
     }, 1500);
   }, [isInitializing, focusNodeWithDelay, setLayoutMode, setNodeWidthMode]);
-
-  const toggleGlobalNodeWidthMode = () => {
-    setNodeWidthMode(toggleNodeWidthMode(nodeWidthMode));
-  };
-
-  const toggleSnakeLayout = () => {
-    setLayoutMode(
-      layoutMode === layoutModes.Basic ? layoutModes.Snake : layoutModes.Basic,
-    );
-    focusNodeWithDelay(focusedNode as SequenceNodeProps);
-  };
 
   const lastClickTimeRef = useRef<number>(0);
   const clickTimerRef = useRef<number | null>(null);
@@ -277,39 +210,12 @@ const Flow = () => {
               focusNode(focusedNode);
             }
           }}
-          toggleNodeWidthMode={() => {
-            void toggleGlobalNodeWidthMode();
-          }}
-          toggleSnakeLayout={() => {
-            void toggleSnakeLayout();
-          }}
         />
         <Panel position="top-left">
           Proteoform graph visualization with React Flow library
         </Panel>
         <Panel position="top-right">
-          <div
-            style={{
-              padding: "10px",
-              display: "flex",
-              gap: "10px",
-              alignItems: "center",
-            }}
-          >
-            <button
-              onClick={() => setIsSettingsOpen(true)}
-              style={{
-                padding: "8px 12px",
-                color: "gray",
-                border: "none",
-                borderRadius: "4px",
-                cursor: "pointer",
-                fontSize: "20px",
-              }}
-            >
-              <Icon icon={"settings"} />
-            </button>
-          </div>
+          <SettingsButton setIsSettingsOpen={setIsSettingsOpen} />
         </Panel>
         <MiniMap
           style={{
@@ -334,7 +240,7 @@ const Flow = () => {
       </ReactFlow>
 
       {isSettingsOpen && (
-        <SettingsMenu
+        <SideMenu
           isOpen={isSettingsOpen}
           previousSelectedFile={selectedFile}
           onClose={() => setIsSettingsOpen(false)}
@@ -349,41 +255,11 @@ const Flow = () => {
         />
       )}
 
-      {/* Backdrop for settings menu */}
-      {isSettingsOpen && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: "rgba(0, 0, 0, 0.3)",
-            zIndex: 999,
-          }}
-          onClick={() => setIsSettingsOpen(false)}
-        />
-      )}
-
-      {/* Backdrop when initializing */}
-      {isInitializing && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: "rgba(255, 255, 255, 0.95)",
-            zIndex: 999,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <h1>Initializing...</h1>
-        </div>
-      )}
+      <SettingsBackdrop
+        isSettingsOpen={isSettingsOpen}
+        setIsSettingsOpen={setIsSettingsOpen}
+      />
+      <LoadingBackdrop isLoading={isInitializing} />
     </>
   );
 };

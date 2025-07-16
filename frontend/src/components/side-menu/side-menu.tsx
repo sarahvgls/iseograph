@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { callApi, callApiWithParameters } from "../../helper/api-call.ts";
 import {
   Checkbox,
+  CloseButton,
   FlexRow,
   PrimaryButton,
   SecondaryButton,
@@ -16,8 +17,9 @@ import {
   StyledSection,
   StyledSectionTitle,
 } from "../base-components";
+import { UserGuide } from "./user-guide.tsx";
 
-export const SettingsMenu = ({
+export const SideMenu = ({
   isOpen,
   previousSelectedFile,
   onClose,
@@ -127,10 +129,13 @@ export const SettingsMenu = ({
 
   const handleSave = () => {
     // Save to localStorage
-    localStorage.setItem("defaultNodeWidthMode", selectedNodeWidthMode);
-    localStorage.setItem("defaultLayoutMode", selectedLayoutMode);
-    localStorage.setItem("allowInteraction", String(allowInteraction));
-    localStorage.setItem("isAnimated", String(isAnimated));
+    localStorage.setItem(localStorageKeys.nodeWidthMode, selectedNodeWidthMode);
+    localStorage.setItem(localStorageKeys.layoutMode, selectedLayoutMode);
+    localStorage.setItem(
+      localStorageKeys.allowInteraction,
+      String(allowInteraction),
+    );
+    localStorage.setItem(localStorageKeys.isAnimated, String(isAnimated));
 
     // Update global state
     setNodeWidthMode(selectedNodeWidthMode);
@@ -177,32 +182,10 @@ export const SettingsMenu = ({
         <h2 style={{ margin: 0, fontSize: "22px", fontWeight: "600" }}>
           Settings
         </h2>
-        <button
-          onClick={onClose}
-          style={{
-            background: "none",
-            border: "none",
-            fontSize: "20px",
-            cursor: "pointer",
-            color: "#666",
-            borderRadius: "50%",
-            width: "32px",
-            height: "32px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            transition: "background-color 0.2s",
-          }}
-          onMouseOver={(e) =>
-            (e.currentTarget.style.backgroundColor = "#f5f5f5")
-          }
-          onMouseOut={(e) =>
-            (e.currentTarget.style.backgroundColor = "transparent")
-          }
-        >
-          ✕
-        </button>
+        <CloseButton onClose={onClose} />
       </div>
+
+      {/*--- Protein Selection ---*/}
 
       <StyledSection>
         <StyledSectionTitle>Protein Selection</StyledSectionTitle>
@@ -244,6 +227,8 @@ export const SettingsMenu = ({
           </FlexRow>
         </div>
       </StyledSection>
+
+      {/*--- Display Settings ---*/}
 
       <StyledSection>
         <StyledSectionTitle>Display Settings</StyledSectionTitle>
@@ -300,24 +285,10 @@ export const SettingsMenu = ({
 
       <PrimaryButton onClick={handleSave}>Save Settings</PrimaryButton>
 
+      {/*--- User Guide ---*/}
+
       <StyledSection style={{ marginTop: "24px" }}>
-        <StyledSectionTitle>User Guide</StyledSectionTitle>
-        <ul
-          style={{
-            margin: "0",
-            paddingLeft: "20px",
-            fontSize: "14px",
-            color: "#555",
-          }}
-        >
-          <li style={{ marginBottom: "8px" }}>
-            Double click on a node to focus it
-          </li>
-          <li style={{ marginBottom: "8px" }}>
-            Single click on a node to change its width mode
-          </li>
-          <li>Use arrow keys to navigate between nodes</li>
-        </ul>
+        <UserGuide />
       </StyledSection>
     </div>
   );
