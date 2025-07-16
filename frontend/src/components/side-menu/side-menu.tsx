@@ -139,7 +139,9 @@ export const SideMenu = ({
 
     // Update global state
     setNodeWidthMode(selectedNodeWidthMode);
-    setLayoutMode(selectedLayoutMode);
+    setTimeout(() => {
+      setLayoutMode(selectedLayoutMode);
+    }, 100);
     setTimeout(() => {
       setStoreIsAnimated(isAnimated);
       setStoreAllowInteraction(allowInteraction);

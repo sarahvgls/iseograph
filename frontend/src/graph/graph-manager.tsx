@@ -60,7 +60,7 @@ const edgeTypes = {
 };
 
 const Flow = () => {
-  const [isInitializing, setIsInitializing] = useState(false);
+  const [isInitializing, setIsInitializing] = useState(true);
   const { getInternalNode } = useReactFlow();
   const {
     nodes,
@@ -97,8 +97,7 @@ const Flow = () => {
 
   // Initialize graph
   useEffect(() => {
-    if (isInitializing) return;
-    setIsInitializing(true);
+    if (!isInitializing) return;
     useGraphStore.getState().setInternalNodeGetter(getInternalNode);
 
     // Apply any localStorage values immediately

@@ -19,7 +19,7 @@ export type nodeWidthModes =
   (typeof nodeWidthModes)[keyof typeof nodeWidthModes];
 
 export const layoutModes = {
-  Basic: "basic",
+  Basic: "linear",
   Snake: "snake",
 };
 
