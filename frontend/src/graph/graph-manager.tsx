@@ -33,6 +33,7 @@ import {
 } from "../components/backdrop/backdrop.tsx";
 import { SettingsButton } from "../components/side-menu/settings-button.tsx";
 import { applyLocalStorageValues } from "./helper/generate-utils.tsx";
+import { ToggleButton } from "../components/on-screen-menu/toggle-button.tsx";
 
 const selector = (state: RFState) => ({
   nodes: state.nodes,
@@ -82,7 +83,8 @@ const Flow = () => {
     setFocusedNode,
   );
   const [selectedFile, setSelectedFile] = useState<string>("");
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
+  const [isOnScreenMenuOpen, setIsOnScreenMenuOpen] = useState(true);
 
   const focusNodeWithDelay = useCallback(
     (nodeToBeFocused: SequenceNodeProps) => {
@@ -214,7 +216,11 @@ const Flow = () => {
           Proteoform graph visualization with React Flow library
         </Panel>
         <Panel position="top-right">
-          <SettingsButton setIsSettingsOpen={setIsSettingsOpen} />
+          <ToggleButton
+            setIsMenuOpen={setIsOnScreenMenuOpen}
+            isMenuOpen={isOnScreenMenuOpen}
+          />
+          <SettingsButton setIsSettingsOpen={setIsSideMenuOpen} />
         </Panel>
         <MiniMap
           style={{
@@ -234,15 +240,18 @@ const Flow = () => {
           position={"bottom-left"}
         />
         <StyledPanel position={"bottom-right"}>
-          <OnScreenMenu />
+          <OnScreenMenu
+            isOpen={isOnScreenMenuOpen}
+            setIsOpen={setIsOnScreenMenuOpen}
+          />
         </StyledPanel>
       </ReactFlow>
 
-      {isSettingsOpen && (
+      {isSideMenuOpen && (
         <SideMenu
-          isOpen={isSettingsOpen}
+          isOpen={isSideMenuOpen}
           previousSelectedFile={selectedFile}
-          onClose={() => setIsSettingsOpen(false)}
+          onClose={() => setIsSideMenuOpen(false)}
           nodeWidthMode={nodeWidthMode}
           setNodeWidthMode={setNodeWidthMode}
           layoutMode={layoutMode}
@@ -255,8 +264,8 @@ const Flow = () => {
       )}
 
       <SettingsBackdrop
-        isSettingsOpen={isSettingsOpen}
-        setIsSettingsOpen={setIsSettingsOpen}
+        isSettingsOpen={isSideMenuOpen}
+        setIsSettingsOpen={setIsSideMenuOpen}
       />
       <LoadingBackdrop isLoading={isInitializing} />
     </>

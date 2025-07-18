@@ -18,7 +18,7 @@ export const SettingsButton = ({
         onClick={() => setIsSettingsOpen(true)}
         style={{
           padding: "8px 12px",
-          color: "gray",
+          color: "#dfdfdf",
           border: "none",
           borderRadius: "4px",
           cursor: "pointer",

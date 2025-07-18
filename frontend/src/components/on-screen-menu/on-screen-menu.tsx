@@ -13,12 +13,17 @@ import styled from "styled-components";
 import { theme } from "../../theme";
 import { layoutModes, nodeWidthModes } from "../../theme/types.tsx";
 
-const MenuContainer = styled.div`
+const MenuContainer = styled.div<{ isOpen: boolean }>`
   display: flex;
   flex-direction: row;
   align-items: flex-end;
   gap: 15px;
   pointer-events: none; /* Allow clicks to pass through to the graph by default */
+  position: fixed;
+  right: ${({ isOpen }) => (isOpen ? "20px" : "-100%")};
+  bottom: 20px;
+  transition: right 0.3s ease-in-out;
+  z-index: 10;
 `;
 
 const ColorPickerBox = styled.div`
@@ -83,7 +88,13 @@ const Slider = styled.div<{ position: number; count: number }>`
   z-index: 1;
 `;
 
-export const OnScreenMenu = () => {
+export const OnScreenMenu = ({
+  isOpen,
+  setIsOpen,
+}: {
+  isOpen: boolean;
+  setIsOpen: (isOpen: boolean) => void;
+}) => {
   const {
     isoformColorMapping,
     selectedIsoforms,
@@ -149,147 +160,176 @@ export const OnScreenMenu = () => {
   );
 
   return (
-    <MenuContainer>
-      <SwitchContainer>
-        <StyledLabel>Layout Mode</StyledLabel>
-        <SwitchOptions>
-          <Slider position={activeLayoutIndex} count={allLayoutModes.length} />
-          {allLayoutModes.map((mode) => (
-            <SwitchOption
-              key={mode}
-              isActive={layoutMode === mode}
-              onClick={() => setLayoutMode(mode)}
-            >
-              {mode}
-            </SwitchOption>
-          ))}
-        </SwitchOptions>
-      </SwitchContainer>
+    <div>
+      <MenuContainer isOpen={isOpen}>
+        <SwitchContainer>
+          <StyledLabel>Layout Mode</StyledLabel>
+          <SwitchOptions>
+            <Slider
+              position={activeLayoutIndex}
+              count={allLayoutModes.length}
+            />
+            {allLayoutModes.map((mode) => (
+              <SwitchOption
+                key={mode}
+                isActive={layoutMode === mode}
+                onClick={() => setLayoutMode(mode)}
+              >
+                {mode}
+              </SwitchOption>
+            ))}
+          </SwitchOptions>
+        </SwitchContainer>
 
-      <SwitchContainer>
-        <StyledLabel>Node Width Mode</StyledLabel>
-        <SwitchOptions>
-          <Slider
-            position={activeWidthIndex}
-            count={allNodeWidthModes.length}
-          />
-          {allNodeWidthModes.map((mode) => (
-            <SwitchOption
-              key={mode}
-              isActive={nodeWidthMode === mode}
-              onClick={() => setNodeWidthMode(mode)}
-            >
-              {mode}
-            </SwitchOption>
-          ))}
-        </SwitchOptions>
-      </SwitchContainer>
+        <SwitchContainer>
+          <StyledLabel>Node Width Mode</StyledLabel>
+          <SwitchOptions>
+            <Slider
+              position={activeWidthIndex}
+              count={allNodeWidthModes.length}
+            />
+            {allNodeWidthModes.map((mode) => (
+              <SwitchOption
+                key={mode}
+                isActive={nodeWidthMode === mode}
+                onClick={() => setNodeWidthMode(mode)}
+              >
+                {mode}
+              </SwitchOption>
+            ))}
+          </SwitchOptions>
+        </SwitchContainer>
 
-      <StyledSection
-        style={{
-          marginBottom: 0,
-          boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
-          pointerEvents: "auto" /* Re-enable pointer events for this element */,
-        }}
-      >
-        <StyledSectionTitle>Isoforms and Colors</StyledSectionTitle>
-        <div
-          style={{ marginTop: "15px", maxHeight: "250px", overflowY: "auto" }}
+        <StyledSection
+          style={{
+            marginBottom: 0,
+            boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
+            pointerEvents:
+              "auto" /* Re-enable pointer events for this element */,
+          }}
         >
-          {Object.entries(isoformColorMapping).map(([isoform, color]) => (
+          <StyledSectionTitle>
             <div
-              key={isoform}
               style={{
                 display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-between",
                 alignItems: "center",
-                marginBottom: "10px",
-                padding: "8px",
-                borderRadius: "4px",
-                backgroundColor: "rgba(245, 245, 245, 0.7)",
               }}
             >
-              <input
-                type="checkbox"
-                id={`isoform-${isoform}`}
-                checked={selectedIsoforms.includes(isoform)}
-                onChange={() => toggleIsoformSelection(isoform)}
-                style={{ marginRight: "10px" }}
-              />
-
+              <div>Isoforms and Colors</div>
+              <button
+                style={{ border: "none", height: "30px" }}
+                onClick={() => {
+                  setIsOpen(false);
+                }}
+              >{`>>`}</button>
+            </div>
+          </StyledSectionTitle>
+          <div
+            style={{
+              marginTop: "15px",
+              maxHeight: "250px",
+              overflowY: "auto",
+            }}
+          >
+            {Object.entries(isoformColorMapping).map(([isoform, color]) => (
               <div
+                key={isoform}
                 style={{
                   display: "flex",
                   alignItems: "center",
-                  cursor: "pointer",
-                  opacity: selectedIsoforms.includes(isoform) ? 1 : 0.5,
+                  marginBottom: "10px",
+                  padding: "8px",
+                  borderRadius: "4px",
+                  backgroundColor: "rgba(245, 245, 245, 0.7)",
                 }}
-                onClick={() =>
-                  activeColorPicker === isoform
-                    ? setActiveColorPicker(null)
-                    : setActiveColorPicker(isoform)
-                }
               >
+                <input
+                  type="checkbox"
+                  id={`isoform-${isoform}`}
+                  checked={selectedIsoforms.includes(isoform)}
+                  onChange={() => toggleIsoformSelection(isoform)}
+                  style={{ marginRight: "10px" }}
+                />
+
                 <div
                   style={{
-                    width: "20px",
-                    height: "20px",
-                    backgroundColor: color,
-                    borderRadius: "4px",
-                    marginRight: "10px",
-                    border: "1px solid #ccc",
+                    display: "flex",
+                    alignItems: "center",
+                    cursor: "pointer",
+                    opacity: selectedIsoforms.includes(isoform) ? 1 : 0.5,
                   }}
-                />
-                <span style={{ color }}>{isoform}</span>
-              </div>
-
-              {activeColorPicker === isoform && (
-                <ColorPickerBox>
-                  <div ref={refActiveColorPicker}>
-                    <HexColorPicker
-                      color={color}
-                      onChange={(newColor) =>
-                        updateIsoformColor(isoform, newColor)
-                      }
-                    />
-                  </div>
+                  onClick={() =>
+                    activeColorPicker === isoform
+                      ? setActiveColorPicker(null)
+                      : setActiveColorPicker(isoform)
+                  }
+                >
                   <div
                     style={{
-                      padding: "8px",
-                      backgroundColor: "white",
-                      display: "flex",
-                      justifyContent: "space-between",
+                      width: "20px",
+                      height: "20px",
+                      backgroundColor: color,
+                      borderRadius: "4px",
+                      marginRight: "10px",
+                      border: "1px solid #ccc",
                     }}
-                  >
-                    <span>{color}</span>
-                    <button
-                      onClick={() => setActiveColorPicker(null)}
+                  />
+                  <span style={{ color }}>{isoform}</span>
+                </div>
+
+                {activeColorPicker === isoform && (
+                  <ColorPickerBox>
+                    <div ref={refActiveColorPicker}>
+                      <HexColorPicker
+                        color={color}
+                        onChange={(newColor) =>
+                          updateIsoformColor(isoform, newColor)
+                        }
+                      />
+                    </div>
+                    <div
                       style={{
-                        border: "none",
-                        background: "none",
-                        cursor: "pointer",
-                        color: "#555",
+                        padding: "8px",
+                        backgroundColor: "white",
+                        display: "flex",
+                        justifyContent: "space-between",
                       }}
                     >
-                      Close
-                    </button>
-                  </div>
-                </ColorPickerBox>
-              )}
-            </div>
-          ))}
-        </div>
-        <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
-          <SecondaryButton onClick={resetColors}>Reset colors</SecondaryButton>
-          <SecondaryButton
-            style={{
-              width: "100px",
-            }}
-            onClick={deselectAll}
-          >
-            Deselect All
-          </SecondaryButton>
-        </div>
-      </StyledSection>
-    </MenuContainer>
+                      <span>{color}</span>
+                      <button
+                        onClick={() => setActiveColorPicker(null)}
+                        style={{
+                          border: "none",
+                          background: "none",
+                          cursor: "pointer",
+                          color: "#555",
+                        }}
+                      >
+                        Close
+                      </button>
+                    </div>
+                  </ColorPickerBox>
+                )}
+              </div>
+            ))}
+          </div>
+          <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
+            <SecondaryButton onClick={resetColors}>
+              Reset colors
+            </SecondaryButton>
+            <SecondaryButton
+              style={{
+                width: "100px",
+              }}
+              onClick={deselectAll}
+            >
+              Deselect All
+            </SecondaryButton>
+          </div>
+        </StyledSection>
+      </MenuContainer>
+    </div>
   );
 };
