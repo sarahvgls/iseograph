@@ -1,5 +1,5 @@
 import { action, makeObservable, observable } from "mobx";
-import { layoutModes, nodeWidthModes } from "./types.tsx";
+import { labelVisibility, layoutModes, nodeWidthModes } from "./types.tsx";
 
 export const defaultPalette = {
   mode: "light",
@@ -72,12 +72,19 @@ export const defaultPalette = {
   backdropLight: "rgba(255,255,255,0.10)",
 };
 
-//TODO refactor: what is still needed
-export const theme = {
-  debugMode: false,
+// Values that can be changed by the user but are per default set to these values
+export const defaultValues = {
   isAnimated: false,
   allowInteraction: false,
+  reverseNodes: true,
   numberOfAllowedIsoforms: 4,
+  rowWidth: 3000,
+  labelVisibility: labelVisibility.always, // TODO implement usage
+};
+
+//TODO refactor: what is still needed
+export const theme = {
+  debugMode: false, // only used in development
   offsets: {
     defaultWidthCollapsed: false,
     defaultLength: 100,
@@ -96,10 +103,8 @@ export const theme = {
       yOffsetBetweenRows: 300,
       xOffsetBetweenNodes: 150,
       maxAAsPerRow: 60, //not used
-      maxWidthPerRow: 3000,
+      maxWidthPerRow: defaultValues.rowWidth,
       maxNodesPerRow: 11, // not used
-      // TODO decide if feature needed
-      splitLargeNodes: false, // if true, large nodes will be split into smaller nodes when reaching the end of a line
     },
   },
   rowNode: {

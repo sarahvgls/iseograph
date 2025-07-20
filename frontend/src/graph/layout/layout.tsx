@@ -150,6 +150,7 @@ export const applyLayout = (
   nodes: NodeTypes[],
   edges: Edge[],
   layoutMode: layoutModes,
+  maxWidthPerRow: number,
   getInternalNode: ((id: string) => InternalNode | undefined) | null,
 ): Promise<[NodeTypes[], Edge[]]> => {
   // remove groups and reset layouting properties
@@ -206,6 +207,7 @@ export const applyLayout = (
         const [snakeNodes, snakeEdges] = applySnakeLayout(
           layoutedNodes,
           layoutedEdges,
+          maxWidthPerRow,
           getInternalNode,
         );
 

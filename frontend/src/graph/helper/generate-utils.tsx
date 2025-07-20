@@ -1,6 +1,7 @@
 import type { ArrowEdgeProps } from "../../components/arrow-edge/arrow-edge.props.tsx";
 import type { SequenceNodeProps } from "../../components/sequence-node/sequence-node.props.tsx";
 import {
+  labelVisibility,
   layoutModes,
   localStorageKeys,
   nodeTypes,
@@ -78,60 +79,100 @@ export const createEdges = (edges: ArrowEdgeProps[]): ArrowEdgeProps[] => {
 export const applyLocalStorageValues = (
   setSelectedFile: (file: string) => void,
 ) => {
-  setSelectedFile(localStorage.getItem(localStorageKeys.selectedFile) || "");
-
-  const savedLayoutMode = localStorage.getItem(
-    localStorageKeys.layoutMode,
-  ) as layoutModes;
-  if (savedLayoutMode && Object.values(layoutModes).includes(savedLayoutMode)) {
-    useGraphStore.setState({ layoutMode: savedLayoutMode });
-  }
-
-  const savedNodeWidthMode = localStorage.getItem(
-    localStorageKeys.nodeWidthMode,
-  ) as nodeWidthModes;
-  if (
-    savedNodeWidthMode &&
-    Object.values(nodeWidthModes).includes(savedNodeWidthMode)
-  ) {
-    useGraphStore.setState({ nodeWidthMode: savedNodeWidthMode });
-  }
-
-  const savedIsAnimated = localStorage.getItem(localStorageKeys.isAnimated);
-  if (savedIsAnimated) {
-    useGraphStore.getState().setIsAnimated(savedIsAnimated === "true");
-  }
-
-  const savedAllowInteraction = localStorage.getItem(
-    localStorageKeys.allowInteraction,
-  );
-  if (savedAllowInteraction) {
-    useGraphStore
-      .getState()
-      .setAllowInteraction(savedAllowInteraction === "true");
-  }
-
-  const selectedIsoforms = localStorage.getItem(
-    localStorageKeys.selectedIsoforms,
-  );
-  if (selectedIsoforms) {
-    try {
-      const parsedSelection = JSON.parse(selectedIsoforms);
-      useGraphStore.setState({ selectedIsoforms: parsedSelection });
-    } catch (error) {
-      console.error("Error parsing selected isoforms", error);
-    }
-  }
-
-  const isoformColorMapping = localStorage.getItem(
-    localStorageKeys.isoformColorMapping,
-  );
-  if (isoformColorMapping) {
-    try {
-      const parsedColorMapping = JSON.parse(isoformColorMapping);
-      useGraphStore.setState({ isoformColorMapping: parsedColorMapping });
-    } catch (error) {
-      console.error("Error parsing isoform color mapping", error);
+  // iterate over localStorageKeys:
+  for (const key of Object.values(localStorageKeys)) {
+    switch (key) {
+      case localStorageKeys.selectedFile:
+        setSelectedFile(
+          localStorage.getItem(localStorageKeys.selectedFile) || "",
+        );
+        break;
+      case localStorageKeys.layoutMode: {
+        const savedLayoutMode = localStorage.getItem(
+          localStorageKeys.layoutMode,
+        ) as layoutModes;
+        if (
+          savedLayoutMode &&
+          Object.values(layoutModes).includes(savedLayoutMode)
+        ) {
+          useGraphStore.setState({ layoutMode: savedLayoutMode });
+        }
+        break;
+      }
+      case localStorageKeys.nodeWidthMode: {
+        const savedNodeWidthMode = localStorage.getItem(
+          localStorageKeys.nodeWidthMode,
+        ) as nodeWidthModes;
+        if (
+          savedNodeWidthMode &&
+          Object.values(nodeWidthModes).includes(savedNodeWidthMode)
+        ) {
+          useGraphStore.setState({ nodeWidthMode: savedNodeWidthMode });
+        }
+        break;
+      }
+      case localStorageKeys.labelVisibility: {
+        const savedLabelVisibility = localStorage.getItem(
+          localStorageKeys.labelVisibility,
+        );
+        if (
+          savedLabelVisibility &&
+          Object.values(labelVisibility).includes(savedLabelVisibility)
+        ) {
+          useGraphStore.setState({ labelVisibility: savedLabelVisibility });
+        }
+        break;
+      }
+      // boolean values
+      case localStorageKeys.allowInteraction:
+      case localStorageKeys.reverseNodes: {
+        const savedBooleanValue = localStorage.getItem(key);
+        try {
+          if (savedBooleanValue) {
+            useGraphStore.setState({ [key]: savedBooleanValue === "true" });
+          }
+        } catch (error) {
+          console.error(`Error parsing local storage value for ${key}`);
+        }
+        break;
+      }
+      case localStorageKeys.isAnimated: {
+        const savedIsAnimated = localStorage.getItem(
+          localStorageKeys.isAnimated,
+        );
+        if (savedIsAnimated) {
+          // different from the other boolean values due to rerendering of edges if animation changes
+          useGraphStore.getState().setIsAnimated(savedIsAnimated === "true");
+        }
+        break;
+      }
+      // numeric values
+      case localStorageKeys.rowWidth:
+      case localStorageKeys.numberOfAllowedIsoforms: {
+        const savedNumericValue = localStorage.getItem(key);
+        console.log(savedNumericValue, "for key", key);
+        if (savedNumericValue) {
+          const parsedValue = parseInt(savedNumericValue, 10);
+          if (!isNaN(parsedValue)) {
+            useGraphStore.setState({ [key]: parsedValue });
+          } else {
+            console.error(`Error parsing local storage value for ${key}`);
+          }
+        }
+        break;
+      }
+      case localStorageKeys.selectedIsoforms:
+      case localStorageKeys.isoformColorMapping: {
+        const selectedJSONValue = localStorage.getItem(key);
+        if (selectedJSONValue) {
+          try {
+            const parsedJSONValue = JSON.parse(selectedJSONValue);
+            useGraphStore.setState({ [key]: parsedJSONValue });
+          } catch (error) {
+            console.error(`Error parsing local stoarge value for ${key}`);
+          }
+        }
+      }
     }
   }
 };

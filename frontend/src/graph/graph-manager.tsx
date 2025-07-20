@@ -40,14 +40,9 @@ const selector = (state: RFState) => ({
   edges: state.edges,
   onNodesChange: state.onNodesChange,
   onEdgesChange: state.onEdgesChange,
-  nodeWidthMode: state.nodeWidthMode,
   setNodeWidthMode: state.setGlobalNodeWidthMode,
-  layoutMode: state.layoutMode,
   setLayoutMode: state.setLayoutMode,
-  isAnimated: state.isAnimated,
-  setIsAnimated: state.setIsAnimated,
   allowInteraction: state.allowInteraction,
-  setAllowInteraction: state.setAllowInteraction,
 });
 
 // this places the node origin in the center of a node
@@ -68,14 +63,9 @@ const Flow = () => {
     edges,
     onNodesChange,
     onEdgesChange,
-    nodeWidthMode,
     setNodeWidthMode,
-    layoutMode,
     setLayoutMode,
-    isAnimated,
-    setIsAnimated,
     allowInteraction,
-    setAllowInteraction,
   } = useGraphStore(selector, shallow); // using shallow to make sure the component only re-renders when one of the values changes
   const [focusedNode, setFocusedNode] = useState<SequenceNodeProps>();
   const { focusNode, onFocusNextNode, onFocusPreviousNode } = useFocusHandlers(
@@ -252,14 +242,6 @@ const Flow = () => {
           isOpen={isSideMenuOpen}
           previousSelectedFile={selectedFile}
           onClose={() => setIsSideMenuOpen(false)}
-          nodeWidthMode={nodeWidthMode}
-          setNodeWidthMode={setNodeWidthMode}
-          layoutMode={layoutMode}
-          setLayoutMode={setLayoutMode}
-          setStoreIsAnimated={setIsAnimated}
-          storeIsAnimated={isAnimated}
-          setStoreAllowInteraction={setAllowInteraction}
-          storeAllowInteraction={allowInteraction}
         />
       )}
 

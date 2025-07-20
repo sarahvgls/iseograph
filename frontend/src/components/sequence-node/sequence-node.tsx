@@ -11,6 +11,7 @@ import type { SequenceNodeProps } from "./sequence-node.props.tsx";
 import { theme } from "../../theme";
 import { SequenceContainer } from "./sequence-container/sequence-container.tsx";
 import { memo, useEffect, useRef, useState } from "react";
+import useGraphStore, { type RFState } from "../../graph/store.ts";
 
 const NodeWrapper = styled.div`
   display: flex;
@@ -66,6 +67,10 @@ const StyledHandleLeft = styled(Handle)`
   transform: translateX(+115%);
 `;
 
+const selector = (state: RFState) => ({
+  reverseNodes: state.reverseNodes,
+});
+
 const useZoom = () => useStore((store) => store.transform[2]); // [x, y, zoom]
 
 const SequenceNode = memo(function SequenceNode({
@@ -76,6 +81,8 @@ const SequenceNode = memo(function SequenceNode({
   const updateNodeInternals = useUpdateNodeInternals();
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
+
+  const { reverseNodes } = useGraphStore(selector);
   const [sequence, setSequence] = useState<string>(data.sequence);
   const width = theme.offsets.defaultWidthCollapsed // TODO what happens here
     ? data.sequence.length * 10 + 100
@@ -88,7 +95,7 @@ const SequenceNode = memo(function SequenceNode({
   const hitboxHeight = size * scale * 2;
   const hitboxWidth = width;
 
-  // Update node internals when isReversed changes DO NOT DELETE
+  // Update node internals when isReversed changes
   useEffect(() => {
     updateNodeInternals(id);
   }, [id, data.isReversed, updateNodeInternals]);
@@ -108,7 +115,7 @@ const SequenceNode = memo(function SequenceNode({
 
   useEffect(() => {
     //reverse data.sequence string char by char when data.isReveresed
-    if (data.isReversed) {
+    if (data.isReversed && reverseNodes) {
       const reversedSequence = data.sequence.split("").reverse().join("");
       setSequence(reversedSequence);
     } else {
@@ -149,7 +156,7 @@ const SequenceNode = memo(function SequenceNode({
             containerWidthRef={containerRef! as React.RefObject<HTMLDivElement>}
           />
           <DirectionArrow
-            $isReversed={data.isReversed}
+            $isReversed={data.isReversed && reverseNodes}
             viewBox={`0 0 ${Math.max(10, containerWidth)} 10`}
             preserveAspectRatio="none"
           >

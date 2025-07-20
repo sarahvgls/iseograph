@@ -1,4 +1,5 @@
 import {
+  labelVisibility,
   layoutModes,
   localStorageKeys,
   nodeWidthModes,
@@ -6,7 +7,6 @@ import {
 import { useEffect, useState } from "react";
 import { callApi, callApiWithParameters } from "../../helper/api-call.ts";
 import {
-  Checkbox,
   CloseButton,
   FlexRow,
   PrimaryButton,
@@ -18,32 +18,58 @@ import {
   StyledSectionTitle,
 } from "../base-components";
 import { UserGuide } from "./user-guide.tsx";
+import { Switch } from "../base-components/switch.tsx";
+import { Slider } from "../base-components/slider.tsx";
+import { defaultValues } from "../../theme";
+import useGraphStore, { type RFState } from "../../graph/store.ts";
+import { Checkbox } from "../base-components/checkbox.tsx";
+
+const selector = (state: RFState) => ({
+  nodeWidthMode: state.nodeWidthMode,
+  setNodeWidthMode: state.setGlobalNodeWidthMode,
+  layoutMode: state.layoutMode,
+  setLayoutMode: state.setLayoutMode,
+  isoformColorMapping: state.isoformColorMapping,
+  isAnimated: state.isAnimated,
+  setIsAnimated: state.setIsAnimated,
+  allowInteraction: state.allowInteraction,
+  reverseNodes: state.reverseNodes,
+  numberOfAllowedIsoforms: state.numberOfAllowedIsoforms,
+  rowWidth: state.rowWidth,
+  storeLabelVisibility: state.labelVisibility,
+});
 
 export const SideMenu = ({
   isOpen,
   previousSelectedFile,
   onClose,
-  nodeWidthMode,
-  setNodeWidthMode,
-  layoutMode,
-  setLayoutMode,
-  storeIsAnimated,
-  setStoreIsAnimated,
-  storeAllowInteraction,
-  setStoreAllowInteraction,
 }: {
   isOpen: boolean;
   previousSelectedFile: string;
   onClose: () => void;
-  nodeWidthMode: nodeWidthModes;
-  setNodeWidthMode: (mode: nodeWidthModes) => void;
-  layoutMode: layoutModes;
-  setLayoutMode: (mode: layoutModes) => void;
-  storeIsAnimated: boolean;
-  setStoreIsAnimated: (isAnimated: boolean) => void;
-  storeAllowInteraction: boolean;
-  setStoreAllowInteraction: (allowInteraction: boolean) => void;
 }) => {
+  const {
+    nodeWidthMode,
+    setNodeWidthMode,
+    layoutMode,
+    setLayoutMode,
+    isoformColorMapping,
+    isAnimated,
+    setIsAnimated,
+    allowInteraction,
+    reverseNodes,
+    numberOfAllowedIsoforms,
+    rowWidth,
+    storeLabelVisibility,
+  } = useGraphStore(selector);
+  const set: (arg0: {
+    rowWidth?: number;
+    allowInteraction?: boolean;
+    reverseNodes?: boolean;
+    numberOfAllowedIsoforms?: number;
+    labelVisibility?: string;
+  }) => void = useGraphStore.setState;
+
   const [selectedNodeWidthMode, setSelectedNodeWidthMode] =
     useState<nodeWidthModes>(nodeWidthMode);
   const [selectedLayoutMode, setSelectedLayoutMode] =
@@ -52,10 +78,21 @@ export const SideMenu = ({
   const [selectedFile, setSelectedFile] =
     useState<string>(previousSelectedFile);
   const [newProteinName, setNewProteinName] = useState<string>("");
-  const [allowInteraction, setAllowInteraction] = useState<boolean>(
-    storeAllowInteraction,
-  );
-  const [isAnimated, setIsAnimated] = useState<boolean>(storeIsAnimated);
+  const [selectedAllowInteraction, setSelectedAllowInteraction] =
+    useState<boolean>(allowInteraction);
+  const [selectedIsAnimated, setSelectedIsAnimated] =
+    useState<boolean>(isAnimated);
+  const [selectedReverseNodes, setSelectedReverseNodes] =
+    useState<boolean>(reverseNodes);
+  const [selectedNumberOfAllowedIsoforms, setSelectedNumberOfAllowedIsoforms] =
+    useState<number>(numberOfAllowedIsoforms);
+  const [selectedRowWidth, setSelectedRowWidth] = useState<number>(rowWidth);
+  const [selectedLabelVisibility, setSelectedLabelVisibility] =
+    useState<labelVisibility>(storeLabelVisibility);
+
+  const allLabelVisibilityOptions = Object.values(labelVisibility);
+
+  const numberOfAvailableIsoforms = Object.keys(isoformColorMapping).length;
 
   useEffect(() => {
     setSelectedNodeWidthMode(nodeWidthMode);
@@ -133,18 +170,38 @@ export const SideMenu = ({
     localStorage.setItem(localStorageKeys.layoutMode, selectedLayoutMode);
     localStorage.setItem(
       localStorageKeys.allowInteraction,
-      String(allowInteraction),
+      String(selectedAllowInteraction),
     );
-    localStorage.setItem(localStorageKeys.isAnimated, String(isAnimated));
+    localStorage.setItem(
+      localStorageKeys.isAnimated,
+      String(selectedIsAnimated),
+    );
+    localStorage.setItem(
+      localStorageKeys.reverseNodes,
+      String(selectedReverseNodes),
+    );
+    localStorage.setItem(
+      localStorageKeys.numberOfAllowedIsoforms,
+      String(selectedNumberOfAllowedIsoforms),
+    );
+    localStorage.setItem(localStorageKeys.rowWidth, String(selectedRowWidth));
+    localStorage.setItem(
+      localStorageKeys.labelVisibility,
+      selectedLabelVisibility,
+    );
 
     // Update global state
     setNodeWidthMode(selectedNodeWidthMode);
+    set({ rowWidth: selectedRowWidth });
     setTimeout(() => {
       setLayoutMode(selectedLayoutMode);
     }, 100);
     setTimeout(() => {
-      setStoreIsAnimated(isAnimated);
-      setStoreAllowInteraction(allowInteraction);
+      setIsAnimated(selectedIsAnimated);
+      set({ allowInteraction: selectedAllowInteraction });
+      set({ reverseNodes: selectedReverseNodes });
+      set({ numberOfAllowedIsoforms: selectedNumberOfAllowedIsoforms });
+      set({ labelVisibility: selectedLabelVisibility });
     }, 500);
 
     onClose();
@@ -269,18 +326,52 @@ export const SideMenu = ({
 
         <div>
           <Checkbox
-            label={"Allow movement of nodes [not saved]"}
-            checked={allowInteraction}
+            label={"Allow movement of nodes (changes are not saved)"}
+            checked={selectedAllowInteraction}
             onChange={(checked) => {
-              setAllowInteraction(checked);
+              setSelectedAllowInteraction(checked);
             }}
           />
           <Checkbox
             label={"Show animated edges"}
-            checked={isAnimated}
+            checked={selectedIsAnimated}
             onChange={(checked) => {
-              setIsAnimated(checked);
+              setSelectedIsAnimated(checked);
             }}
+          />
+          <Switch
+            label={"Show selected edge labels:"}
+            options={allLabelVisibilityOptions}
+            selected={selectedLabelVisibility}
+            selectOption={setSelectedLabelVisibility}
+            isShy={true}
+          />
+          <Checkbox
+            label={"Reverse sequence of reversed nodes"}
+            checked={selectedReverseNodes}
+            onChange={(checked) => {
+              setSelectedReverseNodes(checked);
+            }}
+          />
+          <Slider
+            label={"Width of snake row:"}
+            minValue={1000}
+            maxValue={9000}
+            minValueLabel={"1000px"}
+            maxValueLabel={"9000px"}
+            initialValue={selectedRowWidth}
+            setValue={(newValue) => setSelectedRowWidth(newValue)}
+            defaultValue={defaultValues.rowWidth}
+          />
+          <Slider
+            label={"Number of selectable isoforms:"}
+            minValue={1}
+            maxValue={numberOfAvailableIsoforms}
+            minValueLabel={"1"}
+            maxValueLabel={numberOfAvailableIsoforms.toString()}
+            initialValue={selectedNumberOfAllowedIsoforms}
+            setValue={setSelectedNumberOfAllowedIsoforms}
+            defaultValue={defaultValues.numberOfAllowedIsoforms}
           />
         </div>
       </StyledSection>
