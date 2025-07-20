@@ -59,7 +59,7 @@ export const Switch = ({
   ...rest
 }: {
   label?: string;
-  options: any[];
+  options: string[];
   selected: string;
   selectOption: (newOption: string) => void;
   isShy?: boolean;

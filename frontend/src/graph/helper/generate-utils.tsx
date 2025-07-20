@@ -132,7 +132,9 @@ export const applyLocalStorageValues = (
             useGraphStore.setState({ [key]: savedBooleanValue === "true" });
           }
         } catch (error) {
-          console.error(`Error parsing local storage value for ${key}`);
+          console.error(
+            `Error parsing local storage value for ${key}: ${error}`,
+          );
         }
         break;
       }
@@ -150,7 +152,6 @@ export const applyLocalStorageValues = (
       case localStorageKeys.rowWidth:
       case localStorageKeys.numberOfAllowedIsoforms: {
         const savedNumericValue = localStorage.getItem(key);
-        console.log(savedNumericValue, "for key", key);
         if (savedNumericValue) {
           const parsedValue = parseInt(savedNumericValue, 10);
           if (!isNaN(parsedValue)) {
@@ -169,7 +170,9 @@ export const applyLocalStorageValues = (
             const parsedJSONValue = JSON.parse(selectedJSONValue);
             useGraphStore.setState({ [key]: parsedJSONValue });
           } catch (error) {
-            console.error(`Error parsing local stoarge value for ${key}`);
+            console.error(
+              `Error parsing local stoarge value for ${key}: ${error}`,
+            );
           }
         }
       }

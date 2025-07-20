@@ -121,7 +121,7 @@ const SequenceNode = memo(function SequenceNode({
     } else {
       setSequence(data.sequence);
     }
-  }, [data.sequence, data.isReversed]);
+  }, [data.sequence, data.isReversed, reverseNodes]);
 
   return (
     <div>
