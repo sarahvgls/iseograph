@@ -69,3 +69,7 @@ export const Checkbox: React.FC<CheckboxProps> = ({
     </CheckboxContainer>
   );
 };
+
+export const MultiCompatibleCheckbox = styled(Checkbox)`
+  margin: 0 0 5px 10px;
+`;

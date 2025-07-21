@@ -25,6 +25,10 @@ export const StyledLabel = styled.label`
   color: #555;
 `;
 
+export const BoldStyledLabel = styled(StyledLabel)`
+  font-weight: 600;
+`;
+
 export const StyledDropdown = styled.select`
   width: 100%;
   padding: 10px;
@@ -43,6 +47,7 @@ export const StyledInputTextField = styled.input`
   background-color: white;
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
   font-size: 14px;
+  margin-bottom: 10px;
 `;
 
 export const PrimaryButton = styled.button`
