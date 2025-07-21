@@ -37,6 +37,7 @@ import {
   ToggleMapButton,
   ToggleOnScreenMenuButton,
 } from "../components/on-screen-menu/toggle-button.tsx";
+import { MiniMapContainer } from "../components/minimap/minimap-container.tsx";
 
 const selector = (state: RFState) => ({
   nodes: state.nodes,
@@ -218,8 +219,20 @@ const Flow = () => {
           <ToggleMapButton setIsMapOpen={setIsMapOpen} isMapOpen={isMapOpen} />
           <SettingsButton setIsSettingsOpen={setIsSideMenuOpen} />
         </Panel>
-        {isMapOpen && (
-          // TODO make slide in and out
+        <MiniMapContainer isOpen={isMapOpen}>
+          <button
+            style={{
+              border: "none",
+              position: "relative",
+              height: "30px",
+              left: 60,
+              bottom: 180,
+              zIndex: 110,
+            }}
+            onClick={() => {
+              setIsMapOpen(false);
+            }}
+          >{`<<`}</button>
           <MiniMap
             style={{
               width: 350,
@@ -237,23 +250,7 @@ const Flow = () => {
             inversePan={false}
             position={"bottom-left"}
           />
-        )}
-        <Panel position="bottom-left">
-          {isMapOpen && (
-            <button
-              style={{
-                border: "none",
-                height: "30px",
-                position: "fixed",
-                left: 60,
-                bottom: 180,
-              }}
-              onClick={() => {
-                setIsMapOpen(false);
-              }}
-            >{`<<`}</button>
-          )}
-        </Panel>
+        </MiniMapContainer>
         <StyledPanel position={"bottom-right"}>
           <OnScreenMenu
             isOpen={isOnScreenMenuOpen}

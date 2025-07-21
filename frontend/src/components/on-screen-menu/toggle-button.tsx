@@ -61,11 +61,7 @@ export const ToggleMapButton = ({
 
   return (
     <StyledButton style={{ right: 80 }} onClick={toggleMenu} isOpen={isMapOpen}>
-      <Icon
-        // TODO change icon to map
-        icon={"pencil_brush"}
-        color={isMapOpen ? "onPrimary" : "background"}
-      />
+      <Icon icon={"map"} color={isMapOpen ? "onPrimary" : "background"} />
     </StyledButton>
   );
 };
