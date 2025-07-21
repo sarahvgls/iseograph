@@ -14,7 +14,7 @@ import { createWithEqualityFn } from "zustand/traditional";
 import nodes from "../../../generated/nodes.json";
 import edges from "../../../generated/edges.json";
 import type { SequenceNodeProps } from "../components/sequence-node/sequence-node.props.tsx";
-import { defaultValues, theme } from "../theme";
+import { defaultValues } from "../theme";
 import {
   type labelVisibility,
   type layoutModes,
@@ -102,7 +102,7 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
   },
 
   // --- layouting ---
-  layoutMode: theme.layout.mode,
+  layoutMode: defaultValues.layoutMode,
   setLayoutMode: async (layoutMode: layoutModes) => {
     set({ layoutMode });
 
@@ -123,7 +123,7 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
   },
 
   // --- width of nodes ---
-  nodeWidthMode: theme.layout.defaultNodeWidthMode,
+  nodeWidthMode: defaultValues.nodeWidthMode,
   setGlobalNodeWidthMode: async (nodeWidthMode: nodeWidthModes) => {
     set({ nodeWidthMode });
 

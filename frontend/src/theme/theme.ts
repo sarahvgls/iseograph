@@ -74,6 +74,8 @@ export const defaultPalette = {
 
 // Values that can be changed by the user but are per default set to these values
 export const defaultValues = {
+  layoutMode: layoutModes.Snake,
+  nodeWidthMode: nodeWidthModes.Collapsed,
   isAnimated: false,
   allowInteraction: false,
   reverseNodes: true,
@@ -82,33 +84,24 @@ export const defaultValues = {
   labelVisibility: labelVisibility.always, // TODO implement usage
 };
 
-//TODO refactor: what is still needed
 export const theme = {
   debugMode: false, // only used in development
-  offsets: {
-    defaultWidthCollapsed: false,
-    defaultLength: 100,
-    largeWidth: 150,
-    defaultYSpacingBetweenNodes: 100,
-    debugYSpacingBetweenNodes: 500,
-    useXOffset: false, // TODO decide if xOffset is needed
-  },
-  layout: {
-    mode: layoutModes.Snake,
-    defaultNodeWidthMode: nodeWidthModes.Collapsed,
-    basic: {
-      direction: "LR",
-    },
-    snake: {
-      yOffsetBetweenRows: 300,
-      xOffsetBetweenNodes: 150,
-      maxAAsPerRow: 60, //not used
-      maxWidthPerRow: defaultValues.rowWidth,
-      maxNodesPerRow: 11, // not used
-    },
+  node: {
+    defaultWidth: 150,
+    defaultHeight: 100,
   },
   rowNode: {
     height: 300,
+  },
+  offsets: {
+    defaultYSpacingBetweenNodes: 100, // vertical distance between variations
+    debugYSpacingBetweenNodes: 500,
+  },
+  layout: {
+    snake: {
+      yOffsetBetweenRows: 300,
+      xOffsetBetweenNodes: 150,
+    },
   },
   colors: [
     defaultPalette.green,

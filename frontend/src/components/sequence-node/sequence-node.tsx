@@ -82,19 +82,6 @@ const SequenceNode = memo(function SequenceNode({
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
 
-  const { reverseNodes } = useGraphStore(selector);
-  const [sequence, setSequence] = useState<string>(data.sequence);
-  const width = theme.offsets.defaultWidthCollapsed // TODO what happens here
-    ? data.sequence.length * 10 + 100
-    : theme.offsets.defaultLength; // 10 is the approximated width of each character, plus 50px on each side
-
-  // values for invisible bounding box scale
-  const zoom = useZoom();
-  const scale = 1 / Math.max(zoom, 0.05);
-  const size = 50;
-  const hitboxHeight = size * scale * 2;
-  const hitboxWidth = width;
-
   // Update node internals when isReversed changes
   useEffect(() => {
     updateNodeInternals(id);
@@ -112,6 +99,16 @@ const SequenceNode = memo(function SequenceNode({
     resizeObserver.observe(containerRef.current);
     return () => resizeObserver.disconnect();
   }, []);
+
+  // values for invisible bounding box scale
+  const zoom = useZoom();
+  const scale = 1 / Math.max(zoom, 0.05);
+  const size = 50;
+  const hitboxHeight = size * scale * 2;
+  const hitboxWidth = Math.max(containerWidth, theme.node.defaultWidth);
+
+  const { reverseNodes } = useGraphStore(selector);
+  const [sequence, setSequence] = useState<string>(data.sequence);
 
   useEffect(() => {
     //reverse data.sequence string char by char when data.isReveresed
