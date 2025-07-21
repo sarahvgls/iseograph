@@ -190,6 +190,7 @@ const Flow = () => {
         fitViewOptions={fitViewOptions}
         nodesDraggable={allowInteraction}
         nodesConnectable={false}
+        edgesReconnectable={false}
       >
         {theme.debugMode && <DevTools />}
         <GraphControls
@@ -233,6 +234,7 @@ const Flow = () => {
           <OnScreenMenu
             isOpen={isOnScreenMenuOpen}
             setIsOpen={setIsOnScreenMenuOpen}
+            focusNodeWithDelay={focusNodeWithDelay}
           />
         </StyledPanel>
       </ReactFlow>

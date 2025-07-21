@@ -10,8 +10,9 @@ import { shallow } from "zustand/shallow";
 import { useOutsidePress } from "../../helper/outside-press.tsx";
 import styled from "styled-components";
 import { theme } from "../../theme";
-import { layoutModes, nodeWidthModes } from "../../theme/types.tsx";
+import { layoutModes, nodeTypes, nodeWidthModes } from "../../theme/types.tsx";
 import { Switch } from "../base-components/switch.tsx";
+import type { SequenceNodeProps } from "../sequence-node/sequence-node.props.tsx";
 
 const MenuContainer = styled.div<{ isOpen: boolean }>`
   display: flex;
@@ -43,11 +44,14 @@ const ColorPickerBox = styled.div`
 export const OnScreenMenu = ({
   isOpen,
   setIsOpen,
+  focusNodeWithDelay,
 }: {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
+  focusNodeWithDelay: (nodeToBeFocused: SequenceNodeProps) => void;
 }) => {
   const {
+    nodes,
     isoformColorMapping,
     selectedIsoforms,
     toggleIsoformSelection,
@@ -59,6 +63,7 @@ export const OnScreenMenu = ({
     setNodeWidthMode,
   } = useGraphStore(
     (state) => ({
+      nodes: state.nodes,
       isoformColorMapping: state.isoformColorMapping,
       selectedIsoforms: state.selectedIsoforms,
       toggleIsoformSelection: state.toggleIsoformSelection,
@@ -83,6 +88,14 @@ export const OnScreenMenu = ({
     activeColorPicker !== null,
     false,
   );
+
+  const changeLayoutMode = (mode: layoutModes) => {
+    setLayoutMode(mode);
+    const firstSequenceNode = nodes.find(
+      (node) => node.type === nodeTypes.SequenceNode,
+    ) as SequenceNodeProps;
+    focusNodeWithDelay(firstSequenceNode);
+  };
 
   const resetColors = () => {
     const defaultColors = theme.colors;
@@ -111,7 +124,7 @@ export const OnScreenMenu = ({
           label={"Layout Mode"}
           options={allLayoutModes}
           selected={layoutMode}
-          selectOption={setLayoutMode}
+          selectOption={changeLayoutMode}
           isShy={false}
         />
         <Switch

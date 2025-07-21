@@ -89,6 +89,9 @@ export const theme = {
   node: {
     defaultWidth: 150,
     defaultHeight: 100,
+    // TODO decide what is better
+    delayedRerendering: false, // if true, on node click the size of the node changes but the rerendering of the snake graph is delayed,
+    // meaning only applied when the next node is clicked for the last one
   },
   rowNode: {
     height: 300,

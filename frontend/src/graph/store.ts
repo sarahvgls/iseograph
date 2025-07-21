@@ -14,7 +14,7 @@ import { createWithEqualityFn } from "zustand/traditional";
 import nodes from "../../../generated/nodes.json";
 import edges from "../../../generated/edges.json";
 import type { SequenceNodeProps } from "../components/sequence-node/sequence-node.props.tsx";
-import { defaultValues } from "../theme";
+import { defaultValues, theme } from "../theme";
 import {
   type labelVisibility,
   type layoutModes,
@@ -169,18 +169,35 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
     set({ nodes: updatedNodes });
 
     // Reapply layout after changing the individual node width mode
-    applyLayout(
-      updatedNodes,
-      state.edges,
-      state.layoutMode,
-      state.rowWidth,
-      state.getInternalNodeFn,
-    ).then(([layoutedNodes, layoutedEdges]) => {
-      set({
-        nodes: layoutedNodes,
-        edges: layoutedEdges,
+    if (theme.node.delayedRerendering) {
+      applyLayout(
+        updatedNodes,
+        state.edges,
+        state.layoutMode,
+        state.rowWidth,
+        state.getInternalNodeFn,
+      ).then(([layoutedNodes, layoutedEdges]) => {
+        set({
+          nodes: layoutedNodes,
+          edges: layoutedEdges,
+        });
       });
-    });
+    } else {
+      setTimeout(() => {
+        applyLayout(
+          updatedNodes,
+          state.edges,
+          state.layoutMode,
+          state.rowWidth,
+          state.getInternalNodeFn,
+        ).then(([layoutedNodes, layoutedEdges]) => {
+          set({
+            nodes: layoutedNodes,
+            edges: layoutedEdges,
+          });
+        });
+      }, 100);
+    }
   },
 
   // --- isoform colored edges ---
