@@ -1,7 +1,5 @@
 import {
   PrimaryButton,
-  StyledDropdown,
-  StyledLabel,
   StyledSection,
   StyledSectionTitle,
 } from "../base-components";
@@ -128,38 +126,6 @@ export const GraphSettings = ({ onClose }: { onClose: () => void }) => {
       <StyledSection style={{ maxHeight: "70vh", overflowY: "scroll" }}>
         <StyledSectionTitle>Display Settings</StyledSectionTitle>
 
-        <div style={{ marginBottom: "16px" }}>
-          <StyledLabel>Default Node Width Mode:</StyledLabel>
-          <StyledDropdown
-            value={selectedNodeWidthMode}
-            onChange={(e) =>
-              setSelectedNodeWidthMode(e.target.value as nodeWidthModes)
-            }
-          >
-            {Object.values(nodeWidthModes).map((mode) => (
-              <option key={mode} value={mode}>
-                {mode}
-              </option>
-            ))}
-          </StyledDropdown>
-        </div>
-
-        <div>
-          <StyledLabel>Default Layout Mode:</StyledLabel>
-          <StyledDropdown
-            value={selectedLayoutMode}
-            onChange={(e) =>
-              setSelectedLayoutMode(e.target.value as layoutModes)
-            }
-          >
-            {Object.values(layoutModes).map((mode) => (
-              <option key={mode} value={mode}>
-                {mode}
-              </option>
-            ))}
-          </StyledDropdown>
-        </div>
-
         <div>
           <Checkbox
             label={"Allow movement of nodes (changes are not saved)"}
@@ -175,13 +141,6 @@ export const GraphSettings = ({ onClose }: { onClose: () => void }) => {
               setSelectedIsAnimated(checked);
             }}
           />
-          <Switch
-            label={"Show selected edge labels:"}
-            options={allLabelVisibilityOptions}
-            selected={selectedLabelVisibility}
-            selectOption={setSelectedLabelVisibility}
-            isShy={true}
-          />
           <Checkbox
             label={"Reverse sequence of reversed nodes"}
             checked={selectedReverseNodes}
@@ -189,6 +148,31 @@ export const GraphSettings = ({ onClose }: { onClose: () => void }) => {
               setSelectedReverseNodes(checked);
             }}
           />
+          
+          <Switch
+            label={"Show selected edge labels:"}
+            options={allLabelVisibilityOptions}
+            selected={selectedLabelVisibility}
+            selectOption={setSelectedLabelVisibility}
+            isShy={true}
+          />
+          <Switch
+            label={"Default Layout Mode:"}
+            options={Object.values(layoutModes)}
+            selected={selectedLayoutMode}
+            selectOption={(mode) => setSelectedLayoutMode(mode as layoutModes)}
+            isShy={true}
+          />
+          <Switch
+            label={"Default Node Width Mode:"}
+            options={Object.values(nodeWidthModes)}
+            selected={selectedNodeWidthMode}
+            selectOption={(mode) =>
+              setSelectedNodeWidthMode(mode as nodeWidthModes)
+            }
+            isShy={true}
+          />
+
           <Slider
             label={"Width of snake row:"}
             minValue={1000}
