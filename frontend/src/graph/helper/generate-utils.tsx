@@ -1,7 +1,7 @@
 import type { ArrowEdgeProps } from "../../components/arrow-edge/arrow-edge.props.tsx";
 import type { SequenceNodeProps } from "../../components/sequence-node/sequence-node.props.tsx";
 import {
-  labelVisibility,
+  labelVisibilities,
   layoutModes,
   localStorageKeys,
   nodeTypes,
@@ -117,7 +117,7 @@ export const applyLocalStorageValues = (
         );
         if (
           savedLabelVisibility &&
-          Object.values(labelVisibility).includes(savedLabelVisibility)
+          Object.values(labelVisibilities).includes(savedLabelVisibility)
         ) {
           useGraphStore.setState({ labelVisibility: savedLabelVisibility });
         }

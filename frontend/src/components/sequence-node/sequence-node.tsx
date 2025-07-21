@@ -81,6 +81,9 @@ const SequenceNode = memo(function SequenceNode({
   const updateNodeInternals = useUpdateNodeInternals();
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
+  const { setHoveredNode } = useGraphStore((state) => ({
+    setHoveredNode: state.setHoveredNode,
+  }));
 
   // Update node internals when isReversed changes
   useEffect(() => {
@@ -121,7 +124,10 @@ const SequenceNode = memo(function SequenceNode({
   }, [data.sequence, data.isReversed, reverseNodes]);
 
   return (
-    <div>
+    <div
+      onMouseEnter={() => setHoveredNode(id)}
+      onMouseLeave={() => setHoveredNode(null)}
+    >
       <div
         style={{
           position: "absolute",

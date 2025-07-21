@@ -1,5 +1,5 @@
 import { action, makeObservable, observable } from "mobx";
-import { labelVisibility, layoutModes, nodeWidthModes } from "./types.tsx";
+import { labelVisibilities, layoutModes, nodeWidthModes } from "./types.tsx";
 
 export const defaultPalette = {
   mode: "light",
@@ -81,7 +81,7 @@ export const defaultValues = {
   reverseNodes: true,
   numberOfAllowedIsoforms: 4,
   rowWidth: 3000,
-  labelVisibility: labelVisibility.always, // TODO implement usage
+  labelVisibility: labelVisibilities.always,
 };
 
 export const theme = {

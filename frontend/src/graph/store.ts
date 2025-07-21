@@ -16,7 +16,7 @@ import edges from "../../../generated/edges.json";
 import type { SequenceNodeProps } from "../components/sequence-node/sequence-node.props.tsx";
 import { defaultValues, theme } from "../theme";
 import {
-  type labelVisibility,
+  labelVisibilities,
   type layoutModes,
   localStorageKeys,
   nodeWidthModes,
@@ -43,6 +43,8 @@ export type RFState = {
   layoutMode: layoutModes;
   setLayoutMode: (layoutMode: layoutModes) => void;
   setNodeWidthMode: (nodeId: string, mode: nodeWidthModes) => void;
+  hoveredNode: string | null;
+  setHoveredNode: (nodeId: string | null) => void;
   isoformColorMapping: Record<string, string>;
   selectedIsoforms: string[];
   toggleIsoformSelection: (isoform: string) => void;
@@ -54,7 +56,7 @@ export type RFState = {
   reverseNodes: boolean;
   numberOfAllowedIsoforms: number;
   rowWidth: number;
-  labelVisibility: labelVisibility;
+  labelVisibility: labelVisibilities;
 };
 
 // ----- create nodes and edges -----
@@ -199,7 +201,10 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
       }, 100);
     }
   },
-
+  hoveredNode: null,
+  setHoveredNode: (nodeId: string | null) => {
+    set({ hoveredNode: nodeId });
+  },
   // --- isoform colored edges ---
   isoformColorMapping: initialIsoformColorMapping,
   selectedIsoforms: loadSelectedIsoforms(),

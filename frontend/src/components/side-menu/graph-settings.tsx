@@ -4,7 +4,8 @@ import {
   StyledSectionTitle,
 } from "../base-components";
 import {
-  labelVisibility,
+  labelVisibilities,
+  type labelVisibilities,
   layoutModes,
   localStorageKeys,
   nodeWidthModes,
@@ -68,9 +69,9 @@ export const GraphSettings = ({ onClose }: { onClose: () => void }) => {
     useState<number>(numberOfAllowedIsoforms);
   const [selectedRowWidth, setSelectedRowWidth] = useState<number>(rowWidth);
   const [selectedLabelVisibility, setSelectedLabelVisibility] =
-    useState<labelVisibility>(storeLabelVisibility);
+    useState<labelVisibilities>(storeLabelVisibility);
 
-  const allLabelVisibilityOptions = Object.values(labelVisibility);
+  const allLabelVisibilityOptions = Object.values(labelVisibilities);
   const numberOfAvailableIsoforms = Object.keys(isoformColorMapping).length;
 
   useEffect(() => {

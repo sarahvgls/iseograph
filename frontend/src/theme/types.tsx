@@ -49,10 +49,10 @@ export const Generic = {
 
 export type Generic = (typeof Generic)[keyof typeof Generic];
 
-export const labelVisibility = {
+export const labelVisibilities = {
   onHover: "onHover",
   always: "always",
 };
 
-export type labelVisibility =
-  (typeof labelVisibility)[keyof typeof labelVisibility];
+export type labelVisibilities =
+  (typeof labelVisibilities)[keyof typeof labelVisibilities];
