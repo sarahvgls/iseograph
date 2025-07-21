@@ -33,7 +33,10 @@ import {
 } from "../components/backdrop/backdrop.tsx";
 import { SettingsButton } from "../components/side-menu/settings-button.tsx";
 import { applyLocalStorageValues } from "./helper/generate-utils.tsx";
-import { ToggleButton } from "../components/on-screen-menu/toggle-button.tsx";
+import {
+  ToggleMapButton,
+  ToggleOnScreenMenuButton,
+} from "../components/on-screen-menu/toggle-button.tsx";
 
 const selector = (state: RFState) => ({
   nodes: state.nodes,
@@ -75,6 +78,7 @@ const Flow = () => {
   const [selectedFile, setSelectedFile] = useState<string>("");
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
   const [isOnScreenMenuOpen, setIsOnScreenMenuOpen] = useState(true);
+  const [isMapOpen, setIsMapOpen] = useState(true);
 
   const focusNodeWithDelay = useCallback(
     (nodeToBeFocused: SequenceNodeProps) => {
@@ -207,29 +211,49 @@ const Flow = () => {
           Proteoform graph visualization with React Flow library
         </Panel>
         <Panel position="top-right">
-          <ToggleButton
+          <ToggleOnScreenMenuButton
             setIsMenuOpen={setIsOnScreenMenuOpen}
             isMenuOpen={isOnScreenMenuOpen}
           />
+          <ToggleMapButton setIsMapOpen={setIsMapOpen} isMapOpen={isMapOpen} />
           <SettingsButton setIsSettingsOpen={setIsSideMenuOpen} />
         </Panel>
-        <MiniMap
-          style={{
-            width: 350,
-            height: 200,
-            borderRadius: 10,
-            border: "1px solid #ccc",
-            boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
-            transform: "translate(10%, 0%)",
-          }}
-          nodeComponent={DirectionMiniMapNode}
-          maskColor={"rgba(240, 240, 240, 0.6)"}
-          nodeStrokeWidth={8}
-          zoomable
-          pannable
-          inversePan={false}
-          position={"bottom-left"}
-        />
+        {isMapOpen && (
+          // TODO make slide in and out
+          <MiniMap
+            style={{
+              width: 350,
+              height: 200,
+              borderRadius: 10,
+              border: "1px solid #ccc",
+              boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
+              transform: "translate(10%, 0%)",
+            }}
+            nodeComponent={DirectionMiniMapNode}
+            maskColor={"rgba(240, 240, 240, 0.6)"}
+            nodeStrokeWidth={8}
+            zoomable
+            pannable
+            inversePan={false}
+            position={"bottom-left"}
+          />
+        )}
+        <Panel position="bottom-left">
+          {isMapOpen && (
+            <button
+              style={{
+                border: "none",
+                height: "30px",
+                position: "fixed",
+                left: 60,
+                bottom: 180,
+              }}
+              onClick={() => {
+                setIsMapOpen(false);
+              }}
+            >{`<<`}</button>
+          )}
+        </Panel>
         <StyledPanel position={"bottom-right"}>
           <OnScreenMenu
             isOpen={isOnScreenMenuOpen}

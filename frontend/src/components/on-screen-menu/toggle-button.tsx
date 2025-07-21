@@ -4,7 +4,7 @@ import { Icon } from "../icon";
 
 const StyledButton = styled.button<{ isOpen: boolean }>`
   position: fixed;
-  right: 80px;
+  right: 130px;
   bottom: calc(100vh - 70px);
   width: 45px;
   height: 45px;
@@ -27,7 +27,7 @@ const StyledButton = styled.button<{ isOpen: boolean }>`
   }
 `;
 
-export const ToggleButton = ({
+export const ToggleOnScreenMenuButton = ({
   setIsMenuOpen,
   isMenuOpen,
 }: {
@@ -43,6 +43,28 @@ export const ToggleButton = ({
       <Icon
         icon={"pencil_brush"}
         color={isMenuOpen ? "onPrimary" : "background"}
+      />
+    </StyledButton>
+  );
+};
+
+export const ToggleMapButton = ({
+  setIsMapOpen,
+  isMapOpen,
+}: {
+  setIsMapOpen: (isOpen: boolean) => void;
+  isMapOpen: boolean;
+}) => {
+  const toggleMenu = () => {
+    setIsMapOpen(!isMapOpen);
+  };
+
+  return (
+    <StyledButton style={{ right: 80 }} onClick={toggleMenu} isOpen={isMapOpen}>
+      <Icon
+        // TODO change icon to map
+        icon={"pencil_brush"}
+        color={isMapOpen ? "onPrimary" : "background"}
       />
     </StyledButton>
   );
