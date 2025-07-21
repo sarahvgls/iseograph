@@ -123,7 +123,9 @@ export const GraphSettings = ({ onClose }: { onClose: () => void }) => {
 
   return (
     <div>
-      <StyledSection style={{ maxHeight: "70vh", overflowY: "scroll" }}>
+      <StyledSection
+        style={{ maxHeight: "75vh", overflowY: "scroll", marginBottom: 0 }}
+      >
         <StyledSectionTitle>Display Settings</StyledSectionTitle>
 
         <div>
@@ -148,7 +150,7 @@ export const GraphSettings = ({ onClose }: { onClose: () => void }) => {
               setSelectedReverseNodes(checked);
             }}
           />
-          
+
           <Switch
             label={"Show selected edge labels:"}
             options={allLabelVisibilityOptions}

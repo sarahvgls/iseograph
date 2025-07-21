@@ -13,7 +13,7 @@ const SwitchOptions = styled.div`
   position: relative;
   background-color: #f0f0f0;
   border-radius: 4px;
-  height: 30px;
+  height: 40px;
   padding: 2px;
   box-sizing: border-box;
   width: 100%;
