@@ -5,7 +5,6 @@ import {
 } from "../base-components";
 import {
   labelVisibilities,
-  type labelVisibilities,
   layoutModes,
   localStorageKeys,
   nodeWidthModes,

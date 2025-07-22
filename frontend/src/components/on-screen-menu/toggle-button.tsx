@@ -4,7 +4,7 @@ import { Icon } from "../icon";
 
 const StyledButton = styled.button<{ isOpen: boolean }>`
   position: fixed;
-  right: 130px;
+  right: 80px;
   bottom: calc(100vh - 70px);
   width: 45px;
   height: 45px;
@@ -60,7 +60,11 @@ export const ToggleMapButton = ({
   };
 
   return (
-    <StyledButton style={{ right: 80 }} onClick={toggleMenu} isOpen={isMapOpen}>
+    <StyledButton
+      style={{ right: 130 }}
+      onClick={toggleMenu}
+      isOpen={isMapOpen}
+    >
       <Icon icon={"map"} color={isMapOpen ? "onPrimary" : "background"} />
     </StyledButton>
   );
