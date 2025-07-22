@@ -9,6 +9,7 @@ import type { ArrowEdgeProps } from "./arrow-edge.props.tsx";
 import useGraphStore from "../../graph/store.ts";
 import { shallow } from "zustand/shallow";
 import { theme } from "../../theme";
+import { labelVisibilities } from "../../theme/types.tsx";
 
 export default function ArrowEdge({
   id,
@@ -21,6 +22,8 @@ export default function ArrowEdge({
   style = {},
   label,
   data = {},
+  source,
+  target,
 }: EdgeProps<ArrowEdgeProps>) {
   const [, labelX, labelY] = getBezierPath({
     sourceX,
@@ -30,10 +33,17 @@ export default function ArrowEdge({
     targetY,
     targetPosition,
   });
-  const { isoformColorMapping, selectedIsoforms } = useGraphStore(
+  const {
+    isoformColorMapping,
+    selectedIsoforms,
+    hoveredNode,
+    labelVisibility,
+  } = useGraphStore(
     (state) => ({
       isoformColorMapping: state.isoformColorMapping,
       selectedIsoforms: state.selectedIsoforms,
+      hoveredNode: state.hoveredNode,
+      labelVisibility: state.labelVisibility,
     }),
     shallow,
   );
@@ -44,8 +54,34 @@ export default function ArrowEdge({
         )
       : ["Unknown"];
 
+  const isConnectedNodeHovered =
+    hoveredNode === source || hoveredNode === target;
+
   // prepare path elements to be rendered in the correct order
   const pathElements = [];
+
+  if (isConnectedNodeHovered) {
+    // add a gray wide edge underneath hovered edges
+    const [hoverPath] = getBezierPath({
+      sourceX,
+      sourceY,
+      sourcePosition,
+      targetX,
+      targetY,
+      targetPosition,
+    });
+    pathElements.push(
+      <BaseEdge
+        path={hoverPath}
+        style={{
+          strokeWidth: 20,
+          stroke: "rgba(218,218,218,0.48)",
+        }}
+        key={`${id}-hover`}
+        id={id}
+      />,
+    );
+  }
 
   const hasSelectedIsoform = isoforms.some((isoform) =>
     selectedIsoforms.includes(isoform),
@@ -200,26 +236,29 @@ export default function ArrowEdge({
       {/* Render multiple parallel paths for each isoform */}
       {pathElements}
 
-      {labelValid && (
-        <EdgeLabelRenderer>
-          <div
-            style={{
-              position: "absolute",
-              transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
-              background: markerColor,
-              color: markerLabelColor,
-              padding: "4px 8px",
-              borderRadius: "4px",
-              fontSize: 12,
-              fontWeight: 500,
-              pointerEvents: "all",
-              border: "1px solid #ccc",
-            }}
-          >
-            {labelValid}
-          </div>
-        </EdgeLabelRenderer>
-      )}
+      {labelValid &&
+        (labelVisibility === labelVisibilities.always ||
+          (labelVisibility === labelVisibilities.onHover &&
+            isConnectedNodeHovered)) && (
+          <EdgeLabelRenderer>
+            <div
+              style={{
+                position: "absolute",
+                transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
+                background: markerColor,
+                color: markerLabelColor,
+                padding: "4px 8px",
+                borderRadius: "4px",
+                fontSize: 12,
+                fontWeight: 500,
+                pointerEvents: "all",
+                border: "1px solid #ccc",
+              }}
+            >
+              {labelValid}
+            </div>
+          </EdgeLabelRenderer>
+        )}
     </>
   );
 }

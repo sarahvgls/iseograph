@@ -30,6 +30,10 @@ export const localStorageKeys = {
   layoutMode: "layoutMode",
   isAnimated: "isAnimated",
   allowInteraction: "allowInteraction",
+  reverseNodes: "reverseNodes",
+  numberOfAllowedIsoforms: "numberOfAllowedIsoforms",
+  rowWidth: "rowWidth",
+  labelVisibility: "labelVisibility",
   selectedIsoforms: "selectedIsoforms",
   isoformColorMapping: "isoformColorMapping",
   selectedFile: "selectedFile",
@@ -44,3 +48,11 @@ export const Generic = {
 };
 
 export type Generic = (typeof Generic)[keyof typeof Generic];
+
+export const labelVisibilities = {
+  onHover: "onHover",
+  always: "always",
+};
+
+export type labelVisibilities =
+  (typeof labelVisibilities)[keyof typeof labelVisibilities];

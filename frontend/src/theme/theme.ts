@@ -1,5 +1,5 @@
 import { action, makeObservable, observable } from "mobx";
-import { layoutModes, nodeWidthModes } from "./types.tsx";
+import { labelVisibilities, layoutModes, nodeWidthModes } from "./types.tsx";
 
 export const defaultPalette = {
   mode: "light",
@@ -72,38 +72,39 @@ export const defaultPalette = {
   backdropLight: "rgba(255,255,255,0.10)",
 };
 
-//TODO refactor: what is still needed
-export const theme = {
-  debugMode: false,
+// Values that can be changed by the user but are per default set to these values
+export const defaultValues = {
+  layoutMode: layoutModes.Snake,
+  nodeWidthMode: nodeWidthModes.Collapsed,
   isAnimated: false,
   allowInteraction: false,
+  reverseNodes: true,
   numberOfAllowedIsoforms: 4,
-  offsets: {
-    defaultWidthCollapsed: false,
-    defaultLength: 100,
-    largeWidth: 150,
-    defaultYSpacingBetweenNodes: 100,
-    debugYSpacingBetweenNodes: 500,
-    useXOffset: false, // TODO decide if xOffset is needed
-  },
-  layout: {
-    mode: layoutModes.Snake,
-    defaultNodeWidthMode: nodeWidthModes.Collapsed,
-    basic: {
-      direction: "LR",
-    },
-    snake: {
-      yOffsetBetweenRows: 300,
-      xOffsetBetweenNodes: 150,
-      maxAAsPerRow: 60, //not used
-      maxWidthPerRow: 3000,
-      maxNodesPerRow: 11, // not used
-      // TODO decide if feature needed
-      splitLargeNodes: false, // if true, large nodes will be split into smaller nodes when reaching the end of a line
-    },
+  rowWidth: 3000,
+  labelVisibility: labelVisibilities.always,
+};
+
+export const theme = {
+  debugMode: false, // only used in development
+  node: {
+    defaultWidth: 150,
+    defaultHeight: 100,
+    // TODO decide what is better
+    delayedRerendering: false, // if true, on node click the size of the node changes but the rerendering of the snake graph is delayed,
+    // meaning only applied when the next node is clicked for the last one
   },
   rowNode: {
     height: 300,
+  },
+  offsets: {
+    defaultYSpacingBetweenNodes: 100, // vertical distance between variations
+    debugYSpacingBetweenNodes: 500,
+  },
+  layout: {
+    snake: {
+      yOffsetBetweenRows: 300,
+      xOffsetBetweenNodes: 150,
+    },
   },
   colors: [
     defaultPalette.green,

@@ -14,8 +14,9 @@ import { createWithEqualityFn } from "zustand/traditional";
 import nodes from "../../../generated/nodes.json";
 import edges from "../../../generated/edges.json";
 import type { SequenceNodeProps } from "../components/sequence-node/sequence-node.props.tsx";
-import { theme } from "../theme";
+import { defaultValues, theme } from "../theme";
 import {
+  labelVisibilities,
   type layoutModes,
   localStorageKeys,
   nodeWidthModes,
@@ -42,6 +43,8 @@ export type RFState = {
   layoutMode: layoutModes;
   setLayoutMode: (layoutMode: layoutModes) => void;
   setNodeWidthMode: (nodeId: string, mode: nodeWidthModes) => void;
+  hoveredNode: string | null;
+  setHoveredNode: (nodeId: string | null) => void;
   isoformColorMapping: Record<string, string>;
   selectedIsoforms: string[];
   toggleIsoformSelection: (isoform: string) => void;
@@ -50,7 +53,10 @@ export type RFState = {
   isAnimated: boolean;
   setIsAnimated: (isAnimated: boolean) => void;
   allowInteraction: boolean;
-  setAllowInteraction: (allowInteraction: boolean) => void;
+  reverseNodes: boolean;
+  numberOfAllowedIsoforms: number;
+  rowWidth: number;
+  labelVisibility: labelVisibilities;
 };
 
 // ----- create nodes and edges -----
@@ -96,16 +102,19 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
       edges: applyEdgeChanges(changes, get().edges),
     });
   },
-  layoutMode: theme.layout.mode,
+
+  // --- layouting ---
+  layoutMode: defaultValues.layoutMode,
   setLayoutMode: async (layoutMode: layoutModes) => {
     set({ layoutMode });
 
-    const { nodes, edges, getInternalNodeFn } = get();
+    const { nodes, edges, rowWidth, getInternalNodeFn } = get();
 
     const [layoutedNodes, layoutedEdges] = await applyLayout(
       nodes,
       edges,
       layoutMode,
+      rowWidth,
       getInternalNodeFn,
     );
 
@@ -114,11 +123,13 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
       edges: layoutedEdges,
     });
   },
-  nodeWidthMode: theme.layout.defaultNodeWidthMode,
+
+  // --- width of nodes ---
+  nodeWidthMode: defaultValues.nodeWidthMode,
   setGlobalNodeWidthMode: async (nodeWidthMode: nodeWidthModes) => {
     set({ nodeWidthMode });
 
-    const { nodes, edges, getInternalNodeFn, layoutMode } = get();
+    const { nodes, edges, getInternalNodeFn, layoutMode, rowWidth } = get();
 
     // create altered nodes to be available for the internal nodes
     const alteredNodes = nodes.map((node) => ({
@@ -134,6 +145,7 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
       alteredNodes,
       edges,
       layoutMode,
+      rowWidth,
       getInternalNodeFn,
     );
 
@@ -159,25 +171,48 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
     set({ nodes: updatedNodes });
 
     // Reapply layout after changing the individual node width mode
-    applyLayout(
-      updatedNodes,
-      state.edges,
-      state.layoutMode,
-      state.getInternalNodeFn,
-    ).then(([layoutedNodes, layoutedEdges]) => {
-      set({
-        nodes: layoutedNodes,
-        edges: layoutedEdges,
+    if (theme.node.delayedRerendering) {
+      applyLayout(
+        updatedNodes,
+        state.edges,
+        state.layoutMode,
+        state.rowWidth,
+        state.getInternalNodeFn,
+      ).then(([layoutedNodes, layoutedEdges]) => {
+        set({
+          nodes: layoutedNodes,
+          edges: layoutedEdges,
+        });
       });
-    });
+    } else {
+      setTimeout(() => {
+        applyLayout(
+          updatedNodes,
+          state.edges,
+          state.layoutMode,
+          state.rowWidth,
+          state.getInternalNodeFn,
+        ).then(([layoutedNodes, layoutedEdges]) => {
+          set({
+            nodes: layoutedNodes,
+            edges: layoutedEdges,
+          });
+        });
+      }, 100);
+    }
   },
+  hoveredNode: null,
+  setHoveredNode: (nodeId: string | null) => {
+    set({ hoveredNode: nodeId });
+  },
+  // --- isoform colored edges ---
   isoformColorMapping: initialIsoformColorMapping,
   selectedIsoforms: loadSelectedIsoforms(),
   toggleIsoformSelection: (isoform: string) => {
     const { selectedIsoforms } = get();
     const newSelection = selectedIsoforms.includes(isoform)
       ? selectedIsoforms.filter((iso) => iso !== isoform)
-      : selectedIsoforms.length >= theme.numberOfAllowedIsoforms
+      : selectedIsoforms.length >= get().numberOfAllowedIsoforms
         ? selectedIsoforms
         : [...selectedIsoforms, isoform];
 
@@ -199,17 +234,20 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
 
     localStorage.setItem("isoformColorMapping", JSON.stringify(updatedMapping));
   },
-  isAnimated: theme.isAnimated,
+
+  // --- settings variables ---
+  isAnimated: defaultValues.isAnimated,
   setIsAnimated: (isAnimated: boolean) => {
     set({ isAnimated });
     set({
       edges: get().edges.map((edge) => ({ ...edge, animated: isAnimated })),
     });
   },
-  allowInteraction: theme.allowInteraction,
-  setAllowInteraction: (allowInteraction: boolean) => {
-    set({ allowInteraction });
-  },
+  allowInteraction: defaultValues.allowInteraction,
+  reverseNodes: defaultValues.reverseNodes,
+  numberOfAllowedIsoforms: defaultValues.numberOfAllowedIsoforms,
+  rowWidth: defaultValues.rowWidth,
+  labelVisibility: defaultValues.labelVisibility,
 }));
 
 export default useGraphStore;

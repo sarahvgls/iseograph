@@ -8,17 +8,16 @@ import {
 } from "../../theme/types.tsx";
 import Dagre from "@dagrejs/dagre";
 import type { SequenceNodeProps } from "../../components/sequence-node/sequence-node.props.tsx";
-import { theme } from "../../theme";
+import { defaultValues, theme } from "../../theme";
 import { applySnakeLayout } from "./snake-layout.tsx";
 
 const applyBasicLayoutDagre = (
   nodes: NodeTypes[],
   edges: Edge[],
-  options: { direction: string },
 ): [NodeTypes[], Edge[]] => {
   const g = new Dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
   g.setGraph({
-    rankdir: options.direction,
+    rankdir: "LR",
     ranksep: 60,
     nodesep: 50,
     align: "UL",
@@ -37,8 +36,8 @@ const applyBasicLayoutDagre = (
       width:
         node.data.nodeWidthMode === nodeWidthModes.Expanded
           ? sequenceLength
-          : theme.offsets.largeWidth,
-      height: theme.offsets.defaultLength,
+          : theme.node.defaultWidth,
+      height: theme.node.defaultHeight,
     });
   });
 
@@ -128,12 +127,11 @@ function addSymmetricalOffsetForVariations(
     const positionIndex = sourceToTargets[node.id].positionId;
 
     const yOffset = (intensityIndex - (siblings.length - 1) / 2) * spacing;
-    const xOffset = theme.offsets.useXOffset ? intensityIndex * 50 : 0;
 
     return {
       ...node,
       position: {
-        x: node.position.x + xOffset,
+        x: node.position.x,
         y: node.position.y + yOffset,
       },
       data: {
@@ -150,6 +148,7 @@ export const applyLayout = (
   nodes: NodeTypes[],
   edges: Edge[],
   layoutMode: layoutModes,
+  maxWidthPerRow: number,
   getInternalNode: ((id: string) => InternalNode | undefined) | null,
 ): Promise<[NodeTypes[], Edge[]]> => {
   // remove groups and reset layouting properties
@@ -164,8 +163,7 @@ export const applyLayout = (
         positionIndex: 0,
         intensityRank: 0,
         isReversed: false, // Reset isReversed
-        nodeWidthMode:
-          node.data.nodeWidthMode || theme.layout.defaultNodeWidthMode,
+        nodeWidthMode: node.data.nodeWidthMode || defaultValues.nodeWidthMode,
       },
     }));
 
@@ -173,9 +171,6 @@ export const applyLayout = (
     let [layoutedNodes, layoutedEdges] = applyBasicLayoutDagre(
       filteredNodes,
       edges,
-      {
-        direction: theme.layout.basic.direction,
-      },
     );
 
     [layoutedNodes, layoutedEdges] = addSymmetricalOffsetForVariations(
@@ -206,6 +201,7 @@ export const applyLayout = (
         const [snakeNodes, snakeEdges] = applySnakeLayout(
           layoutedNodes,
           layoutedEdges,
+          maxWidthPerRow,
           getInternalNode,
         );
 

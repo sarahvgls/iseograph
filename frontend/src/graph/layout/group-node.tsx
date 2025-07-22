@@ -7,11 +7,15 @@ export class GroupNode {
     border: "none",
     backgroundColor: "transparent",
     height: theme.rowNode.height,
-    width: theme.layout.snake.maxWidthPerRow,
     borderRadius: 0,
   };
 
-  static create(id: string, rowCount: number, isReversed: boolean): Node {
+  static create(
+    id: string,
+    rowCount: number,
+    isReversed: boolean,
+    rowWidth: number,
+  ): Node {
     return {
       id,
       type: "row",
@@ -23,7 +27,10 @@ export class GroupNode {
         label: `Row ${rowCount}`,
         isReversed,
       },
-      style: GroupNode.style,
+      style: {
+        width: rowWidth,
+        ...GroupNode.style,
+      },
       draggable: false,
     };
   }

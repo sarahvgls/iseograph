@@ -1,9 +1,8 @@
 import { type Edge, type InternalNode, type Node } from "@xyflow/react";
-import { theme } from "../../theme";
+import { defaultValues, theme } from "../../theme";
 import type { NodeTypes } from "../../theme/types.tsx";
 import type { SequenceNodeProps } from "../../components/sequence-node/sequence-node.props.tsx";
 import { GroupNode } from "./group-node.tsx";
-//import useGraphStore from "../store.ts";
 
 // Function that aligns nodes in a snake-like layout on the screen
 // - expects nodes to have correct node.data.positionIndex attributes
@@ -11,6 +10,7 @@ import { GroupNode } from "./group-node.tsx";
 export const applySnakeLayout = (
   nodes: NodeTypes[],
   edges: Edge[],
+  maxWidthPerRow: number = defaultValues.rowWidth,
   getInternalNode: ((id: string) => InternalNode | undefined) | null,
 ): [NodeTypes[], Edge[]] => {
   // --- helper functions ---
@@ -58,7 +58,9 @@ export const applySnakeLayout = (
 
   // Rows are represented by group nodes
   const groupNodes: Node[] = [];
-  groupNodes.push(GroupNode.create(rowId, rowCount, isCurrentRowReversed));
+  groupNodes.push(
+    GroupNode.create(rowId, rowCount, isCurrentRowReversed, maxWidthPerRow),
+  );
 
   // --- main layouting logic ---
   nodes = sortNodesByPositionIndex();
@@ -88,7 +90,7 @@ export const applySnakeLayout = (
     widthInCurrentRow += measuredWidth + theme.layout.snake.xOffsetBetweenNodes; // 100px offset between nodes
 
     // --- new row ---
-    if (widthInCurrentRow > 0.95 * theme.layout.snake.maxWidthPerRow) {
+    if (widthInCurrentRow > 0.95 * maxWidthPerRow) {
       // 95% to not overflow the row
       isCurrentRowReversed = !isCurrentRowReversed;
       widthInCurrentRow =
@@ -96,12 +98,14 @@ export const applySnakeLayout = (
       rowCount++;
 
       rowId = `group-${rowCount}`;
-      groupNodes.push(GroupNode.create(rowId, rowCount, isCurrentRowReversed));
+      groupNodes.push(
+        GroupNode.create(rowId, rowCount, isCurrentRowReversed, maxWidthPerRow),
+      );
     }
 
     // calculate x position
     xPosition = isCurrentRowReversed
-      ? theme.layout.snake.maxWidthPerRow -
+      ? maxWidthPerRow -
         widthInCurrentRow +
         measuredWidth / 2 -
         theme.layout.snake.xOffsetBetweenNodes

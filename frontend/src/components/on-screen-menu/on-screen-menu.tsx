@@ -1,6 +1,5 @@
 import {
   SecondaryButton,
-  StyledLabel,
   StyledSection,
   StyledSectionTitle,
 } from "../base-components";
@@ -11,7 +10,9 @@ import { shallow } from "zustand/shallow";
 import { useOutsidePress } from "../../helper/outside-press.tsx";
 import styled from "styled-components";
 import { theme } from "../../theme";
-import { layoutModes, nodeWidthModes } from "../../theme/types.tsx";
+import { layoutModes, nodeTypes, nodeWidthModes } from "../../theme/types.tsx";
+import { Switch } from "../base-components/switch.tsx";
+import type { SequenceNodeProps } from "../sequence-node/sequence-node.props.tsx";
 
 const MenuContainer = styled.div<{ isOpen: boolean }>`
   display: flex;
@@ -40,62 +41,17 @@ const ColorPickerBox = styled.div`
   pointer-events: auto;
 `;
 
-const SwitchContainer = styled.div`
-  background-color: #f8f9fa;
-  border-radius: 8px;
-  padding: 15px;
-  width: 250px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  align-self: flex-end;
-  pointer-events: auto;
-`;
-
-const SwitchOptions = styled.div`
-  display: flex;
-  position: relative;
-  background-color: #f0f0f0;
-  border-radius: 4px;
-  height: 30px;
-  padding: 2px;
-  box-sizing: border-box;
-  width: 100%;
-`;
-
-const SwitchOption = styled.button<{ isActive: boolean }>`
-  flex: 1;
-  border: none;
-  background: none;
-  cursor: pointer;
-  font-size: 12px;
-  position: relative;
-  z-index: 2;
-  color: ${(props) => (props.isActive ? "#fff" : "#333")};
-  transition: color 0.2s ease;
-  border-radius: 3px;
-  padding: 0;
-`;
-
-const Slider = styled.div<{ position: number; count: number }>`
-  position: absolute;
-  left: 0;
-  top: 2px;
-  bottom: 2px;
-  width: ${(props) => 100 / props.count}%;
-  background-color: #919191;
-  border-radius: 3px;
-  transition: transform 0.3s ease;
-  transform: translateX(${(props) => props.position * 100}%);
-  z-index: 1;
-`;
-
 export const OnScreenMenu = ({
   isOpen,
   setIsOpen,
+  focusNodeWithDelay,
 }: {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
+  focusNodeWithDelay: (nodeToBeFocused: SequenceNodeProps) => void;
 }) => {
   const {
+    nodes,
     isoformColorMapping,
     selectedIsoforms,
     toggleIsoformSelection,
@@ -107,6 +63,7 @@ export const OnScreenMenu = ({
     setNodeWidthMode,
   } = useGraphStore(
     (state) => ({
+      nodes: state.nodes,
       isoformColorMapping: state.isoformColorMapping,
       selectedIsoforms: state.selectedIsoforms,
       toggleIsoformSelection: state.toggleIsoformSelection,
@@ -132,6 +89,14 @@ export const OnScreenMenu = ({
     false,
   );
 
+  const changeLayoutMode = (mode: layoutModes) => {
+    setLayoutMode(mode);
+    const firstSequenceNode = nodes.find(
+      (node) => node.type === nodeTypes.SequenceNode,
+    ) as SequenceNodeProps;
+    focusNodeWithDelay(firstSequenceNode);
+  };
+
   const resetColors = () => {
     const defaultColors = theme.colors;
     Object.keys(isoformColorMapping).forEach((isoform, index) => {
@@ -152,53 +117,25 @@ export const OnScreenMenu = ({
   const allLayoutModes = Object.values(layoutModes);
   const allNodeWidthModes = Object.values(nodeWidthModes);
 
-  const activeLayoutIndex = allLayoutModes.findIndex(
-    (mode) => mode === layoutMode,
-  );
-  const activeWidthIndex = allNodeWidthModes.findIndex(
-    (mode) => mode === nodeWidthMode,
-  );
-
   return (
     <div>
       <MenuContainer isOpen={isOpen}>
-        <SwitchContainer>
-          <StyledLabel>Layout Mode</StyledLabel>
-          <SwitchOptions>
-            <Slider
-              position={activeLayoutIndex}
-              count={allLayoutModes.length}
-            />
-            {allLayoutModes.map((mode) => (
-              <SwitchOption
-                key={mode}
-                isActive={layoutMode === mode}
-                onClick={() => setLayoutMode(mode)}
-              >
-                {mode}
-              </SwitchOption>
-            ))}
-          </SwitchOptions>
-        </SwitchContainer>
-
-        <SwitchContainer>
-          <StyledLabel>Node Width Mode</StyledLabel>
-          <SwitchOptions>
-            <Slider
-              position={activeWidthIndex}
-              count={allNodeWidthModes.length}
-            />
-            {allNodeWidthModes.map((mode) => (
-              <SwitchOption
-                key={mode}
-                isActive={nodeWidthMode === mode}
-                onClick={() => setNodeWidthMode(mode)}
-              >
-                {mode}
-              </SwitchOption>
-            ))}
-          </SwitchOptions>
-        </SwitchContainer>
+        <Switch
+          label={"Layout Mode"}
+          options={allLayoutModes}
+          selected={layoutMode}
+          selectOption={changeLayoutMode}
+          isShy={false}
+        />
+        <Switch
+          label={"Node Width Mode"}
+          options={allNodeWidthModes}
+          selected={nodeWidthMode}
+          selectOption={(option) => {
+            setNodeWidthMode(option as nodeWidthModes);
+          }}
+          isShy={false}
+        />
 
         <StyledSection
           style={{

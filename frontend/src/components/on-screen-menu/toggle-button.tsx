@@ -27,7 +27,7 @@ const StyledButton = styled.button<{ isOpen: boolean }>`
   }
 `;
 
-export const ToggleButton = ({
+export const ToggleOnScreenMenuButton = ({
   setIsMenuOpen,
   isMenuOpen,
 }: {
@@ -44,6 +44,28 @@ export const ToggleButton = ({
         icon={"pencil_brush"}
         color={isMenuOpen ? "onPrimary" : "background"}
       />
+    </StyledButton>
+  );
+};
+
+export const ToggleMapButton = ({
+  setIsMapOpen,
+  isMapOpen,
+}: {
+  setIsMapOpen: (isOpen: boolean) => void;
+  isMapOpen: boolean;
+}) => {
+  const toggleMenu = () => {
+    setIsMapOpen(!isMapOpen);
+  };
+
+  return (
+    <StyledButton
+      style={{ right: 130 }}
+      onClick={toggleMenu}
+      isOpen={isMapOpen}
+    >
+      <Icon icon={"map"} color={isMapOpen ? "onPrimary" : "background"} />
     </StyledButton>
   );
 };
