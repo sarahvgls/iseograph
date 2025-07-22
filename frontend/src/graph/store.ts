@@ -50,6 +50,8 @@ export type RFState = {
   toggleIsoformSelection: (isoform: string) => void;
   deselectAllIsoforms: () => void;
   updateIsoformColor: (isoform: string, color: string) => void;
+  maxPeptidesNodes: number;
+  maxPeptidesEdges: number;
   isAnimated: boolean;
   setIsAnimated: (isAnimated: boolean) => void;
   allowInteraction: boolean;
@@ -60,10 +62,10 @@ export type RFState = {
 };
 
 // ----- create nodes and edges -----
-const customNodes: SequenceNodeProps[] = createNodes(
+const [customNodes, nodesMaxPeptides] = createNodes(
   nodes as SequenceNodeProps[],
 );
-const customEdges: ArrowEdgeProps[] = createEdges(edges as ArrowEdgeProps[]);
+const [customEdges, edgesMaxPeptides] = createEdges(edges as ArrowEdgeProps[]);
 
 // Generate color mapping for isoforms
 const initialIsoformColorMapping = generateIsoformColorMatching(
@@ -234,6 +236,10 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
 
     localStorage.setItem("isoformColorMapping", JSON.stringify(updatedMapping));
   },
+
+  // --- peptide features ---
+  maxPeptidesNodes: nodesMaxPeptides,
+  maxPeptidesEdges: edgesMaxPeptides,
 
   // --- settings variables ---
   isAnimated: defaultValues.isAnimated,

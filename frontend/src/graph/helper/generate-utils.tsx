@@ -10,39 +10,53 @@ import {
 import { theme } from "../../theme";
 import useGraphStore from "../store.ts";
 
+// --- Helper Functions ---
+const convertStringToList = (input: string): string[] => {
+  // split string at commas and trim whitespace
+  if (!input) return [];
+  const stringList = input.split(",").map((input) => input.trim());
+  const cleanedStringList = stringList.filter(
+    (item) => item.toLowerCase() !== "none",
+  );
+  return cleanedStringList;
+};
+
 // --- Nodes ---
 // create nodes of type sequence node for each node in the nodes.json file
 export const createNodes = (
   nodes: SequenceNodeProps[],
-): SequenceNodeProps[] => {
-  return nodes.map((node) => ({
+): [SequenceNodeProps[], number] => {
+  const newNodes = nodes.map((node) => ({
     ...node,
     type: nodeTypes.SequenceNode,
     data: {
+      ...node.data,
       sequence: node.data.sequence,
       intensity: node.data.intensity,
       feature: node.data.feature,
       nodeWidthMode: node.data.nodeWidthMode || nodeWidthModes.Collapsed, // default to Collapsed if not provided
       positionIndex: 0,
       intensityRank: 0,
+      peptides: convertStringToList(node.data.peptidesString || ""),
     },
   }));
+
+  let maxPeptides = 0;
+  newNodes.map((node) => {
+    maxPeptides = Math.max(maxPeptides, node.data.peptides.length);
+  });
+
+  return [newNodes, maxPeptides];
 };
 
 // --- Edges ---
-const convertIsoforms = (isoforms: string): string[] => {
-  // split string at commas and trim whitespace
-  if (!isoforms) return [];
-  return isoforms.split(",").map((isoform) => isoform.trim());
-};
-
 export const generateIsoformColorMatching = (
   edges: ArrowEdgeProps[],
 ): Record<string, string> => {
   const isoformsSet = new Set<string>();
   edges.forEach((edge) => {
     if (edge.source === "n0" && edge.data.isoformString) {
-      const isoforms = convertIsoforms(edge.data.isoformString);
+      const isoforms = convertStringToList(edge.data.isoformString);
       isoforms.forEach((isoform) => isoformsSet.add(isoform));
     }
   });
@@ -59,21 +73,31 @@ export const generateIsoformColorMatching = (
   return isoformsColors;
 };
 
-export const createEdges = (edges: ArrowEdgeProps[]): ArrowEdgeProps[] => {
+export const createEdges = (
+  edges: ArrowEdgeProps[],
+): [ArrowEdgeProps[], number] => {
   const isoformsToColors = generateIsoformColorMatching(edges);
+  let maxPeptides = 0;
 
-  return edges.map((edge) => ({
+  const newEdges = edges.map((edge) => ({
     ...edge,
     type: "arrow",
     animated: false,
     label: edge.data.generic || "none",
     data: {
       ...edge.data,
-      isoforms: convertIsoforms(edge.data.isoformString || ""),
+      isoforms: convertStringToList(edge.data.isoformString || ""),
       isoformsToColors: isoformsToColors || [],
       generic: edge.data.generic || "",
+      peptides: convertStringToList(edge.data.peptidesString || ""),
     },
   }));
+
+  newEdges.map((edge) => {
+    maxPeptides = Math.max(maxPeptides, edge.data.peptides.length);
+  });
+
+  return [newEdges, maxPeptides];
 };
 
 export const applyLocalStorageValues = (

@@ -7,5 +7,7 @@ export interface ArrowEdgeProps extends EdgeProps {
     isoforms?: string[];
     isoformString?: string;
     generic?: Generic;
+    peptides?: string[];
+    peptidesString?: string;
   };
 }

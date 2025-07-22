@@ -12,6 +12,8 @@ import { theme } from "../../theme";
 import { SequenceContainer } from "./sequence-container/sequence-container.tsx";
 import { memo, useEffect, useRef, useState } from "react";
 import useGraphStore, { type RFState } from "../../graph/store.ts";
+import { nodePeptideColor } from "../../controls/peptides-color.tsx";
+import { shallow } from "zustand/vanilla/shallow";
 
 const NodeWrapper = styled.div`
   display: flex;
@@ -81,9 +83,13 @@ const SequenceNode = memo(function SequenceNode({
   const updateNodeInternals = useUpdateNodeInternals();
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
-  const { setHoveredNode } = useGraphStore((state) => ({
-    setHoveredNode: state.setHoveredNode,
-  }));
+  const { setHoveredNode, maxPeptides } = useGraphStore(
+    (state) => ({
+      setHoveredNode: state.setHoveredNode,
+      maxPeptides: state.maxPeptidesNodes,
+    }),
+    shallow,
+  );
 
   // Update node internals when isReversed changes
   useEffect(() => {
@@ -110,11 +116,11 @@ const SequenceNode = memo(function SequenceNode({
   const hitboxHeight = size * scale * 2;
   const hitboxWidth = Math.max(containerWidth, theme.node.defaultWidth);
 
+  //reverse data.sequence string char by char when data.isReveresed
   const { reverseNodes } = useGraphStore(selector);
   const [sequence, setSequence] = useState<string>(data.sequence);
 
   useEffect(() => {
-    //reverse data.sequence string char by char when data.isReveresed
     if (data.isReversed && reverseNodes) {
       const reversedSequence = data.sequence.split("").reverse().join("");
       setSequence(reversedSequence);
@@ -122,6 +128,9 @@ const SequenceNode = memo(function SequenceNode({
       setSequence(data.sequence);
     }
   }, [data.sequence, data.isReversed, reverseNodes]);
+
+  // variables for peptide color management
+  const peptideCount = data.peptides?.length || 0;
 
   return (
     <div
@@ -147,7 +156,15 @@ const SequenceNode = memo(function SequenceNode({
         <Bar $intensity={data.intensity} />
       </NodeToolbar>
 
-      <NodeWrapper>
+      <NodeWrapper
+        style={{
+          zIndex: 0,
+          paddingTop: "10px",
+          paddingBottom: "10px",
+          backgroundColor: nodePeptideColor(peptideCount, maxPeptides),
+          borderRadius: "15px",
+        }}
+      >
         <StyledHandleLeft
           type={data.isReversed ? "source" : "target"}
           position={Position.Left}

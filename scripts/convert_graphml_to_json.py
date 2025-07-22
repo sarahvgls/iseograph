@@ -27,7 +27,8 @@ def convert_graphml_to_json(input_file, output_dir):
             "type": "custom",
             "data": {"sequence": node[1]["aminoacid"],
                      "intensity": randint(1, 5),
-                     "feature": node[1].get("feature", "")
+                     "feature": node[1].get("feature", ""),
+                     "peptidesString": node[1].get("peptides", ""),
                      },
             "position": {"x": node[1]["position"] * 100 if "position" in node[1] else -100, "y": 0},  # basic layout
         }
@@ -48,6 +49,7 @@ def convert_graphml_to_json(input_file, output_dir):
             "data": {
                 "isoformString": data.get("isoforms", ""),
                 "generic": data.get("generic", ""),
+                "peptidesString": data.get("peptides", ""),
             },
         }
         for source, target, data in G.edges(data=True)
