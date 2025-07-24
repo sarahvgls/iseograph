@@ -24,4 +24,5 @@ urlpatterns = [
     path("get_csrf_token/", views.get_csrf_token, name="get_csrf_token"),
     path('api/get_available_files/', views.get_available_files, name='get_available_files'),
     path('api/convert_file/', views.convert_file, name='convert_file'),
+    path('api/generate_base_graph/', views.generate_base_graph, name='generate_base_graph'),
 ]

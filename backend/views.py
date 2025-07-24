@@ -1,8 +1,10 @@
 import json
 import os
+import subprocess
 from django.views.decorators.csrf import ensure_csrf_cookie
 
 from django.http import JsonResponse
+import requests
 
 from backend.consts import PROJECT_ROOT_DIR, TEST_MODE
 from scripts.convert_graphml_to_json import convert_graphml_to_json
@@ -45,6 +47,13 @@ def run_conversion_script(file_name: str) -> None:
 
     convert_graphml_to_json(input_file, output_dir)
 
+def load_protein_file(id):
+    url = f"https://rest.uniprot.org/uniprotkb/{id}.txt"
+    r = requests.get(url)
+    r.raise_for_status()
+    protein_file = f"../data/{id}.txt"
+    protein_file.write_bytes(r.content)
+    return protein_file
 
 # --- api calls ---
 
@@ -76,3 +85,69 @@ def convert_file(request):
 
     run_conversion_script(file_name)
     return JsonResponse({"success": True, "message": f"File '{file_name}' converted successfully."})
+
+@ensure_csrf_cookie
+def generate_base_graph(request):
+    """
+    API endpoint to generate a graph with this organizations fork of protgraph.
+    """
+    if request.method != "POST":
+        return JsonResponse({"success": False, "message": "Invalid request method. Use POST."}, status=405)
+    data = json.loads(request.body)
+    protein_id = data.get("protein_id")
+
+    path_to_protein_file = load_protein_file(protein_id)
+    output_folder_path = "../data"
+
+    features = ""
+    if "features" in data:
+        for feature in data.get("features"):
+            features = features + f"-ft {feature}"
+    
+    peptide_file = ""
+    if "peptide_file" in data:    
+        peptide_file = "-sg -pf " + data.get("peptide_file")
+
+    metadata_file = ""
+    if "metadata_file" in data:    
+        metadata_file = "-mf " + data.get("metadata_file")
+    
+    compare_column = ""
+    if "compare_column" in data:
+        compare_column = "-cc " + data.get("compare_colum")
+    
+    intensity = ""
+    if "intensity" in data:
+        intensity = "-int"
+    
+    count = ""
+    if "count" in data:
+        count = "-cpep"
+    
+    merge_peptides = ""
+    if "merge_peptides" in data:
+        merge_peptides = "-mp"
+    
+    o_aggregation = ""
+    if "o_aggregation" in data:
+        o_aggregation = "-oi " + data.get("o_aggregation")
+    
+    m_aggregation = ""
+    if "m_aggregation" in data:
+        m_aggregation = "-oi " + data.get("m_aggregation")
+
+    cmd_string = f"protgraph -egraphml {path_to_protein_file} \
+                --export_output_folder={output_folder_path} \
+                {features} \
+                {peptide_file} \
+                {metadata_file} \
+                {compare_column} \
+                {intensity} \
+                {count} \
+                {merge_peptides} \
+                {m_aggregation} \
+                {o_aggregation} \
+                -d skip"
+    subprocess.run(cmd_string, shell=True)
+    
+    return JsonResponse({"success": True, "message": f"Generated a graph as .graphml successfully."})
