@@ -100,40 +100,40 @@ def generate_base_graph(request):
     output_folder_path = "../data"
 
     features = ""
-    if "features" in data:
+    if "features" in data:  #arg sollte eine Liste sein, werte in der List nur aus dieser Auswahl MUTAGEN, VARIANT, CONFLICT
         for feature in data.get("features"):
             features = features + f"-ft {feature}"
     
-    peptide_file = ""
-    if "peptide_file" in data:    
+    peptide_file = ""#quasi optional, aber müssen wa nochmal drüber reden
+    if "peptide_file" in data:    #ein pfad 
         peptide_file = "-sg -pf " + data.get("peptide_file")
 
     metadata_file = ""
-    if "metadata_file" in data:    
+    if "metadata_file" in data:    #einpfad, optional
         metadata_file = "-mf " + data.get("metadata_file")
     
     compare_column = ""
-    if "compare_column" in data:
+    if "compare_column" in data: #ein string, der einem Spaltennamen aus metadata file entspricht, welcher nicht Sample ist, optional
         compare_column = "-cc " + data.get("compare_colum")
     
-    intensity = ""
+    intensity = "" #optional
     if "intensity" in data:
         intensity = "-int"
     
-    count = ""
+    count = "" # optional
     if "count" in data:
         count = "-cpep"
     
-    merge_peptides = ""
+    merge_peptides = "" #optional
     if "merge_peptides" in data:
         merge_peptides = "-mp"
     
-    o_aggregation = ""
-    if "o_aggregation" in data:
+    o_aggregation = "" # optional
+    if "o_aggregation" in data: #string, auswahl aus median, sum, mean
         o_aggregation = "-oi " + data.get("o_aggregation")
     
     m_aggregation = ""
-    if "m_aggregation" in data:
+    if "m_aggregation" in data:#string, auswahl aus median, sum, mean (default median)
         m_aggregation = "-oi " + data.get("m_aggregation")
 
     cmd_string = f"protgraph -egraphml {path_to_protein_file} \
