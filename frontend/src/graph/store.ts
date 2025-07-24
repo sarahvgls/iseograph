@@ -20,6 +20,7 @@ import {
   type layoutModes,
   localStorageKeys,
   nodeWidthModes,
+  type PeptideLog,
 } from "../theme/types.tsx";
 import { applyLayout } from "./layout";
 import type { ArrowEdgeProps } from "../components/arrow-edge/arrow-edge.props.tsx";
@@ -52,6 +53,9 @@ export type RFState = {
   updateIsoformColor: (isoform: string, color: string) => void;
   maxPeptidesNodes: number;
   maxPeptidesEdges: number;
+  getPeptides: (nodeId: string) => PeptideLog;
+  peptides: Record<string, PeptideLog>;
+  intensitySources: string[];
   isAnimated: boolean;
   setIsAnimated: (isAnimated: boolean) => void;
   allowInteraction: boolean;
@@ -62,10 +66,12 @@ export type RFState = {
 };
 
 // ----- create nodes and edges -----
-const [customNodes, nodesMaxPeptides] = createNodes(
-  nodes as SequenceNodeProps[],
+const [customNodes, nodesMaxPeptides, intensitySources, peptidesDict] =
+  createNodes(nodes as unknown as SequenceNodeProps[]);
+const [customEdges, edgesMaxPeptides] = createEdges(
+  edges as ArrowEdgeProps[],
+  intensitySources,
 );
-const [customEdges, edgesMaxPeptides] = createEdges(edges as ArrowEdgeProps[]);
 
 // Generate color mapping for isoforms
 const initialIsoformColorMapping = generateIsoformColorMatching(
@@ -240,6 +246,11 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
   // --- peptide features ---
   maxPeptidesNodes: nodesMaxPeptides,
   maxPeptidesEdges: edgesMaxPeptides,
+  intensitySources: intensitySources,
+  peptides: peptidesDict,
+  getPeptides: (nodeId: string) => {
+    return get().peptides[nodeId] || [];
+  },
 
   // --- settings variables ---
   isAnimated: defaultValues.isAnimated,

@@ -6,15 +6,20 @@ import {
   localStorageKeys,
   nodeTypes,
   nodeWidthModes,
+  type PeptideLog,
 } from "../../theme/types.tsx";
 import { theme } from "../../theme";
 import useGraphStore from "../store.ts";
+import { convertStringsToPeptideLog } from "./peptide-conversion.tsx";
 
 // --- Helper Functions ---
 const convertStringToList = (input: string): string[] => {
   // split string at commas and trim whitespace
   if (!input) return [];
-  const stringList = input.split(",").map((input) => input.trim());
+  const stringList = input
+    .replace(/[()]/g, "")
+    .split(",")
+    .map((input) => input.trim());
   const cleanedStringList = stringList.filter(
     (item) => item.toLowerCase() !== "none",
   );
@@ -25,28 +30,51 @@ const convertStringToList = (input: string): string[] => {
 // create nodes of type sequence node for each node in the nodes.json file
 export const createNodes = (
   nodes: SequenceNodeProps[],
-): [SequenceNodeProps[], number] => {
-  const newNodes = nodes.map((node) => ({
-    ...node,
-    type: nodeTypes.SequenceNode,
-    data: {
-      ...node.data,
-      sequence: node.data.sequence,
-      intensity: node.data.intensity,
-      feature: node.data.feature,
-      nodeWidthMode: node.data.nodeWidthMode || nodeWidthModes.Collapsed, // default to Collapsed if not provided
-      positionIndex: 0,
-      intensityRank: 0,
-      peptides: convertStringToList(node.data.peptidesString || ""),
-    },
-  }));
+): [SequenceNodeProps[], number, string[], Record<string, PeptideLog>] => {
+  const startNode = nodes.find((node) => node.data.sequence === "__start__");
+  const intensitySources = convertStringToList(
+    startNode?.data.intensitiesString || "",
+  );
 
+  // map node id to peptideLogs
+  let peptidesDict: Record<string, PeptideLog> = {};
+
+  //
+  const newNodes = nodes.map((node) => {
+    const peptides = convertStringToList(node.data.peptidesString);
+    const intensities = convertStringToList(node.data.intensitiesString || "");
+    const peptideLog = convertStringsToPeptideLog(
+      intensitySources,
+      peptides,
+      node,
+    );
+
+    peptidesDict[node.id] = peptideLog;
+
+    return {
+      ...node,
+      type: nodeTypes.SequenceNode,
+      data: {
+        ...node.data,
+        sequence: node.data.sequence,
+        feature: node.data.feature,
+        nodeWidthMode: node.data.nodeWidthMode || nodeWidthModes.Collapsed, // default to Collapsed if not provided
+        positionIndex: 0,
+        intensityRank: 0,
+        peptides: peptides,
+        intensities: intensities,
+        peptideLogs: peptideLog,
+      },
+    };
+  });
+
+  // iterate over all nodes and calculate the maximum number of peptides
   let maxPeptides = 0;
   newNodes.map((node) => {
     maxPeptides = Math.max(maxPeptides, node.data.peptides.length);
   });
 
-  return [newNodes, maxPeptides];
+  return [newNodes, maxPeptides, intensitySources, peptidesDict];
 };
 
 // --- Edges ---
@@ -75,23 +103,37 @@ export const generateIsoformColorMatching = (
 
 export const createEdges = (
   edges: ArrowEdgeProps[],
+  intensitySources: string[],
 ): [ArrowEdgeProps[], number] => {
   const isoformsToColors = generateIsoformColorMatching(edges);
   let maxPeptides = 0;
 
-  const newEdges = edges.map((edge) => ({
-    ...edge,
-    type: "arrow",
-    animated: false,
-    label: edge.data.generic || "none",
-    data: {
-      ...edge.data,
-      isoforms: convertStringToList(edge.data.isoformString || ""),
-      isoformsToColors: isoformsToColors || [],
-      generic: edge.data.generic || "",
-      peptides: convertStringToList(edge.data.peptidesString || ""),
-    },
-  }));
+  const newEdges = edges.map((edge) => {
+    const peptides = convertStringToList(edge.data.peptidesString || "");
+    const intensities = convertStringToList(edge.data.intensitiesString || "");
+    const peptideLog = convertStringsToPeptideLog(
+      intensitySources,
+      peptides,
+      undefined,
+      edge,
+    );
+
+    return {
+      ...edge,
+      type: "arrow",
+      animated: false,
+      label: edge.data.generic || "none",
+      data: {
+        ...edge.data,
+        isoforms: convertStringToList(edge.data.isoformString || ""),
+        isoformsToColors: isoformsToColors || [],
+        generic: edge.data.generic || "",
+        peptides: peptides,
+        intensities: intensities,
+        peptideLogs: peptideLog,
+      },
+    };
+  });
 
   newEdges.map((edge) => {
     maxPeptides = Math.max(maxPeptides, edge.data.peptides.length);

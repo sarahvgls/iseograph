@@ -38,6 +38,7 @@ import {
   ToggleOnScreenMenuButton,
 } from "../components/on-screen-menu/toggle-button.tsx";
 import { MiniMapContainer } from "../components/minimap/minimap-container.tsx";
+import { PeptideMonitor } from "../components/peptide-monitor/peptide-monitor.tsx";
 
 const selector = (state: RFState) => ({
   nodes: state.nodes,
@@ -210,6 +211,7 @@ const Flow = () => {
         />
         <Panel position="top-left">
           Proteoform graph visualization with React Flow library
+          <PeptideMonitor />
         </Panel>
         <Panel position="top-right">
           <ToggleOnScreenMenuButton

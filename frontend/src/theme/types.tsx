@@ -56,3 +56,30 @@ export const labelVisibilities = {
 
 export type labelVisibilities =
   (typeof labelVisibilities)[keyof typeof labelVisibilities];
+
+export interface IntensitiesPerPeptide {
+  // per node there may be multiple peptides, each having multiple intensities from different sources
+  source: string;
+  intensity: number;
+}
+
+export interface PeptideEntry {
+  peptide: string;
+  intensities: IntensitiesPerPeptide[];
+}
+
+export interface IntensityStats {
+  // per node there shall be one work-by intensity which is based on the median/mean/max/min intensity of all peptides.
+  // this is still constrained by its source
+  medianIntensity: number;
+  meanIntensity: number;
+  maxIntensity: number;
+  minIntensity: number;
+}
+
+export type IntensityStatsBySource = Record<string, IntensityStats>;
+
+export interface PeptideLog {
+  peptideEntries: PeptideEntry[];
+  intensities?: IntensityStatsBySource;
+}
