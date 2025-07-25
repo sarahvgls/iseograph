@@ -29,6 +29,7 @@ import {
   createNodes,
   generateIsoformColorMatching,
 } from "./helper/generate-utils.tsx";
+import type { colorScaleOptions } from "../controls/peptides-color.tsx";
 
 export type RFState = {
   nodes: Node[];
@@ -56,6 +57,8 @@ export type RFState = {
   getPeptides: (nodeId: string) => PeptideLog;
   peptides: Record<string, PeptideLog>;
   intensitySources: string[];
+  colorScale: colorScaleOptions;
+  setColorScale: (colorScale: colorScaleOptions) => void;
   isAnimated: boolean;
   setIsAnimated: (isAnimated: boolean) => void;
   allowInteraction: boolean;
@@ -250,6 +253,11 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
   peptides: peptidesDict,
   getPeptides: (nodeId: string) => {
     return get().peptides[nodeId] || [];
+  },
+  colorScale: theme.edgeGlow.defaultColorScale,
+  setColorScale: (colorScale: colorScaleOptions) => {
+    set({ colorScale });
+    localStorage.setItem(localStorageKeys.peptideColorScale, colorScale);
   },
 
   // --- settings variables ---

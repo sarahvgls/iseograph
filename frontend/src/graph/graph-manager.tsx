@@ -39,6 +39,8 @@ import {
 } from "../components/on-screen-menu/toggle-button.tsx";
 import { MiniMapContainer } from "../components/minimap/minimap-container.tsx";
 import { PeptideMonitor } from "../components/peptide-monitor/peptide-monitor.tsx";
+import { OnScreenPeptidesMenu } from "../components/on-screen-peptides-menu/on-screen-peptides-menu.tsx";
+import styled from "styled-components";
 
 const selector = (state: RFState) => ({
   nodes: state.nodes,
@@ -60,6 +62,16 @@ const edgeTypes = {
   arrow: ArrowEdge,
 };
 
+const MenuStackContainer = styled.div`
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  gap: 15px;
+`;
+
 const Flow = () => {
   const [isInitializing, setIsInitializing] = useState(true);
   const { getInternalNode } = useReactFlow();
@@ -79,6 +91,8 @@ const Flow = () => {
   );
   const [selectedFile, setSelectedFile] = useState<string>("");
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
+  const [isOnScreenPeptideMenuOpen, setIsOnScreenPeptideMenuOpen] =
+    useState(true);
   const [isOnScreenMenuOpen, setIsOnScreenMenuOpen] = useState(true);
   const [isMapOpen, setIsMapOpen] = useState(true);
 
@@ -254,11 +268,17 @@ const Flow = () => {
           />
         </MiniMapContainer>
         <StyledPanel position={"bottom-right"}>
-          <OnScreenMenu
-            isOpen={isOnScreenMenuOpen}
-            setIsOpen={setIsOnScreenMenuOpen}
-            focusNodeWithDelay={focusNodeWithDelay}
-          />
+          <MenuStackContainer>
+            <OnScreenPeptidesMenu
+              isOpen={isOnScreenPeptideMenuOpen}
+              setIsOpen={setIsOnScreenPeptideMenuOpen}
+            />
+            <OnScreenMenu
+              isOpen={isOnScreenMenuOpen}
+              setIsOpen={setIsOnScreenMenuOpen}
+              focusNodeWithDelay={focusNodeWithDelay}
+            />
+          </MenuStackContainer>
         </StyledPanel>
       </ReactFlow>
 

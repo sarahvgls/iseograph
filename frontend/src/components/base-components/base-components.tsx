@@ -18,6 +18,35 @@ export const StyledSectionTitle = styled.h3`
   padding-bottom: 8px;
 `;
 
+export const StyledSectionTitleWithButton = ({
+  setIsOpen,
+  title,
+}: {
+  setIsOpen: (isOpen: boolean) => void;
+  title: string;
+}) => {
+  return (
+    <StyledSectionTitle>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <div>{title}</div>
+        <button
+          style={{ border: "none", height: "30px" }}
+          onClick={() => {
+            setIsOpen(false);
+          }}
+        >{`>>`}</button>
+      </div>
+    </StyledSectionTitle>
+  );
+};
+
 export const StyledLabel = styled.label`
   display: block;
   margin-bottom: 8px;

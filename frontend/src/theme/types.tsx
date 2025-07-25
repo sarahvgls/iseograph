@@ -38,6 +38,7 @@ export const localStorageKeys = {
   isoformColorMapping: "isoformColorMapping",
   selectedFile: "selectedFile",
   newProteinName: "newProteinName",
+  peptideColorScale: "peptideColorScale",
 };
 
 // --- edge related ---
@@ -56,6 +57,23 @@ export const labelVisibilities = {
 
 export type labelVisibilities =
   (typeof labelVisibilities)[keyof typeof labelVisibilities];
+
+export const glowMethods = {
+  intensity: "intensity",
+  count: "count",
+};
+
+export type glowMethods = (typeof glowMethods)[keyof typeof glowMethods];
+
+export const intensityMethods = {
+  median: "median",
+  mean: "mean",
+  max: "max",
+  min: "min",
+};
+
+export type intensityMethods =
+  (typeof intensityMethods)[keyof typeof intensityMethods];
 
 export interface IntensitiesPerPeptide {
   // per node there may be multiple peptides, each having multiple intensities from different sources

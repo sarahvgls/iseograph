@@ -40,6 +40,7 @@ export default function ArrowEdge({
     hoveredNode,
     labelVisibility,
     maxPeptides,
+    colorScale,
   } = useGraphStore(
     (state) => ({
       isoformColorMapping: state.isoformColorMapping,
@@ -47,6 +48,7 @@ export default function ArrowEdge({
       hoveredNode: state.hoveredNode,
       labelVisibility: state.labelVisibility,
       maxPeptides: state.maxPeptidesEdges,
+      colorScale: state.colorScale,
     }),
     shallow,
   );
@@ -81,7 +83,7 @@ export default function ArrowEdge({
       path={peptidePath}
       style={{
         strokeWidth: 30,
-        stroke: edgePeptideColor(peptideCount, maxPeptides),
+        stroke: edgePeptideColor(peptideCount, maxPeptides, colorScale),
       }}
       key={`${id}-peptide`}
       id={id}

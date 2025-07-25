@@ -1,7 +1,7 @@
 import {
   SecondaryButton,
   StyledSection,
-  StyledSectionTitle,
+  StyledSectionTitleWithButton,
 } from "../base-components";
 import { HexColorPicker } from "react-colorful";
 import { useRef, useState } from "react";
@@ -19,12 +19,9 @@ const MenuContainer = styled.div<{ isOpen: boolean }>`
   flex-direction: row;
   align-items: flex-end;
   gap: 15px;
-  pointer-events: none; /* Allow clicks to pass through to the graph by default */
-  position: fixed;
-  right: ${({ isOpen }) => (isOpen ? "20px" : "-100%")};
-  bottom: 20px;
-  transition: right 0.3s ease-in-out;
-  z-index: 10;
+  transform: translateX(${({ isOpen }) => (isOpen ? "0" : "100%")});
+  transition: transform 0.3s ease-in-out;
+  pointer-events: none;
 `;
 
 const ColorPickerBox = styled.div`
@@ -120,6 +117,7 @@ export const OnScreenMenu = ({
   return (
     <div>
       <MenuContainer isOpen={isOpen}>
+        {/*--- Graph Settings Switches ---*/}
         <Switch
           label={"Layout Mode"}
           options={allLayoutModes}
@@ -137,32 +135,18 @@ export const OnScreenMenu = ({
           isShy={false}
         />
 
+        {/*--- Isoform color selection ---*/}
         <StyledSection
           style={{
             marginBottom: 0,
             boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
-            pointerEvents:
-              "auto" /* Re-enable pointer events for this element */,
+            pointerEvents: "auto",
           }}
         >
-          <StyledSectionTitle>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <div>Isoforms and Colors</div>
-              <button
-                style={{ border: "none", height: "30px" }}
-                onClick={() => {
-                  setIsOpen(false);
-                }}
-              >{`>>`}</button>
-            </div>
-          </StyledSectionTitle>
+          <StyledSectionTitleWithButton
+            setIsOpen={setIsOpen}
+            title={"Isoform-colored edges"}
+          />
           <div
             style={{
               marginTop: "15px",

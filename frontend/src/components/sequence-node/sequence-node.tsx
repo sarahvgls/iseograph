@@ -1,7 +1,6 @@
 import {
   Handle,
   type NodeProps,
-  NodeToolbar,
   Position,
   useStore,
   useUpdateNodeInternals,
@@ -31,17 +30,6 @@ const StyledNode = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-`;
-
-const Bar = styled.div<{ $intensity: number }>`
-  width: 10%;
-  height: ${({ $intensity }) => $intensity * 100}px;
-  background-color: #ddd;
-  border-radius: 5px;
-  margin: 5px auto 0 auto; /* Top margin and horizontal centering */
-  position: relative;
-  overflow: hidden;
-  transition: height 0.3s ease-in-out;
 `;
 
 const DirectionArrow = styled.svg<{ $isReversed?: boolean }>`
@@ -83,10 +71,11 @@ const SequenceNode = memo(function SequenceNode({
   const updateNodeInternals = useUpdateNodeInternals();
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
-  const { setHoveredNode, maxPeptides } = useGraphStore(
+  const { setHoveredNode, maxPeptides, colorScale } = useGraphStore(
     (state) => ({
       setHoveredNode: state.setHoveredNode,
       maxPeptides: state.maxPeptidesNodes,
+      colorScale: state.colorScale,
     }),
     shallow,
   );
@@ -149,19 +138,16 @@ const SequenceNode = memo(function SequenceNode({
         }}
       />
 
-      <NodeToolbar isVisible={false} position={Position.Top}>
-        <div
-          style={{ backgroundColor: "#000", width: "10px", height: "10px" }}
-        ></div>
-        <Bar $intensity={data.intensity} />
-      </NodeToolbar>
-
       <NodeWrapper
         style={{
           zIndex: 0,
           paddingTop: "10px",
           paddingBottom: "10px",
-          backgroundColor: nodePeptideColor(peptideCount, maxPeptides),
+          backgroundColor: nodePeptideColor(
+            peptideCount,
+            maxPeptides,
+            colorScale,
+          ),
           borderRadius: "15px",
         }}
       >

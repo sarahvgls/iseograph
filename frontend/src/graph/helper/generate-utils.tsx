@@ -145,9 +145,9 @@ export const createEdges = (
 export const applyLocalStorageValues = (
   setSelectedFile: (file: string) => void,
 ) => {
-  // iterate over localStorageKeys:
   for (const key of Object.values(localStorageKeys)) {
     switch (key) {
+      // special values
       case localStorageKeys.selectedFile:
         setSelectedFile(
           localStorage.getItem(localStorageKeys.selectedFile) || "",
@@ -189,6 +189,16 @@ export const applyLocalStorageValues = (
         }
         break;
       }
+      case localStorageKeys.peptideColorScale: {
+        const savedPeptideColorScale = localStorage.getItem(
+          localStorageKeys.peptideColorScale,
+        );
+        if (savedPeptideColorScale) {
+          useGraphStore.setState({ colorScale: savedPeptideColorScale });
+        }
+        break;
+      }
+
       // boolean values
       case localStorageKeys.allowInteraction:
       case localStorageKeys.reverseNodes: {
@@ -214,6 +224,7 @@ export const applyLocalStorageValues = (
         }
         break;
       }
+
       // numeric values
       case localStorageKeys.rowWidth:
       case localStorageKeys.numberOfAllowedIsoforms: {
@@ -228,6 +239,8 @@ export const applyLocalStorageValues = (
         }
         break;
       }
+
+      // JSON values
       case localStorageKeys.selectedIsoforms:
       case localStorageKeys.isoformColorMapping: {
         const selectedJSONValue = localStorage.getItem(key);
