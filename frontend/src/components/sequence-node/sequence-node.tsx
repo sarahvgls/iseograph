@@ -71,11 +71,23 @@ const SequenceNode = memo(function SequenceNode({
   const updateNodeInternals = useUpdateNodeInternals();
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
-  const { setHoveredNode, maxPeptides, colorScale } = useGraphStore(
+  const {
+    setHoveredNode,
+    maxPeptides,
+    colorScale,
+    glowMethod,
+    intensityMethod,
+    intensitySource,
+    getPeptides,
+  } = useGraphStore(
     (state) => ({
       setHoveredNode: state.setHoveredNode,
       maxPeptides: state.maxPeptidesNodes,
       colorScale: state.colorScale,
+      glowMethod: state.glowMethod,
+      intensityMethod: state.intensityMethod,
+      intensitySource: state.intensitySource,
+      getPeptides: state.getPeptidesForNode,
     }),
     shallow,
   );
@@ -120,6 +132,7 @@ const SequenceNode = memo(function SequenceNode({
 
   // variables for peptide color management
   const peptideCount = data.peptides?.length || 0;
+  const peptideLog = getPeptides(id);
 
   return (
     <div
@@ -144,9 +157,13 @@ const SequenceNode = memo(function SequenceNode({
           paddingTop: "10px",
           paddingBottom: "10px",
           backgroundColor: nodePeptideColor(
+            colorScale,
+            glowMethod,
             peptideCount,
             maxPeptides,
-            colorScale,
+            intensityMethod,
+            intensitySource,
+            peptideLog,
           ),
           borderRadius: "15px",
         }}

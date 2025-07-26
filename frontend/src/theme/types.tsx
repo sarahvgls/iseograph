@@ -25,22 +25,6 @@ export const layoutModes = {
 
 export type layoutModes = (typeof layoutModes)[keyof typeof layoutModes];
 
-export const localStorageKeys = {
-  nodeWidthMode: "nodeWidthMode",
-  layoutMode: "layoutMode",
-  isAnimated: "isAnimated",
-  allowInteraction: "allowInteraction",
-  reverseNodes: "reverseNodes",
-  numberOfAllowedIsoforms: "numberOfAllowedIsoforms",
-  rowWidth: "rowWidth",
-  labelVisibility: "labelVisibility",
-  selectedIsoforms: "selectedIsoforms",
-  isoformColorMapping: "isoformColorMapping",
-  selectedFile: "selectedFile",
-  newProteinName: "newProteinName",
-  peptideColorScale: "peptideColorScale",
-};
-
 // --- edge related ---
 export const Generic = {
   variant: "VARIANT",
@@ -89,15 +73,78 @@ export interface PeptideEntry {
 export interface IntensityStats {
   // per node there shall be one work-by intensity which is based on the median/mean/max/min intensity of all peptides.
   // this is still constrained by its source
-  medianIntensity: number;
-  meanIntensity: number;
-  maxIntensity: number;
-  minIntensity: number;
+  median: number;
+  mean: number;
+  max: number;
+  min: number;
+  normalizedMedian?: number;
+  normalizedMean?: number;
+  normalizedMax?: number;
+  normalizedMin?: number;
+  overallMax?: number;
+  overallMin?: number;
+  normalizedOverallMax?: number;
+  normalizedOverallMin?: number;
 }
 
 export type IntensityStatsBySource = Record<string, IntensityStats>;
 
 export interface PeptideLog {
   peptideEntries: PeptideEntry[];
-  intensities?: IntensityStatsBySource;
+  intensityStats: IntensityStatsBySource;
 }
+
+export const ColorScaleOptions = {
+  blueOrange: "blue-orange",
+  greenRed: "green-red",
+  grayBlack: "gray-black",
+  lightRedDarkRed: "light-red-dark-red",
+  yellowPurple: "yellow-purple",
+  tealCoral: "teal-coral",
+  saturatedDesaturatedBlue: "saturated-desaturated-blue",
+  lightGreenDarkTeal: "light-green-dark-teal",
+  disabled: "Disabled",
+};
+
+export type colorScaleOptions =
+  (typeof ColorScaleOptions)[keyof typeof ColorScaleOptions];
+
+// --- local storage saving related
+
+export const localStorageKeys = {
+  nodeWidthMode: "nodeWidthMode",
+  layoutMode: "layoutMode",
+  isAnimated: "isAnimated",
+  allowInteraction: "allowInteraction",
+  reverseNodes: "reverseNodes",
+  numberOfAllowedIsoforms: "numberOfAllowedIsoforms",
+  rowWidth: "rowWidth",
+  labelVisibility: "labelVisibility",
+  selectedIsoforms: "selectedIsoforms",
+  isoformColorMapping: "isoformColorMapping",
+  selectedFile: "selectedFile",
+  newProteinName: "newProteinName",
+  colorScale: "colorScale",
+  glowMethod: "glowMethod",
+  intensityMethod: "intensityMethod",
+  intensitySource: "intensitySource",
+};
+
+export const settingsKeysToTypes: Record<string, any> = {
+  nodeWidthMode: nodeWidthModes,
+  layoutMode: layoutModes,
+  isAnimated: "boolean",
+  allowInteraction: "boolean",
+  reverseNodes: "boolean",
+  numberOfAllowedIsoforms: "number",
+  rowWidth: "number",
+  labelVisibility: labelVisibilities,
+  selectedIsoforms: "JSON",
+  isoformColorMapping: "JSON",
+  selectedFile: "string",
+  newProteinName: "string",
+  colorScale: ColorScaleOptions,
+  glowMethod: glowMethods,
+  intensityMethod: intensityMethods,
+  intensitySource: "string",
+};

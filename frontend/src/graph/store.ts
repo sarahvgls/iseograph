@@ -16,6 +16,9 @@ import edges from "../../../generated/edges.json";
 import type { SequenceNodeProps } from "../components/sequence-node/sequence-node.props.tsx";
 import { defaultValues, theme } from "../theme";
 import {
+  type colorScaleOptions,
+  type glowMethods,
+  type intensityMethods,
   labelVisibilities,
   type layoutModes,
   localStorageKeys,
@@ -28,8 +31,7 @@ import {
   createEdges,
   createNodes,
   generateIsoformColorMatching,
-} from "./helper/generate-utils.tsx";
-import type { colorScaleOptions } from "../controls/peptides-color.tsx";
+} from "./generation-utils/nodes-edges.tsx";
 
 export type RFState = {
   nodes: Node[];
@@ -47,6 +49,7 @@ export type RFState = {
   setNodeWidthMode: (nodeId: string, mode: nodeWidthModes) => void;
   hoveredNode: string | null;
   setHoveredNode: (nodeId: string | null) => void;
+
   isoformColorMapping: Record<string, string>;
   selectedIsoforms: string[];
   toggleIsoformSelection: (isoform: string) => void;
@@ -54,11 +57,20 @@ export type RFState = {
   updateIsoformColor: (isoform: string, color: string) => void;
   maxPeptidesNodes: number;
   maxPeptidesEdges: number;
-  getPeptides: (nodeId: string) => PeptideLog;
-  peptides: Record<string, PeptideLog>;
-  intensitySources: string[];
+  peptidesByNode: Record<string, PeptideLog>;
+  peptidesByEdge: Record<string, PeptideLog>;
+  getPeptidesForNode: (nodeId: string) => PeptideLog;
+  getPeptidesForEdge: (edgeId: string) => PeptideLog;
+  allIntensitySources: string[];
   colorScale: colorScaleOptions;
   setColorScale: (colorScale: colorScaleOptions) => void;
+  glowMethod: glowMethods;
+  setGlowMethod: (glowMethod: glowMethods) => void;
+  intensityMethod: intensityMethods;
+  setIntensityMethod: (intensityMethod: string) => void;
+  intensitySource: string;
+  setIntensitySource: (intensitySource: string) => void;
+
   isAnimated: boolean;
   setIsAnimated: (isAnimated: boolean) => void;
   allowInteraction: boolean;
@@ -69,9 +81,9 @@ export type RFState = {
 };
 
 // ----- create nodes and edges -----
-const [customNodes, nodesMaxPeptides, intensitySources, peptidesDict] =
+const [customNodes, nodesMaxPeptides, intensitySources, peptidesDictNodes] =
   createNodes(nodes as unknown as SequenceNodeProps[]);
-const [customEdges, edgesMaxPeptides] = createEdges(
+const [customEdges, edgesMaxPeptides, peptidesDictEdges] = createEdges(
   edges as ArrowEdgeProps[],
   intensitySources,
 );
@@ -82,6 +94,7 @@ const initialIsoformColorMapping = generateIsoformColorMatching(
 );
 
 // Load selected isoforms from localStorage if available
+// TODO function probably redundant
 const loadSelectedIsoforms = (): string[] => {
   try {
     const savedSelection = localStorage.getItem(
@@ -249,15 +262,34 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
   // --- peptide features ---
   maxPeptidesNodes: nodesMaxPeptides,
   maxPeptidesEdges: edgesMaxPeptides,
-  intensitySources: intensitySources,
-  peptides: peptidesDict,
-  getPeptides: (nodeId: string) => {
-    return get().peptides[nodeId] || [];
+  allIntensitySources: intensitySources,
+  peptidesByNode: peptidesDictNodes,
+  peptidesByEdge: peptidesDictEdges,
+  getPeptidesForNode: (nodeId: string) => {
+    return get().peptidesByNode[nodeId] || [];
+  },
+  getPeptidesForEdge: (edgeId: string) => {
+    return get().peptidesByEdge[edgeId] || [];
   },
   colorScale: theme.edgeGlow.defaultColorScale,
   setColorScale: (colorScale: colorScaleOptions) => {
     set({ colorScale });
-    localStorage.setItem(localStorageKeys.peptideColorScale, colorScale);
+    localStorage.setItem(localStorageKeys.colorScale, colorScale);
+  },
+  glowMethod: theme.edgeGlow.defaultMethod,
+  setGlowMethod: (glowMethod: glowMethods) => {
+    set({ glowMethod });
+    localStorage.setItem(localStorageKeys.glowMethod, glowMethod);
+  },
+  intensityMethod: theme.edgeGlow.defaultMultiplePeptidesMethod,
+  setIntensityMethod: (intensityMethod: string) => {
+    set({ intensityMethod });
+    localStorage.setItem(localStorageKeys.intensityMethod, intensityMethod);
+  },
+  intensitySource: intensitySources[0],
+  setIntensitySource: (intensitySource: string) => {
+    set({ intensitySource });
+    localStorage.setItem(localStorageKeys.intensitySource, intensitySource);
   },
 
   // --- settings variables ---

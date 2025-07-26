@@ -32,7 +32,6 @@ import {
   SettingsBackdrop,
 } from "../components/backdrop/backdrop.tsx";
 import { SettingsButton } from "../components/side-menu/settings-button.tsx";
-import { applyLocalStorageValues } from "./helper/generate-utils.tsx";
 import {
   ToggleMapButton,
   ToggleOnScreenMenuButton,
@@ -41,6 +40,7 @@ import { MiniMapContainer } from "../components/minimap/minimap-container.tsx";
 import { PeptideMonitor } from "../components/peptide-monitor/peptide-monitor.tsx";
 import { OnScreenPeptidesMenu } from "../components/on-screen-peptides-menu/on-screen-peptides-menu.tsx";
 import styled from "styled-components";
+import { applyLocalStorageValues } from "./generation-utils/apply-local-storage.tsx";
 
 const selector = (state: RFState) => ({
   nodes: state.nodes,

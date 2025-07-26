@@ -11,6 +11,6 @@ export interface ArrowEdgeProps extends EdgeProps {
     peptidesString?: string;
     intensities?: string[]; // not clean TODO
     intensitiesString?: string;
-    peptideLogs?: PeptideLog;
+    peptideLog?: PeptideLog;
   };
 }

@@ -41,6 +41,10 @@ export default function ArrowEdge({
     labelVisibility,
     maxPeptides,
     colorScale,
+    glowMethod,
+    intensityMethod,
+    intensitySource,
+    getPeptides,
   } = useGraphStore(
     (state) => ({
       isoformColorMapping: state.isoformColorMapping,
@@ -49,11 +53,16 @@ export default function ArrowEdge({
       labelVisibility: state.labelVisibility,
       maxPeptides: state.maxPeptidesEdges,
       colorScale: state.colorScale,
+      glowMethod: state.glowMethod,
+      intensityMethod: state.intensityMethod,
+      intensitySource: state.intensitySource,
+      getPeptides: state.getPeptidesForEdge,
     }),
     shallow,
   );
   // Peptide attributes for edge
   const peptideCount = data.peptides?.length || 0;
+  const peptideLog = getPeptides(id);
 
   // Isoform attributes for edge
   const isoforms =
@@ -83,7 +92,15 @@ export default function ArrowEdge({
       path={peptidePath}
       style={{
         strokeWidth: 30,
-        stroke: edgePeptideColor(peptideCount, maxPeptides, colorScale),
+        stroke: edgePeptideColor(
+          colorScale,
+          glowMethod,
+          peptideCount,
+          maxPeptides,
+          intensityMethod,
+          intensitySource,
+          peptideLog,
+        ),
       }}
       key={`${id}-peptide`}
       id={id}

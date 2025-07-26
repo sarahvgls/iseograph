@@ -1,12 +1,12 @@
 import { action, makeObservable, observable } from "mobx";
 import {
+  ColorScaleOptions,
   glowMethods,
   intensityMethods,
   labelVisibilities,
   layoutModes,
   nodeWidthModes,
 } from "./types.tsx";
-import { ColorScaleOptions } from "../controls/peptides-color.tsx";
 
 export const defaultPalette = {
   mode: "light",

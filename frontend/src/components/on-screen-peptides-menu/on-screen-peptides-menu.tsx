@@ -7,14 +7,13 @@ import {
   StyledSectionTitle,
   StyledSectionTitleWithButton,
 } from "../base-components";
+import useGraphStore from "../../graph/store.ts";
 import {
   type colorScaleOptions,
   ColorScaleOptions,
-} from "../../controls/peptides-color.tsx";
-import useGraphStore from "../../graph/store.ts";
-import { glowMethods, intensityMethods } from "../../theme/types.tsx";
-import { useState } from "react";
-import { theme } from "../../theme";
+  glowMethods,
+  intensityMethods,
+} from "../../theme/types.tsx";
 
 const MenuContainer = styled.div<{ isOpen: boolean }>`
   display: flex;
@@ -38,20 +37,27 @@ export const OnScreenPeptidesMenu = ({
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
 }) => {
-  const { intensitySources, colorScale, setColorScale } = useGraphStore(
-    (state) => ({
-      intensitySources: state.intensitySources,
-      colorScale: state.colorScale,
-      setColorScale: state.setColorScale,
-    }),
-  );
-  const [selectedGlowMethod, setSelectedGlowMethod] = useState<glowMethods>(
-    theme.edgeGlow.defaultMethod,
-  );
-  const [selectedIntensitySource, setSelectedIntensitySource] =
-    useState<string>(intensitySources[0] || "");
-  const [selectedIntensityMethod, setSelectedIntensityMethod] =
-    useState<string>(theme.edgeGlow.defaultMultiplePeptidesMethod);
+  const {
+    allIntensitySources,
+    colorScale,
+    setColorScale,
+    intensitySource,
+    setIntensitySource,
+    intensityMethod,
+    setIntensityMethod,
+    glowMethod,
+    setGlowMethod,
+  } = useGraphStore((state) => ({
+    allIntensitySources: state.allIntensitySources,
+    colorScale: state.colorScale,
+    setColorScale: state.setColorScale,
+    intensitySource: state.intensitySource,
+    setIntensitySource: state.setIntensitySource,
+    intensityMethod: state.intensityMethod,
+    setIntensityMethod: state.setIntensityMethod,
+    glowMethod: state.glowMethod,
+    setGlowMethod: state.setGlowMethod,
+  }));
 
   return (
     <div>
@@ -76,10 +82,8 @@ export const OnScreenPeptidesMenu = ({
             ))}
             <StyledSectionTitle>Method selection:</StyledSectionTitle>
             <StyledDropdown
-              value={selectedGlowMethod}
-              onChange={(e) =>
-                setSelectedGlowMethod(e.target.value as glowMethods)
-              }
+              value={glowMethod}
+              onChange={(e) => setGlowMethod(e.target.value as glowMethods)}
             >
               {Object.values(glowMethods).map((method) => (
                 <option key={method} value={method}>
@@ -87,16 +91,16 @@ export const OnScreenPeptidesMenu = ({
                 </option>
               ))}
             </StyledDropdown>
-            {selectedGlowMethod === glowMethods.intensity && (
+            {glowMethod === glowMethods.intensity && (
               <div>
                 <BoldStyledLabel>
                   Choose source for intensities:
                 </BoldStyledLabel>
                 <StyledDropdown
-                  value={selectedIntensitySource}
-                  onChange={(e) => setSelectedIntensitySource(e.target.value)}
+                  value={intensitySource}
+                  onChange={(e) => setIntensitySource(e.target.value)}
                 >
-                  {intensitySources.map((source) => (
+                  {allIntensitySources.map((source) => (
                     <option key={source} value={source}>
                       {source}
                     </option>
@@ -104,14 +108,14 @@ export const OnScreenPeptidesMenu = ({
                 </StyledDropdown>
               </div>
             )}
-            {selectedGlowMethod === glowMethods.intensity && (
+            {glowMethod === glowMethods.intensity && (
               <div>
                 <BoldStyledLabel>
                   Choose method for multiple peptides:
                 </BoldStyledLabel>
                 <StyledDropdown
-                  value={selectedIntensityMethod}
-                  onChange={(e) => setSelectedIntensityMethod(e.target.value)}
+                  value={intensityMethod}
+                  onChange={(e) => setIntensityMethod(e.target.value)}
                 >
                   {Object.values(intensityMethods).map((method) => (
                     <option key={method} value={method}>
