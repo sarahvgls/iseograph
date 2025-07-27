@@ -78,6 +78,7 @@ const SequenceNode = memo(function SequenceNode({
     intensityMethod,
     intensitySource,
     getPeptides,
+    setHoveredNode,
   } = useGraphStore(
     (state) => ({
       maxPeptides: state.maxPeptidesNodes,
@@ -86,6 +87,7 @@ const SequenceNode = memo(function SequenceNode({
       intensityMethod: state.intensityMethod,
       intensitySource: state.intensitySource,
       getPeptides: state.getPeptidesForNode,
+      setHoveredNode: state.setHoveredNode,
     }),
     shallow,
   );
@@ -133,7 +135,10 @@ const SequenceNode = memo(function SequenceNode({
   const peptideLog = getPeptides(id);
 
   return (
-    <div>
+    <div
+      onMouseEnter={() => setHoveredNode(id)}
+      onMouseLeave={() => setHoveredNode(null)}
+    >
       <div
         style={{
           position: "absolute",
