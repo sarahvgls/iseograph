@@ -97,10 +97,10 @@ export interface PeptideLog {
 export const ColorScaleOptions = {
   blueOrange: "blue-orange",
   greenRed: "green-red",
-  grayBlack: "gray-black",
-  lightRedDarkRed: "light-red-dark-red",
   yellowPurple: "yellow-purple",
   tealCoral: "teal-coral",
+  grayBlack: "gray-black",
+  lightRedDarkRed: "light-red-dark-red",
   saturatedDesaturatedBlue: "saturated-desaturated-blue",
   lightGreenDarkTeal: "light-green-dark-teal",
   disabled: "Disabled",

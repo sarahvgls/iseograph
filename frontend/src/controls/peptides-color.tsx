@@ -7,7 +7,7 @@ import {
   type PeptideLog,
 } from "../theme/types.tsx";
 
-const getColor = (
+export const getColor = (
   i: number,
   n: number,
   selectedColorScale: colorScaleOptions,
