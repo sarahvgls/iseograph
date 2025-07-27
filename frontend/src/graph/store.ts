@@ -47,8 +47,8 @@ export type RFState = {
   layoutMode: layoutModes;
   setLayoutMode: (layoutMode: layoutModes) => void;
   setNodeWidthMode: (nodeId: string, mode: nodeWidthModes) => void;
-  hoveredNode: string | null;
-  setHoveredNode: (nodeId: string | null) => void;
+  clickedNode: string | null;
+  setClickedNode: (nodeId: string | null) => void;
 
   isoformColorMapping: Record<string, string>;
   selectedIsoforms: string[];
@@ -225,9 +225,9 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
       }, 100);
     }
   },
-  hoveredNode: null,
-  setHoveredNode: (nodeId: string | null) => {
-    set({ hoveredNode: nodeId });
+  clickedNode: null,
+  setClickedNode: (nodeId: string | null) => {
+    set({ clickedNode: nodeId });
   },
   // --- isoform colored edges ---
   isoformColorMapping: initialIsoformColorMapping,

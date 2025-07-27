@@ -50,6 +50,7 @@ const selector = (state: RFState) => ({
   setNodeWidthMode: state.setGlobalNodeWidthMode,
   setLayoutMode: state.setLayoutMode,
   allowInteraction: state.allowInteraction,
+  setPeptideMonitorForNode: state.setClickedNode,
 });
 
 // this places the node origin in the center of a node
@@ -83,6 +84,7 @@ const Flow = () => {
     setNodeWidthMode,
     setLayoutMode,
     allowInteraction,
+    setPeptideMonitorForNode,
   } = useGraphStore(selector, shallow); // using shallow to make sure the component only re-renders when one of the values changes
   const [focusedNode, setFocusedNode] = useState<SequenceNodeProps>();
   const { focusNode, onFocusNextNode, onFocusPreviousNode } = useFocusHandlers(
@@ -157,7 +159,13 @@ const Flow = () => {
       if (timeSinceLastClick < 300 && lastClickTimeRef.current > 0) {
         // double click
         if (node.type === nodeTypes.SequenceNode) {
-          focusNode(node as SequenceNodeProps);
+          store
+            .getState()
+            .setNodeWidthMode(
+              node.id,
+              toggleNodeWidthMode(node.data.nodeWidthMode as nodeWidthModes),
+            );
+          focusNodeWithDelay(node as SequenceNodeProps);
         }
         lastClickTimeRef.current = 0;
       } else {
@@ -170,13 +178,8 @@ const Flow = () => {
         clickTimerRef.current = window.setTimeout(() => {
           if (lastClickTimeRef.current > 0) {
             // single click
-            store
-              .getState()
-              .setNodeWidthMode(
-                node.id,
-                toggleNodeWidthMode(node.data.nodeWidthMode as nodeWidthModes),
-              );
-            focusNodeWithDelay(node as SequenceNodeProps);
+            focusNode(node as SequenceNodeProps);
+            setPeptideMonitorForNode(node.id);
           }
           clickTimerRef.current = null;
         }, 300);

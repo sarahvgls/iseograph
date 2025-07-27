@@ -49,7 +49,7 @@ export default function ArrowEdge({
     (state) => ({
       isoformColorMapping: state.isoformColorMapping,
       selectedIsoforms: state.selectedIsoforms,
-      hoveredNode: state.hoveredNode,
+      hoveredNode: state.clickedNode,
       labelVisibility: state.labelVisibility,
       maxPeptides: state.maxPeptidesEdges,
       colorScale: state.colorScale,

@@ -14,12 +14,13 @@ export const UserGuide = () => {
           }}
         >
           <li style={{ marginBottom: "8px" }}>
-            Double click on a node to focus it
+            Single click on a node to open peptide inspection for it.
           </li>
           <li style={{ marginBottom: "8px" }}>
-            Single click on a node to change its width mode
+            Double click on a node to resize it: Toggle through expanded {`->`}{" "}
+            small {`->`} collapsed.
           </li>
-          <li>Use arrow keys to navigate between nodes</li>
+          <li>Use arrow buttons to navigate between focused nodes.</li>
         </ul>
       </StyledSection>
     </div>

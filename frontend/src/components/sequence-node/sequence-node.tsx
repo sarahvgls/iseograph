@@ -72,7 +72,6 @@ const SequenceNode = memo(function SequenceNode({
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
   const {
-    setHoveredNode,
     maxPeptides,
     colorScale,
     glowMethod,
@@ -81,7 +80,6 @@ const SequenceNode = memo(function SequenceNode({
     getPeptides,
   } = useGraphStore(
     (state) => ({
-      setHoveredNode: state.setHoveredNode,
       maxPeptides: state.maxPeptidesNodes,
       colorScale: state.colorScale,
       glowMethod: state.glowMethod,
@@ -135,10 +133,7 @@ const SequenceNode = memo(function SequenceNode({
   const peptideLog = getPeptides(id);
 
   return (
-    <div
-      onMouseEnter={() => setHoveredNode(id)}
-      onMouseLeave={() => setHoveredNode(null)}
-    >
+    <div>
       <div
         style={{
           position: "absolute",
