@@ -227,13 +227,13 @@ const Flow = () => {
             }
           }}
         />
-        <Panel position="top-left">
+        <StyledPanel position="top-left">
           Proteoform graph visualization with React Flow library
           <PeptideMonitor
             isOpen={isPeptideMonitorOpen}
             setIsOpen={setIsPeptideMonitorOpen}
           />
-        </Panel>
+        </StyledPanel>
         <Panel position="top-right">
           <ToggleMenuButton
             onToggle={() => {
