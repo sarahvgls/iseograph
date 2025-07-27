@@ -1,4 +1,5 @@
 import type {
+  ExtremesBySource,
   IntensitiesPerPeptide,
   IntensityStatsBySource,
   PeptideEntry,
@@ -103,20 +104,8 @@ export const convertStringsToPeptideLog = (
 export const updateExtremes = (
   intensitySources: string[],
   peptideLog: PeptideLog,
-  overallIntensityExtremesBySource: Record<
-    string,
-    {
-      min: number;
-      max: number;
-    }
-  >,
-): Record<
-  string,
-  {
-    min: number;
-    max: number;
-  }
-> => {
+  extremes: ExtremesBySource,
+): ExtremesBySource => {
   intensitySources.forEach((source) => {
     peptideLog.peptideEntries.forEach((entry) => {
       // find intensity of the current source
@@ -127,27 +116,21 @@ export const updateExtremes = (
         throw new Error("Unexpected error while normalizing intensities.");
       }
 
-      if (value < overallIntensityExtremesBySource[source].min) {
-        overallIntensityExtremesBySource[source].min = value;
+      if (value < extremes[source].min) {
+        extremes[source].min = value;
       }
-      if (value > overallIntensityExtremesBySource[source].max) {
-        overallIntensityExtremesBySource[source].max = value;
+      if (value > extremes[source].max) {
+        extremes[source].max = value;
       }
     });
   });
 
-  return overallIntensityExtremesBySource;
+  return extremes;
 };
 
 export const normalize = (
   intensitySources: string[],
-  overallIntensityExtremesBySource: Record<
-    string,
-    {
-      min: number;
-      max: number;
-    }
-  >,
+  overallIntensityExtremesBySource: ExtremesBySource,
   node?: SequenceNodeProps,
   edge?: ArrowEdgeProps,
 ): PeptideLog => {
@@ -233,6 +216,17 @@ export const normalize = (
       normalizedIntensities[Math.floor(normalizedIntensities.length / 2)];
     const min = Math.min(...normalizedIntensities);
     const max = Math.max(...normalizedIntensities);
+
+    // update extremes
+    if (median > extremes.median) {
+      extremes.median = median;
+    }
+    if (mean > extremes.mean) {
+      extremes.mean = mean;
+    }
+    if (min > extremes.minMax) {
+      extremes.minMax = min;
+    }
 
     if (node) {
       node.data.peptideLog!.intensityStats[source] = {

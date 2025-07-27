@@ -73,6 +73,7 @@ const SequenceNode = memo(function SequenceNode({
   const [containerWidth, setContainerWidth] = useState(0);
   const {
     maxPeptides,
+    extremes,
     colorScale,
     glowMethod,
     intensityMethod,
@@ -82,6 +83,7 @@ const SequenceNode = memo(function SequenceNode({
   } = useGraphStore(
     (state) => ({
       maxPeptides: state.maxPeptidesNodes,
+      extremes: state.nodeExtremes,
       colorScale: state.colorScale,
       glowMethod: state.glowMethod,
       intensityMethod: state.intensityMethod,
@@ -161,6 +163,7 @@ const SequenceNode = memo(function SequenceNode({
             glowMethod,
             peptideCount,
             maxPeptides,
+            extremes,
             intensityMethod,
             intensitySource,
             peptideLog,

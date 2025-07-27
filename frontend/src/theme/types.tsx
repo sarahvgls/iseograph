@@ -94,6 +94,16 @@ export interface PeptideLog {
   intensityStats: IntensityStatsBySource;
 }
 
+export interface Extremes {
+  min: number;
+  max: number;
+  median: number;
+  mean: number;
+  minMax: number;
+}
+
+export type ExtremesBySource = Record<string, Extremes>;
+
 export const ColorScaleOptions = {
   blueOrange: "blue-orange",
   greenRed: "green-red",

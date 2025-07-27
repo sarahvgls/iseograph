@@ -17,6 +17,7 @@ import type { SequenceNodeProps } from "../components/sequence-node/sequence-nod
 import { defaultValues, theme } from "../theme";
 import {
   type colorScaleOptions,
+  type ExtremesBySource,
   type glowMethods,
   type intensityMethods,
   labelVisibilities,
@@ -58,6 +59,8 @@ export type RFState = {
   toggleIsoformSelection: (isoform: string) => void;
   deselectAllIsoforms: () => void;
   updateIsoformColor: (isoform: string, color: string) => void;
+  nodeExtremes: ExtremesBySource;
+  edgeExtremes: ExtremesBySource;
   maxPeptidesNodes: number;
   maxPeptidesEdges: number;
   peptidesByNode: Record<string, PeptideLog>;
@@ -84,12 +87,15 @@ export type RFState = {
 };
 
 // ----- create nodes and edges -----
-const [customNodes, nodesMaxPeptides, intensitySources, peptidesDictNodes] =
-  createNodes(nodes as unknown as SequenceNodeProps[]);
-const [customEdges, edgesMaxPeptides, peptidesDictEdges] = createEdges(
-  edges as ArrowEdgeProps[],
+const [
+  customNodes,
+  nodesMaxPeptides,
+  nodeExtremes,
   intensitySources,
-);
+  peptidesDictNodes,
+] = createNodes(nodes as unknown as SequenceNodeProps[]);
+const [customEdges, edgesMaxPeptides, edgeExtremes, peptidesDictEdges] =
+  createEdges(edges as ArrowEdgeProps[], intensitySources);
 
 // Generate color mapping for isoforms
 const initialIsoformColorMapping = generateIsoformColorMatching(
@@ -268,6 +274,8 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
   },
 
   // --- peptide features ---
+  nodeExtremes: nodeExtremes,
+  edgeExtremes: edgeExtremes,
   maxPeptidesNodes: nodesMaxPeptides,
   maxPeptidesEdges: edgesMaxPeptides,
   allIntensitySources: intensitySources,

@@ -1,6 +1,8 @@
 import {
   ColorScaleOptions,
   type colorScaleOptions,
+  type Extremes,
+  type ExtremesBySource,
   glowMethods,
   intensityMethods,
   type IntensityStats,
@@ -39,6 +41,7 @@ const colorByIntensity = (
   colorScale: colorScaleOptions,
   intensityStats: IntensityStats,
   method: intensityMethods,
+  extremes: Extremes,
 ) => {
   let value = 0;
   let maxValue = intensityStats.normalizedOverallMax || 1;
@@ -47,10 +50,13 @@ const colorByIntensity = (
     value = intensityStats.normalizedMax as number;
   } else if (method === intensityMethods.min) {
     value = intensityStats.normalizedMin as number;
+    maxValue = extremes.minMax;
   } else if (method === intensityMethods.median) {
     value = intensityStats.normalizedMedian as number;
+    maxValue = extremes.median;
   } else if (method === intensityMethods.mean) {
     value = intensityStats.normalizedMean as number;
+    maxValue = extremes.mean;
   }
 
   return getColor(value, maxValue, colorScale);
@@ -63,18 +69,23 @@ export const calculatedPeptideColor = (
   numberOfPeptides?: number,
   maxPeptides?: number,
   // needed for intensity type
+  extremes?: ExtremesBySource,
   method?: intensityMethods,
   source?: string,
   peptideLog?: PeptideLog,
 ): string => {
+  if (
+    extremes === undefined ||
+    (peptideLog === undefined && type === glowMethods.intensity) ||
+    (source === undefined && type === glowMethods.intensity) ||
+    (method === undefined && type === glowMethods.intensity)
+  ) {
+    throw new Error(
+      "Number of peptides and max peptides must be provided for count type",
+    );
+  }
   if (type === glowMethods.count) {
-    if (
-      numberOfPeptides === undefined ||
-      maxPeptides === undefined ||
-      (peptideLog === undefined && type === glowMethods.intensity) ||
-      (source === undefined && type === glowMethods.intensity) ||
-      (method === undefined && type === glowMethods.intensity)
-    ) {
+    if (numberOfPeptides === undefined || maxPeptides === undefined) {
       throw new Error(
         "Number of peptides and max peptides must be provided for count type",
       );
@@ -85,6 +96,7 @@ export const calculatedPeptideColor = (
       colorScale,
       peptideLog!.intensityStats[source!] as IntensityStats,
       method!,
+      extremes![source!] as Extremes,
     );
   } else {
     throw new Error("Not implemented yet");
@@ -98,6 +110,7 @@ export const edgePeptideColor = (
   numberOfPeptides: number,
   maxPeptides: number,
   // needed for type intensity
+  extremes: ExtremesBySource,
   method?: intensityMethods,
   source?: string,
   peptideLog?: PeptideLog,
@@ -110,6 +123,7 @@ export const edgePeptideColor = (
     type,
     numberOfPeptides,
     maxPeptides,
+    extremes,
     method,
     source,
     peptideLog,
@@ -125,6 +139,7 @@ export const nodePeptideColor = (
   numberOfPeptides: number,
   maxPeptides: number,
   // needed for type intensity
+  extremes: ExtremesBySource,
   method?: intensityMethods,
   source?: string,
   peptideLog?: PeptideLog,
@@ -137,6 +152,7 @@ export const nodePeptideColor = (
     type,
     numberOfPeptides,
     maxPeptides,
+    extremes,
     method,
     source,
     peptideLog,

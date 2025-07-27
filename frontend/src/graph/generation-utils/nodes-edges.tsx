@@ -1,6 +1,7 @@
 import type { ArrowEdgeProps } from "../../components/arrow-edge/arrow-edge.props.tsx";
 import type { SequenceNodeProps } from "../../components/sequence-node/sequence-node.props.tsx";
 import {
+  type ExtremesBySource,
   nodeTypes,
   nodeWidthModes,
   type PeptideLog,
@@ -30,7 +31,13 @@ const convertStringToList = (input: string): string[] => {
 // create nodes of type sequence node for each node in the nodes.json file
 export const createNodes = (
   nodes: SequenceNodeProps[],
-): [SequenceNodeProps[], number, string[], Record<string, PeptideLog>] => {
+): [
+  SequenceNodeProps[],
+  number,
+  ExtremesBySource,
+  string[],
+  Record<string, PeptideLog>,
+] => {
   const startNode = nodes.find((node) => node.data.sequence === "__start__");
   const intensitySources = convertStringToList(
     startNode?.data.intensitiesString || "",
@@ -39,14 +46,14 @@ export const createNodes = (
   // map node id to peptideLogs
   let peptidesDict: Record<string, PeptideLog> = {};
 
-  let overallIntensityExtremesBySource: Record<
-    string,
-    { min: number; max: number }
-  > = {};
+  let overallIntensityExtremesBySource: ExtremesBySource = {};
   intensitySources.forEach((source) => {
     overallIntensityExtremesBySource[source] = {
       min: Infinity,
       max: -Infinity,
+      median: -Infinity,
+      mean: -Infinity,
+      minMax: -Infinity,
     };
   });
 
@@ -94,7 +101,13 @@ export const createNodes = (
     maxPeptides = Math.max(maxPeptides, node.data.peptides.length);
   });
 
-  return [newNodes, maxPeptides, intensitySources, peptidesDict];
+  return [
+    newNodes,
+    maxPeptides,
+    overallIntensityExtremesBySource,
+    intensitySources,
+    peptidesDict,
+  ];
 };
 
 // --- Edges ---
@@ -124,20 +137,18 @@ export const generateIsoformColorMatching = (
 export const createEdges = (
   edges: ArrowEdgeProps[],
   intensitySources: string[],
-): [ArrowEdgeProps[], number, Record<string, PeptideLog>] => {
+): [ArrowEdgeProps[], number, ExtremesBySource, Record<string, PeptideLog>] => {
   const isoformsToColors = generateIsoformColorMatching(edges);
-  let maxPeptides = 0;
-
   const peptidesDict: Record<string, PeptideLog> = {};
 
-  let overallIntensityExtremesBySource: Record<
-    string,
-    { min: number; max: number }
-  > = {};
+  let overallIntensityExtremesBySource: ExtremesBySource = {};
   intensitySources.forEach((source) => {
     overallIntensityExtremesBySource[source] = {
       min: Infinity,
       max: -Infinity,
+      mean: -Infinity,
+      median: -Infinity,
+      minMax: -Infinity,
     };
   });
 
@@ -175,6 +186,8 @@ export const createEdges = (
     };
   });
 
+  let maxPeptides = 0;
+
   newEdges.map((edge) => {
     peptidesDict[edge.id] = normalize(
       intensitySources,
@@ -186,5 +199,10 @@ export const createEdges = (
     maxPeptides = Math.max(maxPeptides, edge.data.peptides.length);
   });
 
-  return [newEdges, maxPeptides, peptidesDict];
+  return [
+    newEdges,
+    maxPeptides,
+    overallIntensityExtremesBySource,
+    peptidesDict,
+  ];
 };
