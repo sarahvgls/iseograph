@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { Panel } from "@xyflow/react";
+import useGraphStore from "../../graph/store.ts";
 
 export const StyledSection = styled.div`
   margin-bottom: 24px;
@@ -40,6 +41,7 @@ export const StyledSectionTitleWithButton = ({
           style={{ border: "none", height: "30px" }}
           onClick={() => {
             setIsOpen(false);
+            useGraphStore.setState({ shouldShiftButtons: false });
           }}
         >{`>>`}</button>
       </div>
@@ -66,6 +68,16 @@ export const StyledDropdown = styled.select`
   background-color: white;
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
   font-size: 14px;
+`;
+
+export const StyledSlimmDropdown = styled.select`
+  width: 100%;
+  padding: 6px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  background-color: white;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+  font-size: 12px;
 `;
 
 export const StyledInputTextField = styled.input`

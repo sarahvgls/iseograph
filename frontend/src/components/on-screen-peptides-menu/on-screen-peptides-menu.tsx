@@ -1,11 +1,11 @@
 import styled from "styled-components";
 import {
   BoldStyledLabel,
-  StyledDropdown,
   StyledLabel,
   StyledSection,
   StyledSectionTitle,
   StyledSectionTitleWithButton,
+  StyledSlimmDropdown,
 } from "../base-components";
 import useGraphStore from "../../graph/store.ts";
 import {
@@ -22,12 +22,33 @@ const MenuContainer = styled.div<{ isOpen: boolean }>`
   align-content: flex-end;
   justify-content: flex-end;
   justify-self: flex-end;
-  width: 10px;
   gap: 99px;
   transform: translateX(${({ isOpen }) => (isOpen ? "0" : "100%")});
   transition: transform 0.3s ease-in-out;
   pointer-events: none;
   z-index: 5;
+`;
+
+const PeptidesMenuContainer = styled.div`
+  width: 200px;
+  padding: 5px;
+`;
+
+const ColorSelection = styled.div`
+  display: flex;
+  flex-grow: 1;
+  max-height: 125px;
+  overflow: auto;
+
+  &::-webkit-scrollbar {
+    height: 4px;
+    background-color: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 3px;
+  }
 `;
 
 export const OnScreenPeptidesMenu = ({
@@ -62,41 +83,58 @@ export const OnScreenPeptidesMenu = ({
   return (
     <div>
       <MenuContainer isOpen={isOpen}>
-        <StyledSection style={{ pointerEvents: "auto", marginBottom: 0 }}>
+        <StyledSection
+          style={{
+            pointerEvents: "auto",
+            marginBottom: 0,
+            boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
+          }}
+        >
           <StyledSectionTitleWithButton
             title={"Peptide edge colorscale:"}
             setIsOpen={setIsOpen}
           />
-          <div style={{ width: "200px" }}>
-            {Object.values(ColorScaleOptions).map((option) => (
-              <StyledLabel key={option}>
-                <input
-                  type="radio"
-                  name="colorScale"
-                  value={option} // TODO add visual color scale, not just name
-                  checked={colorScale === option}
-                  onChange={() => setColorScale(option as colorScaleOptions)}
-                />
-                {option}
-              </StyledLabel>
-            ))}
+          <PeptidesMenuContainer>
+            <ColorSelection>
+              {Object.values(ColorScaleOptions).map((option) => (
+                <StyledLabel key={option}>
+                  <input
+                    type="radio"
+                    name="colorScale"
+                    value={option} // TODO add visual color scale, not just name
+                    checked={colorScale === option}
+                    onChange={() => setColorScale(option as colorScaleOptions)}
+                  />
+                  {option}
+                </StyledLabel>
+              ))}
+            </ColorSelection>
             <StyledSectionTitle>Method selection:</StyledSectionTitle>
-            <StyledDropdown
+            <StyledSlimmDropdown
+              style={{ marginBottom: "10px" }}
               value={glowMethod}
-              onChange={(e) => setGlowMethod(e.target.value as glowMethods)}
+              onChange={(e) => {
+                setGlowMethod(e.target.value as glowMethods);
+                if (e.target.value === glowMethods.intensity) {
+                  useGraphStore.setState({ shouldShiftButtons: true });
+                } else if (e.target.value !== glowMethods.intensity) {
+                  useGraphStore.setState({ shouldShiftButtons: false });
+                }
+              }}
             >
               {Object.values(glowMethods).map((method) => (
                 <option key={method} value={method}>
                   {method}
                 </option>
               ))}
-            </StyledDropdown>
+            </StyledSlimmDropdown>
             {glowMethod === glowMethods.intensity && (
               <div>
                 <BoldStyledLabel>
                   Choose source for intensities:
                 </BoldStyledLabel>
-                <StyledDropdown
+                <StyledSlimmDropdown
+                  style={{ marginBottom: "10px" }}
                   value={intensitySource}
                   onChange={(e) => setIntensitySource(e.target.value)}
                 >
@@ -105,15 +143,15 @@ export const OnScreenPeptidesMenu = ({
                       {source}
                     </option>
                   ))}
-                </StyledDropdown>
+                </StyledSlimmDropdown>
               </div>
             )}
             {glowMethod === glowMethods.intensity && (
               <div>
                 <BoldStyledLabel>
-                  Choose method for multiple peptides:
+                  Choose how to handle multiple peptides in one node:
                 </BoldStyledLabel>
-                <StyledDropdown
+                <StyledSlimmDropdown
                   value={intensityMethod}
                   onChange={(e) => setIntensityMethod(e.target.value)}
                 >
@@ -122,10 +160,10 @@ export const OnScreenPeptidesMenu = ({
                       {method}
                     </option>
                   ))}
-                </StyledDropdown>
+                </StyledSlimmDropdown>
               </div>
             )}
-          </div>
+          </PeptidesMenuContainer>
         </StyledSection>
       </MenuContainer>
     </div>

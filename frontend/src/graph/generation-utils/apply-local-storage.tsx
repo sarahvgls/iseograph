@@ -82,6 +82,12 @@ export const applyLocalStorageValues = (
         const savedValue = localStorage.getItem(key);
         if (savedValue && Object.values(type).includes(savedValue)) {
           useGraphStore.setState({ [key]: savedValue });
+          if (
+            key === localStorageKeys.glowMethod &&
+            savedValue === glowMethods.intensity
+          ) {
+            useGraphStore.setState({ shouldShiftButtons: true });
+          }
         } else {
           console.warn(
             `Invalid value for ${key} in local storage: ${savedValue}`,

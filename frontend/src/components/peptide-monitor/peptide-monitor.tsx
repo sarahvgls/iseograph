@@ -1,8 +1,9 @@
 import useGraphStore from "../../graph/store.ts";
 import type { PeptideLog } from "../../theme/types.tsx";
 import styled from "styled-components";
+import { CloseButton } from "../base-components";
 
-const Container = styled.div`
+const Container = styled.div<{ isOpen: boolean }>`
   margin-top: 10px;
   padding: 10px;
   background-color: #f9f9f9;
@@ -12,6 +13,9 @@ const Container = styled.div`
   overflow-y: auto;
   font-size: 0.85rem;
   width: 200px;
+  transform: translateX(${({ isOpen }) => (isOpen ? "0" : "-110%")});
+  transition: transform 0.2s ease-in-out;
+  pointer-events: auto;
 `;
 
 const Title = styled.h3`
@@ -21,6 +25,9 @@ const Title = styled.h3`
   border-bottom: 1px solid #e0e0e0;
   color: #333;
   font-size: 0.95rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 `;
 
 const Content = styled.div`
@@ -32,8 +39,6 @@ const Content = styled.div`
 const PeptideEntries = styled.div`
   max-height: 220px;
   overflow: auto;
-
-  // show scrollbar
 
   &::-webkit-scrollbar {
     width: 6px;
@@ -154,11 +159,20 @@ const SectionHeader = styled.td`
   text-align: left;
 `;
 
-export const PeptideMonitor = () => {
-  const { selectedNodeId, getPeptides } = useGraphStore((state) => ({
-    selectedNodeId: state.clickedNode,
-    getPeptides: state.getPeptidesForNode,
-  }));
+export const PeptideMonitor = ({
+  isOpen,
+  setIsOpen,
+}: {
+  isOpen: boolean;
+  setIsOpen: (isOpen: boolean) => void;
+}) => {
+  const { selectedNodeId, setSelectedNodeId, getPeptides } = useGraphStore(
+    (state) => ({
+      selectedNodeId: state.clickedNode,
+      setSelectedNodeId: state.setClickedNode,
+      getPeptides: state.getPeptidesForNode,
+    }),
+  );
 
   const currentPeptideLog: PeptideLog = getPeptides(
     selectedNodeId ? selectedNodeId : "",
@@ -170,8 +184,16 @@ export const PeptideMonitor = () => {
   const sources = Object.keys(intensityStats);
 
   return (
-    <Container>
-      <Title>Peptide Monitor</Title>
+    <Container isOpen={isOpen}>
+      <Title>
+        Peptide Monitor
+        <CloseButton
+          onClose={() => {
+            setSelectedNodeId("");
+            setIsOpen(false);
+          }}
+        />
+      </Title>
       {hasPeptides ? (
         <Content>
           <PeptideEntries>

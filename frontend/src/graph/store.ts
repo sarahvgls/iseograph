@@ -49,6 +49,7 @@ export type RFState = {
   setNodeWidthMode: (nodeId: string, mode: nodeWidthModes) => void;
   clickedNode: string | null;
   setClickedNode: (nodeId: string | null) => void;
+  shouldShiftButtons: boolean;
 
   isoformColorMapping: Record<string, string>;
   selectedIsoforms: string[];
@@ -229,6 +230,7 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
   setClickedNode: (nodeId: string | null) => {
     set({ clickedNode: nodeId });
   },
+  shouldShiftButtons: false,
   // --- isoform colored edges ---
   isoformColorMapping: initialIsoformColorMapping,
   selectedIsoforms: loadSelectedIsoforms(),

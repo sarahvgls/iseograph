@@ -1,19 +1,26 @@
 import { Icon } from "../icon";
 
+import styled from "styled-components";
+
+const Container = styled.div<{ isShifted?: boolean }>`
+  padding: 10px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  position: fixed;
+  right: ${({ isShifted }) => (isShifted ? "257px" : "15px")};
+  bottom: calc(100vh - 80px);
+`;
+
 export const SettingsButton = ({
   setIsSettingsOpen,
+  isShifted,
 }: {
   setIsSettingsOpen: (isOpen: boolean) => void;
+  isShifted: boolean;
 }) => {
   return (
-    <div
-      style={{
-        padding: "10px",
-        display: "flex",
-        gap: "10px",
-        alignItems: "center",
-      }}
-    >
+    <Container isShifted={isShifted}>
       <button
         onClick={() => setIsSettingsOpen(true)}
         style={{
@@ -27,6 +34,6 @@ export const SettingsButton = ({
       >
         <Icon icon={"settings"} />
       </button>
-    </div>
+    </Container>
   );
 };

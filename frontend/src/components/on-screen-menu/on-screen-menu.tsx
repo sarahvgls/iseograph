@@ -24,6 +24,22 @@ const MenuContainer = styled.div<{ isOpen: boolean }>`
   pointer-events: none;
 `;
 
+const ColorSelection = styled.div`
+  margin-top: 15px;
+  max-height: 200px;
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    width: 4px;
+    background-color: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 20px;
+  }
+`;
+
 const ColorPickerBox = styled.div`
   position: absolute;
   top: 10px;
@@ -147,13 +163,7 @@ export const OnScreenMenu = ({
             setIsOpen={setIsOpen}
             title={"Isoform-colored edges"}
           />
-          <div
-            style={{
-              marginTop: "15px",
-              maxHeight: "250px",
-              overflowY: "auto",
-            }}
-          >
+          <ColorSelection>
             {Object.entries(isoformColorMapping).map(([isoform, color]) => (
               <div
                 key={isoform}
@@ -235,7 +245,7 @@ export const OnScreenMenu = ({
                 )}
               </div>
             ))}
-          </div>
+          </ColorSelection>
           <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
             <SecondaryButton onClick={resetColors}>
               Reset colors
