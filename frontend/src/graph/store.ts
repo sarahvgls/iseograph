@@ -52,7 +52,8 @@ export type RFState = {
   setHoveredNode: (nodeId: string | null) => void;
   clickedNode: string | null;
   setClickedNode: (nodeId: string | null) => void;
-  shouldShiftButtons: boolean;
+  isIsoformMenuFullSize: boolean;
+  isPeptideMenuFullSize: boolean;
 
   isoformColorMapping: Record<string, string>;
   selectedIsoforms: string[];
@@ -242,7 +243,8 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
   setClickedNode: (nodeId: string | null) => {
     set({ clickedNode: nodeId });
   },
-  shouldShiftButtons: false,
+  isIsoformMenuFullSize: Object.values(initialIsoformColorMapping).length > 4,
+  isPeptideMenuFullSize: false,
   // --- isoform colored edges ---
   isoformColorMapping: initialIsoformColorMapping,
   selectedIsoforms: loadSelectedIsoforms(),

@@ -86,7 +86,7 @@ export const applyLocalStorageValues = (
             key === localStorageKeys.glowMethod &&
             savedValue === glowMethods.intensity
           ) {
-            useGraphStore.setState({ shouldShiftButtons: true });
+            useGraphStore.setState({ isPeptideMenuFullSize: true });
           }
         } else {
           console.warn(

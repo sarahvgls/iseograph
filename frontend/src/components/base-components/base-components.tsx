@@ -1,6 +1,5 @@
 import styled from "styled-components";
 import { Panel } from "@xyflow/react";
-import useGraphStore from "../../graph/store.ts";
 
 export const StyledSection = styled.div`
   margin-bottom: 24px;
@@ -20,10 +19,10 @@ export const StyledSectionTitle = styled.h3`
 `;
 
 export const StyledSectionTitleWithButton = ({
-  setIsOpen,
+  onClose,
   title,
 }: {
-  setIsOpen: (isOpen: boolean) => void;
+  onClose: () => void;
   title: string;
 }) => {
   return (
@@ -40,8 +39,7 @@ export const StyledSectionTitleWithButton = ({
         <button
           style={{ border: "none", height: "30px" }}
           onClick={() => {
-            setIsOpen(false);
-            useGraphStore.setState({ shouldShiftButtons: false });
+            onClose();
           }}
         >{`>>`}</button>
       </div>

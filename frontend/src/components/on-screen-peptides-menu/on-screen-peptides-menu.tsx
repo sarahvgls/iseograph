@@ -129,7 +129,10 @@ export const OnScreenPeptidesMenu = ({
         >
           <StyledSectionTitleWithButton
             title={"Peptide edge colorscale:"}
-            setIsOpen={setIsOpen}
+            onClose={() => {
+              setIsOpen(false);
+              useGraphStore.setState({ isPeptideMenuFullSize: false });
+            }}
           />
           <PeptidesMenuContainer>
             <div style={{ display: "flex", flexDirection: "row" }}>
@@ -248,9 +251,9 @@ export const OnScreenPeptidesMenu = ({
               onChange={(e) => {
                 setGlowMethod(e.target.value as glowMethods);
                 if (e.target.value === glowMethods.intensity) {
-                  useGraphStore.setState({ shouldShiftButtons: true });
-                } else if (e.target.value !== glowMethods.intensity) {
-                  useGraphStore.setState({ shouldShiftButtons: false });
+                  useGraphStore.setState({ isPeptideMenuFullSize: true });
+                } else {
+                  useGraphStore.setState({ isPeptideMenuFullSize: false });
                 }
               }}
             >

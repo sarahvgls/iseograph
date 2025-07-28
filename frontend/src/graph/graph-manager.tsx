@@ -48,7 +48,8 @@ const selector = (state: RFState) => ({
   setLayoutMode: state.setLayoutMode,
   allowInteraction: state.allowInteraction,
   setPeptideMonitorForNode: state.setClickedNode,
-  shouldShiftButtons: state.shouldShiftButtons,
+  isPeptideMenuFullSize: state.isPeptideMenuFullSize,
+  isIsoformMenuFullSize: state.isIsoformMenuFullSize,
   glowMethod: state.glowMethod,
 });
 
@@ -84,7 +85,8 @@ const Flow = () => {
     setLayoutMode,
     allowInteraction,
     setPeptideMonitorForNode,
-    shouldShiftButtons,
+    isPeptideMenuFullSize,
+    isIsoformMenuFullSize,
     glowMethod,
   } = useGraphStore(selector, shallow); // using shallow to make sure the component only re-renders when one of the values changes
   const [focusedNode, setFocusedNode] = useState<SequenceNodeProps>();
@@ -97,6 +99,7 @@ const Flow = () => {
   const [isOnScreenMenuOpen, setIsOnScreenMenuOpen] = useState(true);
   const [isPeptideMonitorOpen, setIsPeptideMonitorOpen] = useState(false);
   const [isMapOpen, setIsMapOpen] = useState(true);
+  const shouldShiftButtons = isPeptideMenuFullSize && isIsoformMenuFullSize;
 
   const focusNodeWithDelay = useCallback(
     (nodeToBeFocused: SequenceNodeProps) => {
@@ -239,7 +242,7 @@ const Flow = () => {
             onToggle={() => {
               if (glowMethod === glowMethods.intensity) {
                 useGraphStore.setState({
-                  shouldShiftButtons: !isOnScreenMenuOpen,
+                  isPeptideMenuFullSize: !isOnScreenMenuOpen,
                 });
               }
             }}

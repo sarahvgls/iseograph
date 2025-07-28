@@ -160,7 +160,10 @@ export const OnScreenMenu = ({
           }}
         >
           <StyledSectionTitleWithButton
-            setIsOpen={setIsOpen}
+            onClose={() => {
+              setIsOpen(false);
+              useGraphStore.setState({ isIsoformMenuFullSize: false });
+            }}
             title={"Isoform-colored edges"}
           />
           <ColorSelection>
