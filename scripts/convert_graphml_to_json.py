@@ -40,7 +40,8 @@ def convert_graphml_to_json(input_file, output_dir):
     print("Edges:")
     edges = G.edges(data=True)
     for source, target, data in edges:
-        print(f"{source} -> {target}")
+        print(f"{source} -> {target}: ", data.get("isoforms", ""), data.get("generic", ""), data.get("peptides", ""),
+              data.get("intensity", ""))
 
     edges = [
         {
