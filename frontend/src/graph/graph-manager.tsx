@@ -95,6 +95,7 @@ const Flow = () => {
     setFocusedNode,
   );
   const [selectedFile, setSelectedFile] = useState<string>("");
+  const [selectedNewProtein, setSelectedNewProtein] = useState<string>("");
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
   const [isOnScreenMenuOpen, setIsOnScreenMenuOpen] = useState(true);
   const [isPeptideMonitorOpen, setIsPeptideMonitorOpen] = useState(false);
@@ -118,7 +119,7 @@ const Flow = () => {
     useGraphStore.getState().setInternalNodeGetter(getInternalNode);
 
     // Apply any localStorage values immediately
-    applyLocalStorageValues(setSelectedFile);
+    applyLocalStorageValues(setSelectedFile, setSelectedNewProtein);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [getInternalNode]);
@@ -315,6 +316,7 @@ const Flow = () => {
         <SideMenu
           isOpen={isSideMenuOpen}
           previousSelectedFile={selectedFile}
+          previousSelectedNewProtein={selectedNewProtein}
           onClose={() => setIsSideMenuOpen(false)}
         />
       )}

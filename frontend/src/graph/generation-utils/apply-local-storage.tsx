@@ -12,15 +12,16 @@ import useGraphStore from "../store.ts";
 
 export const applyLocalStorageValues = (
   setSelectedFile: (file: string) => void,
+  setNewProtein: (name: string) => void,
 ) => {
   for (const key of Object.keys(localStorageKeys)) {
     if (Object.keys(settingsKeysToTypes).includes(key)) {
       //special values
-      if (
-        key === localStorageKeys.selectedFile ||
-        key === localStorageKeys.newProteinName
-      ) {
+      if (key === localStorageKeys.selectedFile) {
         setSelectedFile(localStorage.getItem(key) || "");
+        continue;
+      } else if (key === localStorageKeys.newProteinName) {
+        setNewProtein(localStorage.getItem(key) || "");
         continue;
       }
 

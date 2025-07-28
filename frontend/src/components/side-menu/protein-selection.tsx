@@ -15,13 +15,17 @@ import { localStorageKeys } from "../../theme/types.tsx";
 
 export const ProteinSelection = ({
   previousSelectedFile,
+  previousSelectedNewProtein,
 }: {
   previousSelectedFile: string;
+  previousSelectedNewProtein: string;
 }) => {
   const [fileNames, setFileNames] = useState<string[]>([]);
   const [selectedFile, setSelectedFile] =
     useState<string>(previousSelectedFile);
-  const [newProteinName, setNewProteinName] = useState<string>("");
+  const [newProteinName, setNewProteinName] = useState<string>(
+    previousSelectedNewProtein,
+  );
 
   useEffect(() => {
     const getFileNames = async () => {
@@ -78,6 +82,7 @@ export const ProteinSelection = ({
 
     // clear dropdown
     setSelectedFile("");
+    localStorage.removeItem(localStorageKeys.selectedFile);
 
     // TODO use shouldGenerate... booleans
 
