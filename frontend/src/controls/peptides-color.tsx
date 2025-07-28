@@ -46,6 +46,13 @@ const colorByIntensity = (
   let value = 0;
   let maxValue = intensityStats.normalizedOverallMax || 1;
 
+  if (
+    intensityStats === ({} as IntensityStats) ||
+    extremes === ({} as Extremes)
+  ) {
+    return getColor(0, 0, ColorScaleOptions.disabled);
+  }
+
   if (method === intensityMethods.max) {
     value = intensityStats.normalizedMax as number;
   } else if (method === intensityMethods.min) {
@@ -75,13 +82,11 @@ export const calculatedPeptideColor = (
   peptideLog?: PeptideLog,
 ): string => {
   if (
-    extremes === undefined ||
     (peptideLog === undefined && type === glowMethods.intensity) ||
-    (source === undefined && type === glowMethods.intensity) ||
     (method === undefined && type === glowMethods.intensity)
   ) {
     throw new Error(
-      "Number of peptides and max peptides must be provided for count type",
+      "There was an error calculating the color. Please check metadata.",
     );
   }
   if (type === glowMethods.count) {
@@ -92,12 +97,16 @@ export const calculatedPeptideColor = (
     }
     return getColor(numberOfPeptides, maxPeptides, colorScale);
   } else if (type === glowMethods.intensity) {
-    return colorByIntensity(
-      colorScale,
-      peptideLog!.intensityStats[source!] as IntensityStats,
-      method!,
-      extremes![source!] as Extremes,
-    );
+    let validStats = {} as IntensityStats;
+    let validExtremes = {} as Extremes;
+    if (source !== undefined) {
+      validStats = peptideLog?.intensityStats[source] as IntensityStats;
+    }
+    if (extremes![source!] !== undefined) {
+      validExtremes = extremes![source!] as Extremes;
+    }
+
+    return colorByIntensity(colorScale, validStats, method!, validExtremes);
   } else {
     throw new Error("Not implemented yet");
   }
@@ -115,7 +124,14 @@ export const edgePeptideColor = (
   source?: string,
   peptideLog?: PeptideLog,
 ): string => {
-  if (maxPeptides === 0 || colorScale === ColorScaleOptions.disabled) {
+  if (
+    maxPeptides === 0 ||
+    colorScale === ColorScaleOptions.disabled ||
+    (type === glowMethods.intensity &&
+      (peptideLog === undefined ||
+        method === undefined ||
+        source === undefined))
+  ) {
     return "hsla(0, 0%, 0%, 0.0)"; // No color for no peptides
   }
   return calculatedPeptideColor(
@@ -144,7 +160,14 @@ export const nodePeptideColor = (
   source?: string,
   peptideLog?: PeptideLog,
 ): string => {
-  if (maxPeptides === 0 || colorScale === ColorScaleOptions.disabled) {
+  if (
+    maxPeptides === 0 ||
+    colorScale === ColorScaleOptions.disabled ||
+    (type === glowMethods.intensity &&
+      (peptideLog === undefined ||
+        method === undefined ||
+        source === undefined))
+  ) {
     return "hsla(0, 0%, 0%, 0.0)"; // No color for no peptides
   }
   return calculatedPeptideColor(

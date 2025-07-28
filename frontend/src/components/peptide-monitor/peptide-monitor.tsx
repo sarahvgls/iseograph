@@ -205,14 +205,18 @@ export const PeptideMonitor = ({
                 </PeptideSequence>
                 <div>
                   <Label>Intensity: </Label>
-                  <IntensityList>
-                    {peptide.intensities.map((intensity, idx) => (
-                      <IntensityItem key={idx}>
-                        <Source>{intensity.source}:</Source>
-                        <Value>{intensity.intensity}</Value>
-                      </IntensityItem>
-                    ))}
-                  </IntensityList>
+                  {peptide.intensities.length > 0 ? (
+                    <IntensityList>
+                      {peptide.intensities.map((intensity, idx) => (
+                        <IntensityItem key={idx}>
+                          <Source>{intensity.source}:</Source>
+                          <Value>{intensity.intensity}</Value>
+                        </IntensityItem>
+                      ))}
+                    </IntensityList>
+                  ) : (
+                    <p>No intensities found. Add metadata.</p>
+                  )}
                 </div>
               </PeptideCard>
             ))}
