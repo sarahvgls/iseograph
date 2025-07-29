@@ -56,25 +56,28 @@ const applyBasicLayoutDagre = (
   ];
 };
 
-function addSymmetricalOffsetForVariations(
+function assignPositionIndices(
   nodes: NodeTypes[],
   edges: Edge[],
-): [NodeTypes[], Edge[]] {
-  const spacing = theme.debugMode
-    ? theme.offsets.debugYSpacingBetweenNodes
-    : theme.offsets.defaultYSpacingBetweenNodes; // vertical distance between variations
+): Record<
+  string,
+  {
+    positionIndex: number;
+    targets: string[];
+  }
+> {
   // Create a map to track the parent nodes and their children with correct index
   const sourceToTargets: Record<
     string,
-    { positionId: number; targets: string[] }
+    { positionIndex: number; targets: string[] }
   > = {};
 
   edges.forEach(({ source, target }) => {
     if (!sourceToTargets[source]) {
-      sourceToTargets[source] = { positionId: -1, targets: [] };
+      sourceToTargets[source] = { positionIndex: -1, targets: [] };
     }
     if (!sourceToTargets[target]) {
-      sourceToTargets[target] = { positionId: -1, targets: [] };
+      sourceToTargets[target] = { positionIndex: -1, targets: [] };
     }
     sourceToTargets[source].targets.push(target);
   });
@@ -83,11 +86,10 @@ function addSymmetricalOffsetForVariations(
     (node) => node.type === nodeTypes.SequenceNode,
   );
   if (!firstSequenceNode) {
-    console.warn("No sequence node found, skipping layout adjustment.");
-    return [nodes, edges];
+    throw new Error("No sequence node found, layout not possible.");
   }
   let parentIdStack = [firstSequenceNode.id];
-  sourceToTargets[firstSequenceNode.id].positionId = 0;
+  sourceToTargets[firstSequenceNode.id].positionIndex = 0;
 
   // loop through all nodes and assign positionId
   while (parentIdStack.length > 0) {
@@ -98,14 +100,23 @@ function addSymmetricalOffsetForVariations(
       const children = sourceToTargets[parent].targets;
       if (children.length === 0) break;
       for (const childId of children) {
-        sourceToTargets[childId].positionId =
-          sourceToTargets[parent].positionId + 1;
+        sourceToTargets[childId].positionIndex =
+          sourceToTargets[parent].positionIndex + 1;
         if (!parentIdStack.includes(childId)) {
           parentIdStack.push(childId);
         }
       }
     }
   }
+
+  return sourceToTargets;
+}
+
+function addSymmetricalOffsetForVariations(
+  nodes: NodeTypes[],
+  edges: Edge[],
+): [NodeTypes[], Edge[]] {
+  const sourceToTargets = assignPositionIndices(nodes, edges);
 
   const alteredNodes = nodes.map((node) => {
     const parent = Object.entries(sourceToTargets).find(([, targets]) =>
@@ -126,7 +137,10 @@ function addSymmetricalOffsetForVariations(
       );
     });
     const intensityIndex = siblings.indexOf(node.id);
-    const positionIndex = sourceToTargets[node.id].positionId;
+    const positionIndex = sourceToTargets[node.id].positionIndex;
+    const spacing = theme.debugMode
+      ? theme.offsets.debugYSpacingBetweenNodes
+      : theme.offsets.defaultYSpacingBetweenNodes; // vertical distance between variations
 
     const yOffset = (intensityIndex - (siblings.length - 1) / 2) * spacing;
 
@@ -196,7 +210,7 @@ export const applyLayout = (
       return;
     }
 
-    // Wait for two animation frames to ensure DOM is updated with new node widths
+    // Wait for two animation frames
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         const [snakeNodes, snakeEdges] = applySnakeLayout(
