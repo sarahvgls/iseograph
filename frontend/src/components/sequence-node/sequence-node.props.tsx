@@ -10,7 +10,6 @@ export interface SequenceNodeProps extends NodeProps {
   position: { x: number; y: number };
   data: {
     sequence: string;
-    feature: string;
     positionIndex: number;
     intensityRank: number;
     isReversed?: boolean;
