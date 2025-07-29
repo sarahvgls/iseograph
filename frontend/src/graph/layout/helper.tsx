@@ -18,7 +18,7 @@ export const getNodeWidth = (
   mode: nodeWidthModes,
   sequence: string,
 ): number => {
-  const sequenceLength = sequence.length * 12; // 12 is the approximated width of each character, plus 50px on each side
+  const sequenceLength = sequence.length * 12; // 12 is the approximated width of each character
   return mode === nodeWidthModes.Expanded
     ? sequenceLength
     : mode === nodeWidthModes.Small

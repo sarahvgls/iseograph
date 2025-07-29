@@ -13,6 +13,9 @@ const CollapsedSequence = styled.div`
   white-space: normal;
   max-width: 100px;
   overflow: auto;
+  cursor: pointer;
+  // make text selectable and copyiable
+  user-select: text;
 
   &::-webkit-scrollbar {
     width: 2px;
@@ -31,6 +34,9 @@ const Sequence = styled.div`
   color: #000;
   white-space: normal;
   overflow: hidden;
+  cursor: pointer;
+  // make text selectable and copyiable
+  user-select: text;
 `;
 
 export const SequenceContainer: React.FC<SequenceContainerProps> = ({
