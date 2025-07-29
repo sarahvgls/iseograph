@@ -117,12 +117,17 @@ function addSymmetricalOffsetForVariations(
     if (!parent) return node;
 
     const siblings = parent[1].targets;
-    // sort siblings by node.data.intensity
-    siblings.sort(
-      (a, b) =>
-        ((nodes.find((n) => n.id === b)?.data.intensity as number) ?? 0) -
-        ((nodes.find((n) => n.id === a)?.data.intensity as number) ?? 0),
-    );
+    // sort siblings by peptide count
+    siblings.sort((a, b) => {
+      const aString =
+        (nodes.find((n) => n.id === a)?.data.peptidesString as string) || "";
+      const bString =
+        (nodes.find((n) => n.id === b)?.data.peptidesString as string) || "";
+
+      return (
+        (bString.match(/,/g) || []).length - (aString.match(/,/g) || []).length
+      );
+    });
     const intensityIndex = siblings.indexOf(node.id);
     const positionIndex = sourceToTargets[node.id].positionId;
 
