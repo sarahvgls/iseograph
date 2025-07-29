@@ -1,4 +1,5 @@
 import { nodeWidthModes } from "../../theme/types.tsx";
+import { theme } from "../../theme";
 
 export const toggleNodeWidthMode = (mode: nodeWidthModes): nodeWidthModes => {
   switch (mode) {
@@ -11,4 +12,16 @@ export const toggleNodeWidthMode = (mode: nodeWidthModes): nodeWidthModes => {
     default:
       return nodeWidthModes.Collapsed;
   }
+};
+
+export const getNodeWidth = (
+  mode: nodeWidthModes,
+  sequence: string,
+): number => {
+  const sequenceLength = sequence.length * 12; // 12 is the approximated width of each character, plus 50px on each side
+  return mode === nodeWidthModes.Expanded
+    ? sequenceLength
+    : mode === nodeWidthModes.Small
+      ? theme.node.defaultWidthSmall
+      : theme.node.defaultWidthCollapsed;
 };

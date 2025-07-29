@@ -3,7 +3,6 @@ import {
   type NodeOrigin,
   Panel,
   type NodeMouseHandler,
-  useReactFlow,
   MiniMap,
 } from "@xyflow/react";
 import DevTools from "./devtools/devtools.tsx";
@@ -75,7 +74,6 @@ const MenuStackContainer = styled.div`
 
 const Flow = () => {
   const [isInitializing, setIsInitializing] = useState(true);
-  const { getInternalNode } = useReactFlow();
   const {
     nodes,
     edges,
@@ -116,13 +114,11 @@ const Flow = () => {
   // Initialize graph
   useEffect(() => {
     if (!isInitializing) return;
-    useGraphStore.getState().setInternalNodeGetter(getInternalNode);
-
     // Apply any localStorage values immediately
     applyLocalStorageValues(setSelectedFile, setSelectedNewProtein);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [getInternalNode]);
+  }, []);
 
   useEffect(() => {
     if (!isInitializing) return;

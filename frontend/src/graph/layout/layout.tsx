@@ -1,5 +1,5 @@
 // ----- functions for layouting nodes and edges -----
-import { type Edge, type InternalNode } from "@xyflow/react";
+import { type Edge } from "@xyflow/react";
 import {
   layoutModes,
   nodeTypes,
@@ -10,6 +10,7 @@ import Dagre from "@dagrejs/dagre";
 import type { SequenceNodeProps } from "../../components/sequence-node/sequence-node.props.tsx";
 import { defaultValues, theme } from "../../theme";
 import { applySnakeLayout } from "./snake-layout.tsx";
+import { getNodeWidth } from "./helper.tsx";
 
 const applyBasicLayoutDagre = (
   nodes: NodeTypes[],
@@ -18,9 +19,7 @@ const applyBasicLayoutDagre = (
   const g = new Dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
   g.setGraph({
     rankdir: "LR",
-    ranksep: 60,
     nodesep: 50,
-    align: "UL",
   });
 
   edges.forEach((edge) => g.setEdge(edge.source, edge.target));
@@ -28,15 +27,13 @@ const applyBasicLayoutDagre = (
     if (node.type !== nodeTypes.SequenceNode) {
       return;
     }
-    const sequence: string = node.data.sequence as string;
-    const sequenceLength = sequence.length * 12 + 100; // 12 is the approximated width of each character, plus 50px on each side
-
     g.setNode(node.id, {
       ...node,
       width:
-        node.data.nodeWidthMode === nodeWidthModes.Expanded
-          ? sequenceLength
-          : theme.node.defaultWidth,
+        getNodeWidth(
+          node.data.nodeWidthMode as nodeWidthModes,
+          node.data.sequence as string,
+        ) + theme.layout.linear.xOffsetBetweenNodes,
       height: theme.node.defaultHeight,
     });
   });
@@ -154,7 +151,6 @@ export const applyLayout = (
   edges: Edge[],
   layoutMode: layoutModes,
   maxWidthPerRow: number,
-  getInternalNode: ((id: string) => InternalNode | undefined) | null,
 ): Promise<[NodeTypes[], Edge[]]> => {
   // remove groups and reset layouting properties
   const filteredNodes = nodes
@@ -207,7 +203,6 @@ export const applyLayout = (
           layoutedNodes,
           layoutedEdges,
           maxWidthPerRow,
-          getInternalNode,
         );
 
         const finalNodes = snakeNodes.map((node) => {

@@ -3,7 +3,6 @@ import {
   applyNodeChanges,
   type Edge,
   type EdgeChange,
-  type InternalNode,
   type Node,
   type NodeChange,
   type OnEdgesChange,
@@ -37,10 +36,6 @@ import {
 export type RFState = {
   nodes: Node[];
   edges: Edge[];
-  getInternalNodeFn: ((id: string) => InternalNode | undefined) | null;
-  setInternalNodeGetter: (
-    getter: (id: string) => InternalNode | undefined,
-  ) => void;
   onNodesChange: OnNodesChange;
   onEdgesChange: OnEdgesChange;
   nodeWidthMode: nodeWidthModes;
@@ -123,10 +118,6 @@ const loadSelectedIsoforms = (): string[] => {
 const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
   nodes: customNodes,
   edges: customEdges,
-  getInternalNodeFn: null,
-  setInternalNodeGetter: (getter) => {
-    set({ getInternalNodeFn: getter });
-  },
   onNodesChange: (changes: NodeChange[]) => {
     set({
       nodes: applyNodeChanges(changes, get().nodes),
@@ -143,14 +134,13 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
   setLayoutMode: async (layoutMode: layoutModes) => {
     set({ layoutMode });
 
-    const { nodes, edges, rowWidth, getInternalNodeFn } = get();
+    const { nodes, edges, rowWidth } = get();
 
     const [layoutedNodes, layoutedEdges] = await applyLayout(
       nodes,
       edges,
       layoutMode,
       rowWidth,
-      getInternalNodeFn,
     );
 
     set({
@@ -164,7 +154,7 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
   setGlobalNodeWidthMode: async (nodeWidthMode: nodeWidthModes) => {
     set({ nodeWidthMode });
 
-    const { nodes, edges, getInternalNodeFn, layoutMode, rowWidth } = get();
+    const { nodes, edges, layoutMode, rowWidth } = get();
 
     // create altered nodes to be available for the internal nodes
     const alteredNodes = nodes.map((node) => ({
@@ -181,7 +171,6 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
       edges,
       layoutMode,
       rowWidth,
-      getInternalNodeFn,
     );
 
     set({
@@ -212,7 +201,6 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
         state.edges,
         state.layoutMode,
         state.rowWidth,
-        state.getInternalNodeFn,
       ).then(([layoutedNodes, layoutedEdges]) => {
         set({
           nodes: layoutedNodes,
@@ -226,7 +214,6 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
           state.edges,
           state.layoutMode,
           state.rowWidth,
-          state.getInternalNodeFn,
         ).then(([layoutedNodes, layoutedEdges]) => {
           set({
             nodes: layoutedNodes,
