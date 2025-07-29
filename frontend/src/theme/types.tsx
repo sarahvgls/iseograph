@@ -138,6 +138,7 @@ export const localStorageKeys = {
   glowMethod: "glowMethod",
   intensityMethod: "intensityMethod",
   intensitySource: "intensitySource",
+  zeroValuesPeptides: "zeroValuesPeptides",
 };
 
 export const settingsKeysToTypes: Record<string, any> = {
@@ -157,4 +158,5 @@ export const settingsKeysToTypes: Record<string, any> = {
   glowMethod: glowMethods,
   intensityMethod: intensityMethods,
   intensitySource: "string",
+  zeroValuesPeptides: "boolean",
 };

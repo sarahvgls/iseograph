@@ -8,30 +8,35 @@ import {
   type IntensityStats,
   type PeptideLog,
 } from "../theme/types.tsx";
+import useGraphStore from "../graph/store.ts";
 
 export const getColor = (
   i: number,
   n: number,
   selectedColorScale: colorScaleOptions,
+  opacity: number = 1,
 ): string => {
+  if (i === 0 && !useGraphStore.getState().zeroValuesPeptides) {
+    return `hsla(0, 0%, 0%, 0.0)`; // No color for no peptides
+  }
   if (selectedColorScale === ColorScaleOptions.blueOrange) {
-    return `hsl(${240 - (i / n) * 210}, 100%, 50%)`; // blue-orange version
+    return `hsla(${240 - (i / n) * 210}, 100%, 50%, ${opacity})`; // blue-orange version
   } else if (selectedColorScale === ColorScaleOptions.greenRed) {
-    return `hsl(${(i / n) * 120}, 100%, 50%)`; // green-red version
+    return `hsla(${(i / n) * 120}, 100%, 50%, ${opacity})`; // green-red version
   } else if (selectedColorScale === ColorScaleOptions.grayBlack) {
-    return `hsl(0, 0%, ${60 - (i / n) * 70}%)`; // gray to black version
+    return `hsla(0, 0%, ${90 - (i / n) * 100}%, ${opacity})`; // gray to black version
   } else if (selectedColorScale === ColorScaleOptions.lightRedDarkRed) {
-    return `hsl(0, 100%, ${80 - (i / n) * 60}%)`; // light red to dark red
+    return `hsla(0, 100%, ${80 - (i / n) * 60}%, ${opacity})`; // light red to dark red
   } else if (selectedColorScale === ColorScaleOptions.yellowPurple) {
-    return `hsl(${280 - (1 - i / n) * 220}, 100%, 50%)`; // yellow to purple
+    return `hsla(${280 - (1 - i / n) * 220}, 100%, 50%, ${opacity})`; // yellow to purple
   } else if (selectedColorScale === ColorScaleOptions.tealCoral) {
-    return `hsl(${180 - (i / n) * 150}, 100%, 50%)`; // teal to coral
+    return `hsla(${180 - (i / n) * 150}, 100%, 50%, ${opacity})`; // teal to coral
   } else if (
     selectedColorScale === ColorScaleOptions.saturatedDesaturatedBlue
   ) {
-    return `hsl(220, ${100 - (i / n) * 70}%, 50%)`; // saturated blue to desaturated blue
+    return `hsla(220, ${100 - (i / n) * 70}%, 50%, ${opacity})`; // saturated blue to desaturated blue
   } else if (selectedColorScale === ColorScaleOptions.lightGreenDarkTeal) {
-    return `hsl(${120 + (i / n) * 30}, 100%, ${70 - (i / n) * 40}%)`; // light green to dark teal
+    return `hsla(${120 + (i / n) * 30}, 100%, ${70 - (i / n) * 40}%, ${opacity})`; // light green to dark teal
   } else {
     return `hsla(0, 0%, 0%, 0.0)`; // Default color if no valid scale is selected
   }
@@ -39,6 +44,7 @@ export const getColor = (
 
 const colorByIntensity = (
   colorScale: colorScaleOptions,
+  opacity: number,
   intensityStats: IntensityStats,
   method: intensityMethods,
   extremes: Extremes,
@@ -50,7 +56,7 @@ const colorByIntensity = (
     intensityStats === ({} as IntensityStats) ||
     extremes === ({} as Extremes)
   ) {
-    return getColor(0, 0, ColorScaleOptions.disabled);
+    return getColor(0, 0, ColorScaleOptions.disabled, 0.0);
   }
 
   if (method === intensityMethods.max) {
@@ -66,11 +72,12 @@ const colorByIntensity = (
     maxValue = extremes.mean;
   }
 
-  return getColor(value, maxValue, colorScale);
+  return getColor(value, maxValue, colorScale, opacity);
 };
 
 export const calculatedPeptideColor = (
   colorScale: colorScaleOptions,
+  opacity: number,
   type: glowMethods,
   // needed for count type
   numberOfPeptides?: number,
@@ -95,7 +102,7 @@ export const calculatedPeptideColor = (
         "Number of peptides and max peptides must be provided for count type",
       );
     }
-    return getColor(numberOfPeptides, maxPeptides, colorScale);
+    return getColor(numberOfPeptides, maxPeptides, colorScale, opacity);
   } else if (type === glowMethods.intensity) {
     let validStats = {} as IntensityStats;
     let validExtremes = {} as Extremes;
@@ -106,7 +113,13 @@ export const calculatedPeptideColor = (
       validExtremes = extremes![source!] as Extremes;
     }
 
-    return colorByIntensity(colorScale, validStats, method!, validExtremes);
+    return colorByIntensity(
+      colorScale,
+      opacity,
+      validStats,
+      method!,
+      validExtremes,
+    );
   } else {
     throw new Error("Not implemented yet");
   }
@@ -134,8 +147,10 @@ export const edgePeptideColor = (
   ) {
     return "hsla(0, 0%, 0%, 0.0)"; // No color for no peptides
   }
+  const edgeOpacity = 0.07;
   return calculatedPeptideColor(
     colorScale,
+    edgeOpacity,
     type,
     numberOfPeptides,
     maxPeptides,
@@ -143,9 +158,7 @@ export const edgePeptideColor = (
     method,
     source,
     peptideLog,
-  )
-    .replace("hsl", "hsla")
-    .replace(")", ", 0.1)");
+  );
 };
 
 export const nodePeptideColor = (
@@ -170,8 +183,10 @@ export const nodePeptideColor = (
   ) {
     return "hsla(0, 0%, 0%, 0.0)"; // No color for no peptides
   }
+  const nodeOpacity = 0.5;
   return calculatedPeptideColor(
     colorScale,
+    nodeOpacity,
     type,
     numberOfPeptides,
     maxPeptides,
@@ -179,7 +194,5 @@ export const nodePeptideColor = (
     method,
     source,
     peptideLog,
-  )
-    .replace("hsl", "hsla")
-    .replace(")", ", 0.2)");
+  );
 };

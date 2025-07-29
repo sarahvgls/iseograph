@@ -89,6 +89,7 @@ export const defaultValues = {
   numberOfAllowedIsoforms: 4,
   rowWidth: 3000,
   labelVisibility: labelVisibilities.always,
+  zeroValuesPeptides: true,
 };
 
 export const theme = {

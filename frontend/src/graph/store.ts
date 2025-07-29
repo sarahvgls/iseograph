@@ -85,6 +85,7 @@ export type RFState = {
   numberOfAllowedIsoforms: number;
   rowWidth: number;
   labelVisibility: labelVisibilities;
+  zeroValuesPeptides: boolean;
 };
 
 // ----- create nodes and edges -----
@@ -243,7 +244,7 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
   setClickedNode: (nodeId: string | null) => {
     set({ clickedNode: nodeId });
   },
-  isIsoformMenuFullSize: Object.values(initialIsoformColorMapping).length > 4,
+  isIsoformMenuFullSize: Object.values(initialIsoformColorMapping).length > 3,
   isPeptideMenuFullSize: false,
   // --- isoform colored edges ---
   isoformColorMapping: initialIsoformColorMapping,
@@ -323,6 +324,7 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
   numberOfAllowedIsoforms: defaultValues.numberOfAllowedIsoforms,
   rowWidth: defaultValues.rowWidth,
   labelVisibility: defaultValues.labelVisibility,
+  zeroValuesPeptides: defaultValues.zeroValuesPeptides,
 }));
 
 export default useGraphStore;
