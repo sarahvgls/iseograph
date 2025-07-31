@@ -46,9 +46,9 @@ export const createNodes = (
   // map node id to peptideLogs
   let peptidesDict: Record<string, PeptideLog> = {};
 
-  let overallIntensityExtremesBySource: ExtremesBySource = {};
+  let intensityExtremesBySource: ExtremesBySource = {};
   intensitySources.forEach((source) => {
-    overallIntensityExtremesBySource[source] = {
+    intensityExtremesBySource[source] = {
       min: Infinity,
       max: -Infinity,
       median: -Infinity,
@@ -67,10 +67,10 @@ export const createNodes = (
     );
 
     // update overall intensity extremes
-    overallIntensityExtremesBySource = updateExtremes(
+    intensityExtremesBySource = updateExtremes(
       intensitySources,
       peptideLog,
-      overallIntensityExtremesBySource,
+      intensityExtremesBySource,
     );
 
     return {
@@ -94,7 +94,7 @@ export const createNodes = (
   newNodes.map((node) => {
     peptidesDict[node.id] = normalize(
       intensitySources,
-      overallIntensityExtremesBySource,
+      intensityExtremesBySource,
       node,
     );
     maxPeptides = Math.max(maxPeptides, node.data.peptides.length);
@@ -103,7 +103,7 @@ export const createNodes = (
   return [
     newNodes,
     maxPeptides,
-    overallIntensityExtremesBySource,
+    intensityExtremesBySource,
     intensitySources,
     peptidesDict,
   ];
