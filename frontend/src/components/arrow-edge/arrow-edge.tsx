@@ -186,6 +186,7 @@ export default function ArrowEdge({
     const centerIndex = Math.floor(isoforms.length / 2);
 
     isoforms.map((isoform, index) => {
+      if (index === centerIndex) return; // Skip the center isoform for correct order of rendering
       const color = isoformColorMapping[isoform] || "#000";
       const offset = index - (isoforms.length - 1) / 2;
       const offsetDistance = (style.strokeWidth as number) || 2; // Distance between parallel lines in pixels
@@ -211,7 +212,6 @@ export default function ArrowEdge({
         <BaseEdge
           key={`${id}-${isoform}`}
           path={offsetPath}
-          markerEnd={centerIndex === index ? `url(#${edgeId})` : undefined}
           style={{
             stroke: color,
             strokeWidth: style.strokeWidth || 2,
@@ -221,6 +221,42 @@ export default function ArrowEdge({
         />,
       );
     });
+
+    if (isoforms.length > 0) {
+      const centerIsoform = isoforms[centerIndex];
+      const color = isoformColorMapping[centerIsoform] || "#000";
+      const offset = centerIndex - (isoforms.length - 1) / 2;
+      const offsetDistance = 2;
+
+      const dx = targetX - sourceX;
+      const dy = targetY - sourceY;
+      const length = Math.sqrt(dx * dx + dy * dy);
+      const offsetX = (-dy / length) * offset * offsetDistance;
+      const offsetY = (dx / length) * offset * offsetDistance;
+
+      const [offsetPath] = getBezierPath({
+        sourceX: sourceX + offsetX,
+        sourceY: sourceY + offsetY,
+        sourcePosition,
+        targetX: targetX + offsetX,
+        targetY: targetY + offsetY,
+        targetPosition,
+      });
+
+      pathElements.push(
+        <BaseEdge
+          key={`${id}-${centerIsoform}-marker`}
+          path={offsetPath}
+          markerEnd={`url(#${edgeId})`}
+          style={{
+            stroke: color,
+            strokeWidth: style.strokeWidth || 2,
+            ...style,
+          }}
+          id={`${id}-${centerIsoform}`}
+        />,
+      );
+    }
   }
 
   return (
