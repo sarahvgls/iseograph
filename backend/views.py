@@ -48,13 +48,27 @@ def run_conversion_script(file_name: str) -> None:
 
     convert_graphml_to_json(input_file, output_dir)
 
+
 def load_protein_file(id):
+    """
+    Downloads a protein file from UniProt and saves it to the data directory.
+    """
     url = f"https://rest.uniprot.org/uniprotkb/{id}.txt"
     r = requests.get(url)
     r.raise_for_status()
     protein_file = f"{PROJECT_ROOT_DIR}/data/{id}.txt"
     Path(protein_file).write_bytes(r.content)
     return protein_file
+
+    # data_dir = PROJECT_ROOT_DIR / "downloads"
+    # if not os.path.exists(data_dir):
+    #     os.makedirs(data_dir)
+    #
+    # protein_file_path = os.path.join(data_dir, f"{id}.txt")
+    # with open(protein_file_path, "wb") as f:
+    #     f.write(r.content)
+    # return protein_file_path
+
 
 # --- api calls ---
 
@@ -87,6 +101,7 @@ def convert_file(request):
     run_conversion_script(file_name)
     return JsonResponse({"success": True, "message": f"File '{file_name}' converted successfully."})
 
+
 @ensure_csrf_cookie
 def generate_base_graph(request):
     """
@@ -101,40 +116,40 @@ def generate_base_graph(request):
     output_folder_path = f"{PROJECT_ROOT_DIR}/data"
 
     features = ""
-    if "features" in data:  #arg sollte eine Liste sein, werte in der List nur aus dieser Auswahl MUTAGEN, VARIANT, CONFLICT, VAR_SEQ
+    if "features" in data:  # arg sollte eine Liste sein, werte in der List nur aus dieser Auswahl MUTAGEN, VARIANT, CONFLICT, VAR_SEQ
         for feature in data.get("features"):
             features = features + f"-ft {feature} "
-    
-    peptide_file = ""#quasi optional, aber müssen wa nochmal drüber reden
-    if "peptide_file" in data:    #ein pfad 
+
+    peptide_file = ""  # quasi optional, aber müssen wa nochmal drüber reden
+    if "peptide_file" in data:  # ein pfad
         peptide_file = "-sg -pf " + data.get("peptide_file")
 
     metadata_file = ""
-    if "metadata_file" in data:    #einpfad, optional
+    if "metadata_file" in data:  # einpfad, optional
         metadata_file = "-mf " + data.get("metadata_file")
-    
+
     compare_column = ""
-    if "compare_column" in data: #ein string, der einem Spaltennamen aus metadata file entspricht, welcher nicht Sample ist, optional
+    if "compare_column" in data:  # ein string, der einem Spaltennamen aus metadata file entspricht, welcher nicht Sample ist, optional
         compare_column = "-cc " + data.get("compare_colum")
-    
-    intensity = "" #optional
+
+    intensity = ""  # optional
     if "intensity" in data:
         intensity = "-int"
-    
-    count = "" # optional
+
+    count = ""  # optional
     if "count" in data:
         count = "-cpep"
-    
-    merge_peptides = "" #optional
+
+    merge_peptides = ""  # optional
     if "merge_peptides" in data:
         merge_peptides = "-mp"
-    
-    o_aggregation = "" # optional
-    if "o_aggregation" in data: #string, auswahl aus median, sum, mean
+
+    o_aggregation = ""  # optional
+    if "o_aggregation" in data:  # string, auswahl aus median, sum, mean
         o_aggregation = "-oi " + data.get("o_aggregation")
-    
+
     m_aggregation = ""
-    if "m_aggregation" in data:#string, auswahl aus median, sum, mean (default median)
+    if "m_aggregation" in data:  # string, auswahl aus median, sum, mean (default median)
         m_aggregation = "-oi " + data.get("m_aggregation")
 
     cmd_string = f"protgraph -egraphml {path_to_protein_file} \
@@ -151,5 +166,5 @@ def generate_base_graph(request):
                 -d skip -o {output_folder_path}/statistics.csv"
 
     subprocess.run(cmd_string, shell=True)
-    
+
     return JsonResponse({"success": True, "message": f"Generated a graph as .graphml successfully."})

@@ -81,20 +81,21 @@ export const ProteinSelection = ({
 
     // TODO use shouldGenerate... booleans
 
-    alert("not implemented yet. Protein: " + newProteinName);
-    // try {
-    //   const response = await callApiWithParameters("api/add_protein/", {
-    //     protein_name: proteinName,
-    //   });
-    //   console.log("Response from add_protein:", response);
-    //   if (!response.success) {
-    //     console.error("Failed to add protein:", response.error);
-    //     return;
-    //   }
-    //   // Optionally, refresh the file names or handle success
-    // } catch (error) {
-    //   console.error("Error adding protein:", error);
-    // }
+    // alert("not implemented yet. Protein: " + newProteinName);
+    try {
+      const response = await callApiWithParameters("api/generate_base_graph/", {
+        protein_id: newProteinName,
+        features: ["VARIANT"],
+      });
+      console.log("Response from add_protein:", response);
+      if (!response.success) {
+        console.error("Failed to add protein:", response.error);
+        return;
+      }
+      // Optionally, refresh the file names or handle success
+    } catch (error) {
+      console.error("Error adding protein:", error);
+    }
   };
 
   return (
