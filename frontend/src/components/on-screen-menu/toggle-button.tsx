@@ -1,10 +1,20 @@
 import styled from "styled-components";
 import { theme } from "../../theme";
-import { Icon } from "../icon";
+import { Icon, type IconType } from "../icon";
 
-const StyledButton = styled.button<{ isOpen: boolean }>`
+const ScreenPositions = ["80px", "130px", "180px"];
+const ShiftedScreenPositions = ["322px", "372px", "422px"];
+
+const StyledButton = styled.button<{
+  isOpen: boolean;
+  positionIndex: number;
+  isShifted: boolean;
+}>`
   position: fixed;
-  right: 80px;
+  right: ${({ positionIndex, isShifted }) =>
+    isShifted
+      ? ShiftedScreenPositions[positionIndex]
+      : ScreenPositions[positionIndex]};
   bottom: calc(100vh - 70px);
   width: 45px;
   height: 45px;
@@ -27,45 +37,34 @@ const StyledButton = styled.button<{ isOpen: boolean }>`
   }
 `;
 
-export const ToggleOnScreenMenuButton = ({
-  setIsMenuOpen,
-  isMenuOpen,
+export const ToggleMenuButton = ({
+  setIsOpen,
+  onToggle = () => {},
+  isOpen,
+  icon,
+  positionIndex,
+  isShifted,
 }: {
-  setIsMenuOpen: (isOpen: boolean) => void;
-  isMenuOpen: boolean;
+  setIsOpen: (isOpen: boolean) => void;
+  onToggle?: () => void;
+  isOpen: boolean;
+  icon: IconType;
+  positionIndex: number;
+  isShifted: boolean;
 }) => {
   const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
-
-  return (
-    <StyledButton onClick={toggleMenu} isOpen={isMenuOpen}>
-      <Icon
-        icon={"pencil_brush"}
-        color={isMenuOpen ? "onPrimary" : "background"}
-      />
-    </StyledButton>
-  );
-};
-
-export const ToggleMapButton = ({
-  setIsMapOpen,
-  isMapOpen,
-}: {
-  setIsMapOpen: (isOpen: boolean) => void;
-  isMapOpen: boolean;
-}) => {
-  const toggleMenu = () => {
-    setIsMapOpen(!isMapOpen);
+    setIsOpen(!isOpen);
+    onToggle();
   };
 
   return (
     <StyledButton
-      style={{ right: 130 }}
       onClick={toggleMenu}
-      isOpen={isMapOpen}
+      isOpen={isOpen}
+      positionIndex={positionIndex}
+      isShifted={isShifted}
     >
-      <Icon icon={"map"} color={isMapOpen ? "onPrimary" : "background"} />
+      <Icon icon={icon} color={isOpen ? "onPrimary" : "background"} />
     </StyledButton>
   );
 };

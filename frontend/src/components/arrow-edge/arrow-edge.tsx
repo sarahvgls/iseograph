@@ -10,6 +10,7 @@ import useGraphStore from "../../graph/store.ts";
 import { shallow } from "zustand/shallow";
 import { theme } from "../../theme";
 import { labelVisibilities } from "../../theme/types.tsx";
+import { edgePeptideColor } from "../../controls/peptides-color.tsx";
 
 export default function ArrowEdge({
   id,
@@ -38,15 +39,34 @@ export default function ArrowEdge({
     selectedIsoforms,
     hoveredNode,
     labelVisibility,
+    maxPeptides,
+    extremes,
+    colorScale,
+    glowMethod,
+    intensityMethod,
+    intensitySource,
+    getPeptides,
   } = useGraphStore(
     (state) => ({
       isoformColorMapping: state.isoformColorMapping,
       selectedIsoforms: state.selectedIsoforms,
       hoveredNode: state.hoveredNode,
       labelVisibility: state.labelVisibility,
+      maxPeptides: state.maxPeptidesEdges,
+      extremes: state.edgeExtremes,
+      colorScale: state.colorScale,
+      glowMethod: state.glowMethod,
+      intensityMethod: state.intensityMethod,
+      intensitySource: state.intensitySource,
+      getPeptides: state.getPeptidesForEdge,
     }),
     shallow,
   );
+  // Peptide attributes for edge
+  const peptideCount = data.peptides?.length || 0;
+  const peptideLog = getPeptides(id);
+
+  // Isoform attributes for edge
   const isoforms =
     data.isoforms?.length || 0 > 0
       ? data.isoforms!.filter((isoform: string) =>
@@ -60,8 +80,38 @@ export default function ArrowEdge({
   // prepare path elements to be rendered in the correct order
   const pathElements = [];
 
+  // add a colored wide edge underneath for peptide score
+  const [peptidePath] = getBezierPath({
+    sourceX,
+    sourceY,
+    sourcePosition,
+    targetX,
+    targetY,
+    targetPosition,
+  });
+  pathElements.push(
+    <BaseEdge
+      path={peptidePath}
+      style={{
+        strokeWidth: 30,
+        stroke: edgePeptideColor(
+          colorScale,
+          glowMethod,
+          peptideCount,
+          maxPeptides,
+          extremes,
+          intensityMethod,
+          intensitySource,
+          peptideLog,
+        ),
+      }}
+      key={`${id}-peptide`}
+      id={id}
+    />,
+  );
+
+  // add a gray wide edge underneath hovered edges
   if (isConnectedNodeHovered) {
-    // add a gray wide edge underneath hovered edges
     const [hoverPath] = getBezierPath({
       sourceX,
       sourceY,

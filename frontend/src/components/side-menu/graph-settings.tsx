@@ -29,6 +29,7 @@ const selector = (state: RFState) => ({
   numberOfAllowedIsoforms: state.numberOfAllowedIsoforms,
   rowWidth: state.rowWidth,
   storeLabelVisibility: state.labelVisibility,
+  zeroValuesPeptides: state.zeroValuesPeptides,
 });
 
 export const GraphSettings = ({ onClose }: { onClose: () => void }) => {
@@ -45,6 +46,7 @@ export const GraphSettings = ({ onClose }: { onClose: () => void }) => {
     numberOfAllowedIsoforms,
     rowWidth,
     storeLabelVisibility,
+    zeroValuesPeptides,
   } = useGraphStore(selector);
   const set: (arg0: {
     rowWidth?: number;
@@ -52,6 +54,7 @@ export const GraphSettings = ({ onClose }: { onClose: () => void }) => {
     reverseNodes?: boolean;
     numberOfAllowedIsoforms?: number;
     labelVisibility?: string;
+    zeroValuesPeptides?: boolean;
   }) => void = useGraphStore.setState;
 
   const [selectedNodeWidthMode, setSelectedNodeWidthMode] =
@@ -69,6 +72,8 @@ export const GraphSettings = ({ onClose }: { onClose: () => void }) => {
   const [selectedRowWidth, setSelectedRowWidth] = useState<number>(rowWidth);
   const [selectedLabelVisibility, setSelectedLabelVisibility] =
     useState<labelVisibilities>(storeLabelVisibility);
+  const [selectedZeroValues, setSelectedZeroValues] =
+    useState<boolean>(zeroValuesPeptides);
 
   const allLabelVisibilityOptions = Object.values(labelVisibilities);
   const numberOfAvailableIsoforms = Object.keys(isoformColorMapping).length;
@@ -103,6 +108,10 @@ export const GraphSettings = ({ onClose }: { onClose: () => void }) => {
       localStorageKeys.labelVisibility,
       selectedLabelVisibility,
     );
+    localStorage.setItem(
+      localStorageKeys.zeroValuesPeptides,
+      String(selectedZeroValues),
+    );
 
     // Update global state
     setNodeWidthMode(selectedNodeWidthMode);
@@ -116,6 +125,7 @@ export const GraphSettings = ({ onClose }: { onClose: () => void }) => {
       set({ reverseNodes: selectedReverseNodes });
       set({ numberOfAllowedIsoforms: selectedNumberOfAllowedIsoforms });
       set({ labelVisibility: selectedLabelVisibility });
+      set({ zeroValuesPeptides: selectedZeroValues });
     }, 500);
 
     onClose();
@@ -149,6 +159,11 @@ export const GraphSettings = ({ onClose }: { onClose: () => void }) => {
             onChange={(checked) => {
               setSelectedReverseNodes(checked);
             }}
+          />
+          <Checkbox
+            label={"Include zero values in peptide edge glow."}
+            checked={selectedZeroValues}
+            onChange={(checked) => setSelectedZeroValues(checked)}
           />
 
           <Switch

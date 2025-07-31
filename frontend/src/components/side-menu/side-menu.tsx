@@ -8,10 +8,12 @@ import { ProteinSelection } from "./protein-selection.tsx";
 export const SideMenu = ({
   isOpen,
   previousSelectedFile,
+  previousSelectedNewProtein,
   onClose,
 }: {
   isOpen: boolean;
   previousSelectedFile: string;
+  previousSelectedNewProtein: string;
   onClose: () => void;
 }) => {
   const settingsSections = {
@@ -68,7 +70,10 @@ export const SideMenu = ({
 
       {/*--- Protein Selection ---*/}
       {selectedSection === settingsSections.proteinSelection && (
-        <ProteinSelection previousSelectedFile={previousSelectedFile} />
+        <ProteinSelection
+          previousSelectedFile={previousSelectedFile}
+          previousSelectedNewProtein={previousSelectedNewProtein}
+        />
       )}
 
       {/*--- Display Settings ---*/}

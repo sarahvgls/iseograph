@@ -16,10 +16,15 @@ import edges from "../../../generated/edges.json";
 import type { SequenceNodeProps } from "../components/sequence-node/sequence-node.props.tsx";
 import { defaultValues, theme } from "../theme";
 import {
+  type colorScaleOptions,
+  type ExtremesBySource,
+  type glowMethods,
+  type intensityMethods,
   labelVisibilities,
   type layoutModes,
   localStorageKeys,
   nodeWidthModes,
+  type PeptideLog,
 } from "../theme/types.tsx";
 import { applyLayout } from "./layout";
 import type { ArrowEdgeProps } from "../components/arrow-edge/arrow-edge.props.tsx";
@@ -27,7 +32,7 @@ import {
   createEdges,
   createNodes,
   generateIsoformColorMatching,
-} from "./helper/generate-utils.tsx";
+} from "./generation-utils/nodes-edges.tsx";
 
 export type RFState = {
   nodes: Node[];
@@ -45,11 +50,34 @@ export type RFState = {
   setNodeWidthMode: (nodeId: string, mode: nodeWidthModes) => void;
   hoveredNode: string | null;
   setHoveredNode: (nodeId: string | null) => void;
+  clickedNode: string | null;
+  setClickedNode: (nodeId: string | null) => void;
+  isIsoformMenuFullSize: boolean;
+  isPeptideMenuFullSize: boolean;
+
   isoformColorMapping: Record<string, string>;
   selectedIsoforms: string[];
   toggleIsoformSelection: (isoform: string) => void;
   deselectAllIsoforms: () => void;
   updateIsoformColor: (isoform: string, color: string) => void;
+  nodeExtremes: ExtremesBySource;
+  edgeExtremes: ExtremesBySource;
+  maxPeptidesNodes: number;
+  maxPeptidesEdges: number;
+  peptidesByNode: Record<string, PeptideLog>;
+  peptidesByEdge: Record<string, PeptideLog>;
+  getPeptidesForNode: (nodeId: string) => PeptideLog;
+  getPeptidesForEdge: (edgeId: string) => PeptideLog;
+  allIntensitySources: string[];
+  colorScale: colorScaleOptions;
+  setColorScale: (colorScale: colorScaleOptions) => void;
+  glowMethod: glowMethods;
+  setGlowMethod: (glowMethod: glowMethods) => void;
+  intensityMethod: intensityMethods;
+  setIntensityMethod: (intensityMethod: string) => void;
+  intensitySource: string;
+  setIntensitySource: (intensitySource: string) => void;
+
   isAnimated: boolean;
   setIsAnimated: (isAnimated: boolean) => void;
   allowInteraction: boolean;
@@ -57,13 +85,19 @@ export type RFState = {
   numberOfAllowedIsoforms: number;
   rowWidth: number;
   labelVisibility: labelVisibilities;
+  zeroValuesPeptides: boolean;
 };
 
 // ----- create nodes and edges -----
-const customNodes: SequenceNodeProps[] = createNodes(
-  nodes as SequenceNodeProps[],
-);
-const customEdges: ArrowEdgeProps[] = createEdges(edges as ArrowEdgeProps[]);
+const [
+  customNodes,
+  nodesMaxPeptides,
+  nodeExtremes,
+  intensitySources,
+  peptidesDictNodes,
+] = createNodes(nodes as unknown as SequenceNodeProps[]);
+const [customEdges, edgesMaxPeptides, edgeExtremes, peptidesDictEdges] =
+  createEdges(edges as ArrowEdgeProps[], intensitySources);
 
 // Generate color mapping for isoforms
 const initialIsoformColorMapping = generateIsoformColorMatching(
@@ -71,6 +105,7 @@ const initialIsoformColorMapping = generateIsoformColorMatching(
 );
 
 // Load selected isoforms from localStorage if available
+// TODO function probably redundant
 const loadSelectedIsoforms = (): string[] => {
   try {
     const savedSelection = localStorage.getItem(
@@ -205,6 +240,12 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
   setHoveredNode: (nodeId: string | null) => {
     set({ hoveredNode: nodeId });
   },
+  clickedNode: null,
+  setClickedNode: (nodeId: string | null) => {
+    set({ clickedNode: nodeId });
+  },
+  isIsoformMenuFullSize: Object.values(initialIsoformColorMapping).length > 3,
+  isPeptideMenuFullSize: false,
   // --- isoform colored edges ---
   isoformColorMapping: initialIsoformColorMapping,
   selectedIsoforms: loadSelectedIsoforms(),
@@ -235,6 +276,41 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
     localStorage.setItem("isoformColorMapping", JSON.stringify(updatedMapping));
   },
 
+  // --- peptide features ---
+  nodeExtremes: nodeExtremes,
+  edgeExtremes: edgeExtremes,
+  maxPeptidesNodes: nodesMaxPeptides,
+  maxPeptidesEdges: edgesMaxPeptides,
+  allIntensitySources: intensitySources,
+  peptidesByNode: peptidesDictNodes,
+  peptidesByEdge: peptidesDictEdges,
+  getPeptidesForNode: (nodeId: string) => {
+    return get().peptidesByNode[nodeId] || [];
+  },
+  getPeptidesForEdge: (edgeId: string) => {
+    return get().peptidesByEdge[edgeId] || [];
+  },
+  colorScale: theme.edgeGlow.defaultColorScale,
+  setColorScale: (colorScale: colorScaleOptions) => {
+    set({ colorScale });
+    localStorage.setItem(localStorageKeys.colorScale, colorScale);
+  },
+  glowMethod: theme.edgeGlow.defaultMethod,
+  setGlowMethod: (glowMethod: glowMethods) => {
+    set({ glowMethod });
+    localStorage.setItem(localStorageKeys.glowMethod, glowMethod);
+  },
+  intensityMethod: theme.edgeGlow.defaultMultiplePeptidesMethod,
+  setIntensityMethod: (intensityMethod: string) => {
+    set({ intensityMethod });
+    localStorage.setItem(localStorageKeys.intensityMethod, intensityMethod);
+  },
+  intensitySource: intensitySources[0],
+  setIntensitySource: (intensitySource: string) => {
+    set({ intensitySource });
+    localStorage.setItem(localStorageKeys.intensitySource, intensitySource);
+  },
+
   // --- settings variables ---
   isAnimated: defaultValues.isAnimated,
   setIsAnimated: (isAnimated: boolean) => {
@@ -248,6 +324,7 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
   numberOfAllowedIsoforms: defaultValues.numberOfAllowedIsoforms,
   rowWidth: defaultValues.rowWidth,
   labelVisibility: defaultValues.labelVisibility,
+  zeroValuesPeptides: defaultValues.zeroValuesPeptides,
 }));
 
 export default useGraphStore;

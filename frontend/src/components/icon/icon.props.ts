@@ -4,11 +4,6 @@ import type * as icons from "./icons";
 import type { Color } from "../../theme";
 
 export type IconType = keyof typeof icons;
-export type DefaultColoredIconType =
-  | "complete"
-  | "incomplete"
-  | "failed"
-  | "outdated";
 
 export interface IconProps extends React.SVGProps<SVGSVGElement> {
   icon: IconType;

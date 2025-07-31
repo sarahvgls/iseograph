@@ -17,7 +17,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { SequenceNodeProps } from "../components/sequence-node/sequence-node.props.tsx";
 import GraphControls from "./controls.tsx";
 import { useFocusHandlers } from "../controls/focus-node/focus-utils.ts";
-import { nodeTypes, nodeWidthModes } from "../theme/types.tsx";
+import { glowMethods, nodeTypes, nodeWidthModes } from "../theme/types.tsx";
 import { theme } from "../theme";
 import RowNode from "../components/row-node/row-node.tsx";
 import store from "./store.ts";
@@ -32,12 +32,12 @@ import {
   SettingsBackdrop,
 } from "../components/backdrop/backdrop.tsx";
 import { SettingsButton } from "../components/side-menu/settings-button.tsx";
-import { applyLocalStorageValues } from "./helper/generate-utils.tsx";
-import {
-  ToggleMapButton,
-  ToggleOnScreenMenuButton,
-} from "../components/on-screen-menu/toggle-button.tsx";
 import { MiniMapContainer } from "../components/minimap/minimap-container.tsx";
+import { PeptideMonitor } from "../components/peptide-monitor/peptide-monitor.tsx";
+import { OnScreenPeptidesMenu } from "../components/on-screen-peptides-menu/on-screen-peptides-menu.tsx";
+import styled from "styled-components";
+import { applyLocalStorageValues } from "./generation-utils/apply-local-storage.tsx";
+import { ToggleMenuButton } from "../components/on-screen-menu/toggle-button.tsx";
 
 const selector = (state: RFState) => ({
   nodes: state.nodes,
@@ -47,6 +47,10 @@ const selector = (state: RFState) => ({
   setNodeWidthMode: state.setGlobalNodeWidthMode,
   setLayoutMode: state.setLayoutMode,
   allowInteraction: state.allowInteraction,
+  setPeptideMonitorForNode: state.setClickedNode,
+  isPeptideMenuFullSize: state.isPeptideMenuFullSize,
+  isIsoformMenuFullSize: state.isIsoformMenuFullSize,
+  glowMethod: state.glowMethod,
 });
 
 // this places the node origin in the center of a node
@@ -59,6 +63,16 @@ const edgeTypes = {
   arrow: ArrowEdge,
 };
 
+const MenuStackContainer = styled.div`
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  gap: 15px;
+`;
+
 const Flow = () => {
   const [isInitializing, setIsInitializing] = useState(true);
   const { getInternalNode } = useReactFlow();
@@ -70,6 +84,10 @@ const Flow = () => {
     setNodeWidthMode,
     setLayoutMode,
     allowInteraction,
+    setPeptideMonitorForNode,
+    isPeptideMenuFullSize,
+    isIsoformMenuFullSize,
+    glowMethod,
   } = useGraphStore(selector, shallow); // using shallow to make sure the component only re-renders when one of the values changes
   const [focusedNode, setFocusedNode] = useState<SequenceNodeProps>();
   const { focusNode, onFocusNextNode, onFocusPreviousNode } = useFocusHandlers(
@@ -77,9 +95,12 @@ const Flow = () => {
     setFocusedNode,
   );
   const [selectedFile, setSelectedFile] = useState<string>("");
+  const [selectedNewProtein, setSelectedNewProtein] = useState<string>("");
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
   const [isOnScreenMenuOpen, setIsOnScreenMenuOpen] = useState(true);
+  const [isPeptideMonitorOpen, setIsPeptideMonitorOpen] = useState(false);
   const [isMapOpen, setIsMapOpen] = useState(true);
+  const shouldShiftButtons = isPeptideMenuFullSize && isIsoformMenuFullSize;
 
   const focusNodeWithDelay = useCallback(
     (nodeToBeFocused: SequenceNodeProps) => {
@@ -98,7 +119,7 @@ const Flow = () => {
     useGraphStore.getState().setInternalNodeGetter(getInternalNode);
 
     // Apply any localStorage values immediately
-    applyLocalStorageValues(setSelectedFile);
+    applyLocalStorageValues(setSelectedFile, setSelectedNewProtein);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [getInternalNode]);
@@ -142,7 +163,13 @@ const Flow = () => {
       if (timeSinceLastClick < 300 && lastClickTimeRef.current > 0) {
         // double click
         if (node.type === nodeTypes.SequenceNode) {
-          focusNode(node as SequenceNodeProps);
+          store
+            .getState()
+            .setNodeWidthMode(
+              node.id,
+              toggleNodeWidthMode(node.data.nodeWidthMode as nodeWidthModes),
+            );
+          focusNodeWithDelay(node as SequenceNodeProps);
         }
         lastClickTimeRef.current = 0;
       } else {
@@ -155,13 +182,9 @@ const Flow = () => {
         clickTimerRef.current = window.setTimeout(() => {
           if (lastClickTimeRef.current > 0) {
             // single click
-            store
-              .getState()
-              .setNodeWidthMode(
-                node.id,
-                toggleNodeWidthMode(node.data.nodeWidthMode as nodeWidthModes),
-              );
-            focusNodeWithDelay(node as SequenceNodeProps);
+            focusNode(node as SequenceNodeProps);
+            setIsPeptideMonitorOpen(true);
+            setPeptideMonitorForNode(node.id);
           }
           clickTimerRef.current = null;
         }, 300);
@@ -208,16 +231,39 @@ const Flow = () => {
             }
           }}
         />
-        <Panel position="top-left">
+        <StyledPanel position="top-left">
           Proteoform graph visualization with React Flow library
-        </Panel>
-        <Panel position="top-right">
-          <ToggleOnScreenMenuButton
-            setIsMenuOpen={setIsOnScreenMenuOpen}
-            isMenuOpen={isOnScreenMenuOpen}
+          <PeptideMonitor
+            isOpen={isPeptideMonitorOpen}
+            setIsOpen={setIsPeptideMonitorOpen}
           />
-          <ToggleMapButton setIsMapOpen={setIsMapOpen} isMapOpen={isMapOpen} />
-          <SettingsButton setIsSettingsOpen={setIsSideMenuOpen} />
+        </StyledPanel>
+        <Panel position="top-right">
+          <ToggleMenuButton
+            onToggle={() => {
+              if (glowMethod === glowMethods.intensity) {
+                useGraphStore.setState({
+                  isPeptideMenuFullSize: !isOnScreenMenuOpen,
+                });
+              }
+            }}
+            setIsOpen={setIsOnScreenMenuOpen}
+            isOpen={isOnScreenMenuOpen}
+            icon={"pencil_brush"}
+            positionIndex={0}
+            isShifted={shouldShiftButtons}
+          />
+          <ToggleMenuButton
+            setIsOpen={setIsMapOpen}
+            isOpen={isMapOpen}
+            icon={"map"}
+            positionIndex={1}
+            isShifted={shouldShiftButtons}
+          />
+          <SettingsButton
+            setIsSettingsOpen={setIsSideMenuOpen}
+            isShifted={shouldShiftButtons}
+          />
         </Panel>
         <MiniMapContainer isOpen={isMapOpen}>
           <button
@@ -252,11 +298,17 @@ const Flow = () => {
           />
         </MiniMapContainer>
         <StyledPanel position={"bottom-right"}>
-          <OnScreenMenu
-            isOpen={isOnScreenMenuOpen}
-            setIsOpen={setIsOnScreenMenuOpen}
-            focusNodeWithDelay={focusNodeWithDelay}
-          />
+          <MenuStackContainer>
+            <OnScreenPeptidesMenu
+              isOpen={isOnScreenMenuOpen}
+              setIsOpen={setIsOnScreenMenuOpen}
+            />
+            <OnScreenMenu
+              isOpen={isOnScreenMenuOpen}
+              setIsOpen={setIsOnScreenMenuOpen}
+              focusNodeWithDelay={focusNodeWithDelay}
+            />
+          </MenuStackContainer>
         </StyledPanel>
       </ReactFlow>
 
@@ -264,6 +316,7 @@ const Flow = () => {
         <SideMenu
           isOpen={isSideMenuOpen}
           previousSelectedFile={selectedFile}
+          previousSelectedNewProtein={selectedNewProtein}
           onClose={() => setIsSideMenuOpen(false)}
         />
       )}
