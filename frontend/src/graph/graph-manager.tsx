@@ -186,7 +186,7 @@ const Flow = () => {
         }, 300);
       }
     },
-    [focusNode, focusNodeWithDelay],
+    [focusNode, focusNodeWithDelay, setPeptideMonitorForNode],
   );
 
   const fitViewOptions = {
