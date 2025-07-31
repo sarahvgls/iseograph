@@ -123,6 +123,8 @@ export const theme = {
     defaultMethod: glowMethods.count,
     defaultColorScale: ColorScaleOptions.disabled,
     defaultMultiplePeptidesMethod: intensityMethods.median,
+    edgeOpacity: 0.07,
+    nodeOpacity: 0.5,
   },
   colors: [
     defaultPalette.green,

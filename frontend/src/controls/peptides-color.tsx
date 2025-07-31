@@ -9,6 +9,7 @@ import {
   type PeptideLog,
 } from "../theme/types.tsx";
 import useGraphStore from "../graph/store.ts";
+import { theme } from "../theme";
 
 export const getColor = (
   i: number,
@@ -63,13 +64,13 @@ const colorByIntensity = (
     value = intensityStats.normalizedMax as number;
   } else if (method === intensityMethods.min) {
     value = intensityStats.normalizedMin as number;
-    maxValue = extremes.minMax;
+    maxValue = extremes.normalizedMinMax;
   } else if (method === intensityMethods.median) {
     value = intensityStats.normalizedMedian as number;
-    maxValue = extremes.median;
+    maxValue = extremes.normalizedMedian;
   } else if (method === intensityMethods.mean) {
     value = intensityStats.normalizedMean as number;
-    maxValue = extremes.mean;
+    maxValue = extremes.normalizedMean;
   }
 
   return getColor(value, maxValue, colorScale, opacity);
@@ -147,10 +148,9 @@ export const edgePeptideColor = (
   ) {
     return "hsla(0, 0%, 0%, 0.0)"; // No color for no peptides
   }
-  const edgeOpacity = 0.07;
   return calculatedPeptideColor(
     colorScale,
-    edgeOpacity,
+    theme.edgeGlow.edgeOpacity,
     type,
     numberOfPeptides,
     maxPeptides,
@@ -183,10 +183,9 @@ export const nodePeptideColor = (
   ) {
     return "hsla(0, 0%, 0%, 0.0)"; // No color for no peptides
   }
-  const nodeOpacity = 0.5;
   return calculatedPeptideColor(
     colorScale,
-    nodeOpacity,
+    theme.edgeGlow.nodeOpacity,
     type,
     numberOfPeptides,
     maxPeptides,

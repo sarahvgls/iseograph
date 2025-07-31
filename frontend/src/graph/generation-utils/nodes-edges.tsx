@@ -51,9 +51,10 @@ export const createNodes = (
     intensityExtremesBySource[source] = {
       min: Infinity,
       max: -Infinity,
-      median: -Infinity,
-      mean: -Infinity,
-      minMax: -Infinity,
+      normalizedMedian: -Infinity,
+      normalizedMean: -Infinity,
+      normalizedMinMax: -Infinity,
+      normalizedMax: -Infinity,
     };
   });
 
@@ -90,19 +91,22 @@ export const createNodes = (
   });
 
   // iterate over all nodes, normalize and calculate the maximum number of peptides
-  let maxPeptides = 0;
+  let maxNumberOfPeptides = 0;
   newNodes.map((node) => {
     peptidesDict[node.id] = normalize(
       intensitySources,
       intensityExtremesBySource,
       node,
     );
-    maxPeptides = Math.max(maxPeptides, node.data.peptides.length);
+    maxNumberOfPeptides = Math.max(
+      maxNumberOfPeptides,
+      node.data.peptides.length,
+    );
   });
 
   return [
     newNodes,
-    maxPeptides,
+    maxNumberOfPeptides,
     intensityExtremesBySource,
     intensitySources,
     peptidesDict,
@@ -145,9 +149,10 @@ export const createEdges = (
     overallIntensityExtremesBySource[source] = {
       min: Infinity,
       max: -Infinity,
-      mean: -Infinity,
-      median: -Infinity,
-      minMax: -Infinity,
+      normalizedMean: -Infinity,
+      normalizedMedian: -Infinity,
+      normalizedMinMax: -Infinity,
+      normalizedMax: -Infinity,
     };
   });
 

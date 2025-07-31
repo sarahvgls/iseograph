@@ -147,6 +147,7 @@ export const normalize = (
     const extremes = overallIntensityExtremesBySource[source];
     const normalizedOverallMax = extremes.max - extremes.min + 1;
     const normalizedOverallMin = 0;
+    extremes.normalizedMax = extremes.max - extremes.min + 1;
 
     // cases no peptides
     if (node && node.data.peptideLog?.peptideEntries.length === 0) {
@@ -218,14 +219,14 @@ export const normalize = (
     const max = Math.max(...normalizedIntensities);
 
     // update extremes
-    if (median > extremes.median) {
-      extremes.median = median;
+    if (median > extremes.normalizedMedian) {
+      extremes.normalizedMedian = median;
     }
-    if (mean > extremes.mean) {
-      extremes.mean = mean;
+    if (mean > extremes.normalizedMean) {
+      extremes.normalizedMean = mean;
     }
-    if (min > extremes.minMax) {
-      extremes.minMax = min;
+    if (min > extremes.normalizedMinMax) {
+      extremes.normalizedMinMax = min;
     }
 
     if (node) {
