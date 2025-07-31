@@ -99,22 +99,6 @@ const initialIsoformColorMapping = generateIsoformColorMatching(
   customEdges as ArrowEdgeProps[],
 );
 
-// Load selected isoforms from localStorage if available
-// TODO function probably redundant
-const loadSelectedIsoforms = (): string[] => {
-  try {
-    const savedSelection = localStorage.getItem(
-      localStorageKeys.selectedIsoforms,
-    );
-    return savedSelection
-      ? JSON.parse(savedSelection)
-      : Object.keys(initialIsoformColorMapping);
-  } catch (error) {
-    console.error("Error loading selected isoforms", error);
-    return Object.keys(initialIsoformColorMapping);
-  }
-};
-
 const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
   nodes: customNodes,
   edges: customEdges,
@@ -235,7 +219,7 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
   isPeptideMenuFullSize: false,
   // --- isoform colored edges ---
   isoformColorMapping: initialIsoformColorMapping,
-  selectedIsoforms: loadSelectedIsoforms(),
+  selectedIsoforms: [],
   toggleIsoformSelection: (isoform: string) => {
     const { selectedIsoforms } = get();
     const newSelection = selectedIsoforms.includes(isoform)
