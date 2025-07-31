@@ -137,29 +137,27 @@ export default function ArrowEdge({
     selectedIsoforms.includes(isoform),
   );
 
-  // prepare marker ID and color
-  const markerId = useMemo(() => `arrow-${id}`, [id]);
-  const markerColor = isoforms.includes("Canonical")
+  // prepare ID used for marker and label & colors
+  const edgeId = useMemo(() => `arrow-${id}`, [id]);
+  const labelColor = isoforms.includes("Canonical")
     ? isoformColorMapping["Canonical"]
     : hasSelectedIsoform
       ? isoformColorMapping[isoforms[0]] || theme.defaultColor
       : isoformColorMapping["Default"] || theme.defaultColor;
-  // get marker label color based on the label color to have much contrast
-  const markerLabelColor = useMemo(() => {
-    const rgb = markerColor.match(/\d+/g);
+  // get text color based on the label color with much contrast
+  const labelTextColor = useMemo(() => {
+    const rgb = labelColor.match(/\d+/g);
     if (!rgb) return "#000"; // Fallback to black if color is invalid
     const [r, g, b] = rgb.map(Number);
     const brightness = (r * 299 + g * 587 + b * 114) / 1000;
     return brightness > 128 ? "#000" : "#fff"; // Return black for light colors, white for dark colors
-  }, [markerColor]);
+  }, [labelColor]);
 
-  // Valid label that is not none or None
-  let labelValid: string | undefined;
-  if (label && label !== "None" && label !== "none") {
-    labelValid = label as string;
-  } else {
-    labelValid = undefined;
-  }
+  // Valid label that is not none
+  const labelValid =
+    label && (label as String).toLowerCase() !== "none"
+      ? (label as string)
+      : undefined;
 
   // If no isoforms are selected, render simple black edge
   if (!hasSelectedIsoform) {
@@ -176,7 +174,7 @@ export default function ArrowEdge({
         key={`${id}-default`}
         id={id}
         path={defaultPath}
-        markerEnd={`url(#${markerId})`}
+        markerEnd={`url(#${edgeId})`}
         style={{
           stroke: isoformColorMapping["Default"] || theme.defaultColor,
           strokeWidth: style.strokeWidth || 2,
@@ -188,11 +186,9 @@ export default function ArrowEdge({
     const centerIndex = Math.floor(isoforms.length / 2);
 
     isoforms.map((isoform, index) => {
-      if (index === centerIndex) return; // Skip the center isoform for now
-      if (!selectedIsoforms.includes(isoform)) return; // Skip if not selected
       const color = isoformColorMapping[isoform] || "#000";
       const offset = index - (isoforms.length - 1) / 2;
-      const offsetDistance = 2; // Distance between parallel lines in pixels
+      const offsetDistance = (style.strokeWidth as number) || 2; // Distance between parallel lines in pixels
 
       // Calculate perpendicular offset
       const dx = targetX - sourceX;
@@ -215,6 +211,7 @@ export default function ArrowEdge({
         <BaseEdge
           key={`${id}-${isoform}`}
           path={offsetPath}
+          markerEnd={centerIndex === index ? `url(#${edgeId})` : undefined}
           style={{
             stroke: color,
             strokeWidth: style.strokeWidth || 2,
@@ -224,49 +221,13 @@ export default function ArrowEdge({
         />,
       );
     });
-
-    if (isoforms.length > 0) {
-      const centerIsoform = isoforms[centerIndex];
-      const color = isoformColorMapping[centerIsoform] || "#000";
-      const offset = centerIndex - (isoforms.length - 1) / 2;
-      const offsetDistance = 2;
-
-      const dx = targetX - sourceX;
-      const dy = targetY - sourceY;
-      const length = Math.sqrt(dx * dx + dy * dy);
-      const offsetX = (-dy / length) * offset * offsetDistance;
-      const offsetY = (dx / length) * offset * offsetDistance;
-
-      const [offsetPath] = getBezierPath({
-        sourceX: sourceX + offsetX,
-        sourceY: sourceY + offsetY,
-        sourcePosition,
-        targetX: targetX + offsetX,
-        targetY: targetY + offsetY,
-        targetPosition,
-      });
-
-      pathElements.push(
-        <BaseEdge
-          key={`${id}-${centerIsoform}-marker`}
-          path={offsetPath}
-          markerEnd={`url(#${markerId})`}
-          style={{
-            stroke: color,
-            strokeWidth: style.strokeWidth || 2,
-            ...style,
-          }}
-          id={`${id}-${centerIsoform}`}
-        />,
-      );
-    }
   }
 
   return (
     <>
       <defs>
         <marker
-          id={markerId}
+          id={edgeId}
           markerWidth="15"
           markerHeight="15"
           refX="9.8"
@@ -295,8 +256,8 @@ export default function ArrowEdge({
               style={{
                 position: "absolute",
                 transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
-                background: markerColor,
-                color: markerLabelColor,
+                background: labelColor,
+                color: labelTextColor,
                 padding: "4px 8px",
                 borderRadius: "4px",
                 fontSize: 12,
