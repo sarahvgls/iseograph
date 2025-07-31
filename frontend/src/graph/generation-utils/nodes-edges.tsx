@@ -79,6 +79,7 @@ export const createNodes = (
       data: {
         ...node.data,
         sequence: node.data.sequence,
+        feature: node.data.feature,
         nodeWidthMode: node.data.nodeWidthMode || nodeWidthModes.Collapsed, // default to Collapsed if not provided
         positionIndex: 0,
         intensityRank: 0,
