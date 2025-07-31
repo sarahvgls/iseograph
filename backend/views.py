@@ -1,5 +1,6 @@
 import json
 import os
+from pathlib import Path
 import subprocess
 from django.views.decorators.csrf import ensure_csrf_cookie
 
@@ -51,8 +52,8 @@ def load_protein_file(id):
     url = f"https://rest.uniprot.org/uniprotkb/{id}.txt"
     r = requests.get(url)
     r.raise_for_status()
-    protein_file = f"../data/{id}.txt"
-    protein_file.write_bytes(r.content)
+    protein_file = f"{PROJECT_ROOT_DIR}/data/{id}.txt"
+    Path(protein_file).write_bytes(r.content)
     return protein_file
 
 # --- api calls ---
@@ -97,12 +98,12 @@ def generate_base_graph(request):
     protein_id = data.get("protein_id")
 
     path_to_protein_file = load_protein_file(protein_id)
-    output_folder_path = "../data"
+    output_folder_path = f"{PROJECT_ROOT_DIR}/data"
 
     features = ""
-    if "features" in data:  #arg sollte eine Liste sein, werte in der List nur aus dieser Auswahl MUTAGEN, VARIANT, CONFLICT
+    if "features" in data:  #arg sollte eine Liste sein, werte in der List nur aus dieser Auswahl MUTAGEN, VARIANT, CONFLICT, VAR_SEQ
         for feature in data.get("features"):
-            features = features + f"-ft {feature}"
+            features = features + f"-ft {feature} "
     
     peptide_file = ""#quasi optional, aber müssen wa nochmal drüber reden
     if "peptide_file" in data:    #ein pfad 
@@ -147,7 +148,8 @@ def generate_base_graph(request):
                 {merge_peptides} \
                 {m_aggregation} \
                 {o_aggregation} \
-                -d skip"
+                -d skip -o {output_folder_path}/statistics.csv"
+
     subprocess.run(cmd_string, shell=True)
     
     return JsonResponse({"success": True, "message": f"Generated a graph as .graphml successfully."})
