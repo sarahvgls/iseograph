@@ -51,7 +51,7 @@ const colorByIntensity = (
   extremes: Extremes,
 ) => {
   let value = 0;
-  let maxValue = intensityStats.normalizedOverallMax || 1;
+  let maxValue = 1;
 
   if (
     intensityStats === ({} as IntensityStats) ||
@@ -62,6 +62,7 @@ const colorByIntensity = (
 
   if (method === intensityMethods.max) {
     value = intensityStats.normalizedMax as number;
+    maxValue = extremes.normalizedMax;
   } else if (method === intensityMethods.min) {
     value = intensityStats.normalizedMin as number;
     maxValue = extremes.normalizedMinMax;

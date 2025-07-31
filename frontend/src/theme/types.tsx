@@ -81,10 +81,6 @@ export interface IntensityStats {
   normalizedMean?: number;
   normalizedMax?: number;
   normalizedMin?: number;
-  overallMax?: number;
-  overallMin?: number;
-  normalizedOverallMax?: number;
-  normalizedOverallMin?: number;
 }
 
 export type IntensityStatsBySource = Record<string, IntensityStats>;
