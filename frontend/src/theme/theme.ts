@@ -96,7 +96,7 @@ export const theme = {
   debugMode: false, // only used in development
   node: {
     defaultWidth: 150,
-    defaultWidthSmall: 100,
+    defaultWidthSmall: 80,
     defaultWidthCollapsed: 20,
     defaultHeight: 100,
     // TODO decide what is better
