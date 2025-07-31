@@ -60,7 +60,6 @@ export const createNodes = (
 
   const newNodes = nodes.map((node) => {
     const peptides = convertStringToList(node.data.peptidesString);
-    const intensities = convertStringToList(node.data.intensitiesString || "");
     const peptideLog: PeptideLog = convertStringsToPeptideLog(
       intensitySources,
       peptides,
@@ -83,8 +82,6 @@ export const createNodes = (
         nodeWidthMode: node.data.nodeWidthMode || nodeWidthModes.Collapsed, // default to Collapsed if not provided
         positionIndex: 0,
         intensityRank: 0,
-        peptides: peptides,
-        intensities: intensities,
         peptideLog: peptideLog,
       },
     };
@@ -100,7 +97,7 @@ export const createNodes = (
     );
     maxNumberOfPeptides = Math.max(
       maxNumberOfPeptides,
-      node.data.peptides.length,
+      node.data.peptideLog.peptideEntries.length,
     );
   });
 
@@ -158,7 +155,6 @@ export const createEdges = (
 
   const newEdges = edges.map((edge) => {
     const peptides = convertStringToList(edge.data.peptidesString || "");
-    const intensities = convertStringToList(edge.data.intensitiesString || "");
     const peptideLog = convertStringsToPeptideLog(
       intensitySources,
       peptides,
@@ -183,8 +179,6 @@ export const createEdges = (
         isoforms: convertStringToList(edge.data.isoformString || ""),
         isoformsToColors: isoformsToColors || [],
         generic: edge.data.generic || "",
-        peptides: peptides,
-        intensities: intensities,
         peptideLog: peptideLog,
       },
     };
@@ -200,7 +194,10 @@ export const createEdges = (
       edge,
     );
 
-    maxPeptides = Math.max(maxPeptides, edge.data.peptides.length);
+    maxPeptides = Math.max(
+      maxPeptides,
+      edge.data.peptideLog.peptideEntries.length,
+    );
   });
 
   return [

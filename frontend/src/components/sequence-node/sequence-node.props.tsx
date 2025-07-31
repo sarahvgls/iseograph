@@ -14,9 +14,7 @@ export interface SequenceNodeProps extends NodeProps {
     intensityRank: number;
     isReversed?: boolean;
     nodeWidthMode: nodeWidthModes; // mode for this node, can be overridden by the store
-    peptides?: string[];
     peptidesString: string;
-    intensities?: string[]; // not clean TODO
     intensitiesString?: string;
     peptideLog?: PeptideLog;
   };

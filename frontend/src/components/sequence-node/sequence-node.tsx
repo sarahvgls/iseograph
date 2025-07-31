@@ -133,7 +133,7 @@ const SequenceNode = memo(function SequenceNode({
   }, [data.sequence, data.isReversed, reverseNodes]);
 
   // variables for peptide color management
-  const peptideCount = data.peptides?.length || 0;
+  const peptideCount = data.peptideLog?.peptideEntries?.length || 0;
   const peptideLog = getPeptides(id);
 
   return (

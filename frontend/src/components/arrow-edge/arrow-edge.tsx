@@ -63,7 +63,7 @@ export default function ArrowEdge({
     shallow,
   );
   // Peptide attributes for edge
-  const peptideCount = data.peptides?.length || 0;
+  const peptideCount = data.peptideLog?.peptideEntries?.length || 0;
   const peptideLog = getPeptides(id);
 
   // Isoform attributes for edge
@@ -155,7 +155,7 @@ export default function ArrowEdge({
 
   // Valid label that is not none
   const labelValid =
-    label && (label as String).toLowerCase() !== "none"
+    label && (label as string).toLowerCase() !== "none"
       ? (label as string)
       : undefined;
 
