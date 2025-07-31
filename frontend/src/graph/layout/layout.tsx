@@ -112,6 +112,25 @@ function assignPositionIndices(
   return sourceToTargets;
 }
 
+// correct positions of node siblings due to unwanted x coordinate in some cases
+function correctNodePositions(nodes: NodeTypes[]) {
+  const positionIndexToX: Record<number, number> = {};
+  nodes.forEach((node) => {
+    if (node.type !== nodeTypes.SequenceNode) {
+      return;
+    }
+    const positionIndex = node.data.positionIndex as number;
+    if (
+      positionIndexToX[positionIndex] === undefined ||
+      node.position.x < positionIndexToX[positionIndex]
+    ) {
+      positionIndexToX[positionIndex] = node.position.x;
+    } else {
+      node.position.x = positionIndexToX[positionIndex];
+    }
+  });
+}
+
 function addSymmetricalOffsetForVariations(
   nodes: NodeTypes[],
   edges: Edge[],
@@ -143,6 +162,12 @@ function addSymmetricalOffsetForVariations(
       : theme.offsets.defaultYSpacingBetweenNodes; // vertical distance between variations
 
     const yOffset = (intensityIndex - (siblings.length - 1) / 2) * spacing;
+
+    // const siblingXs = siblings.map((siblingId) => {
+    //   const siblingNode = nodes.find((n) => n.id === siblingId);
+    //   return siblingNode ? siblingNode.position.x : Infinity;
+    // });
+    // const smallestXOfSiblings = Math.min(...siblingXs);
 
     return {
       ...node,
@@ -192,6 +217,8 @@ export const applyLayout = (
       layoutedNodes,
       layoutedEdges,
     );
+
+    correctNodePositions(layoutedNodes);
 
     if (layoutMode !== layoutModes.Snake) {
       const finalNodes = layoutedNodes.map((node) => {
