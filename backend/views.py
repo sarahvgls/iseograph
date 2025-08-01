@@ -64,6 +64,41 @@ def load_protein_file(id):
     return protein_file
 
 
+def clean_up(protein_id: str) -> None:
+    # clear downloads folder
+    downloads_dir = PROJECT_ROOT_DIR / "downloads"
+    if os.path.exists(downloads_dir):
+        for file in os.listdir(downloads_dir):
+            file_path = os.path.join(downloads_dir, file)
+            if os.path.isfile(file_path):
+                os.remove(file_path)
+
+    # check last_recently_added.json
+    last_recently_added_file = PROJECT_ROOT_DIR / "data" / "last_recently_added.json"
+    if os.path.exists(last_recently_added_file):
+        with open(last_recently_added_file, "r") as f:
+            last_recently_added = json.load(f)
+
+        last_10_proteins = last_recently_added.get("last_10_protein_ids", [])
+        if protein_id not in last_10_proteins:
+            # remove first, if there are already 10 entries
+            if len(last_10_proteins) >= 10:
+                last_10_proteins.pop(0)
+            # add new protein id
+            last_10_proteins.append(protein_id)
+            with open(last_recently_added_file, "w") as f:
+                json.dump(last_recently_added, f)
+    else:
+        last_recently_added = {
+            "last_10_protein_ids": [protein_id],
+        }
+
+        with open(last_recently_added_file, "w") as f:
+            json.dump(last_recently_added, f)
+
+    return True
+
+
 # --- api calls ---
 
 @ensure_csrf_cookie
@@ -161,4 +196,10 @@ def generate_base_graph(request):
 
     subprocess.run(cmd_string, shell=True)
 
-    return JsonResponse({"success": True, "message": f"Generated a graph as .graphml successfully."})
+    output_file = os.path.join(output_folder_path, f"{protein_id}.graphml")
+    if not os.path.exists(output_file):
+        return JsonResponse({"success": False, "message": f"Failed to generate graph for {protein_id}."}, status=500)
+
+    clean_up(protein_id)
+
+    return JsonResponse({"success": True, "message": f"Generated {protein_id} a graph as .graphml successfully."})
