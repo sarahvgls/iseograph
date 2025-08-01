@@ -56,18 +56,12 @@ def load_protein_file(id):
     url = f"https://rest.uniprot.org/uniprotkb/{id}.txt"
     r = requests.get(url)
     r.raise_for_status()
-    protein_file = f"{PROJECT_ROOT_DIR}/data/{id}.txt"
+    download_dir = PROJECT_ROOT_DIR / "downloads"
+    if not os.path.exists(download_dir):
+        os.makedirs(download_dir)
+    protein_file = f"{download_dir}/{id}.txt"
     Path(protein_file).write_bytes(r.content)
     return protein_file
-
-    # data_dir = PROJECT_ROOT_DIR / "downloads"
-    # if not os.path.exists(data_dir):
-    #     os.makedirs(data_dir)
-    #
-    # protein_file_path = os.path.join(data_dir, f"{id}.txt")
-    # with open(protein_file_path, "wb") as f:
-    #     f.write(r.content)
-    # return protein_file_path
 
 
 # --- api calls ---
