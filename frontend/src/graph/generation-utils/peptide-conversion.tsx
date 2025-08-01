@@ -1,4 +1,5 @@
 import type {
+  Extremes,
   ExtremesBySource,
   IntensitiesPerPeptide,
   IntensityStatsBySource,
@@ -128,6 +129,18 @@ export const updateExtremes = (
   return extremes;
 };
 
+function calcLogAndNormalized(extremes: Extremes, value: number): number {
+  if (extremes.max === extremes.min) {
+    return 0; // Avoid division by zero
+  }
+
+  value = Math.log(value + 1); // Adding 1 to avoid log(0)
+  const min = Math.log(extremes.min + 1);
+  const max = Math.log(extremes.max + 1);
+
+  return (value - min) / (max - min);
+}
+
 export const normalize = (
   intensitySources: string[],
   overallIntensityExtremesBySource: ExtremesBySource,
@@ -145,7 +158,7 @@ export const normalize = (
 
   intensitySources.forEach((source) => {
     const extremes = overallIntensityExtremesBySource[source];
-    extremes.normalizedMax = extremes.max - extremes.min + 1;
+    extremes.normalizedMax = calcLogAndNormalized(extremes, extremes.max);
 
     // cases no peptides
     if (node && node.data.peptideLog?.peptideEntries.length === 0) {
@@ -195,7 +208,7 @@ export const normalize = (
     // normalize values by subtracting min
     const normalizedIntensities = plainIntensitiesBySource[source].map(
       (intensity) => {
-        return intensity - extremes.min + 1;
+        return calcLogAndNormalized(extremes, intensity);
       },
     );
 

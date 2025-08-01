@@ -43,7 +43,7 @@ export type labelVisibilities =
   (typeof labelVisibilities)[keyof typeof labelVisibilities];
 
 export const glowMethods = {
-  intensity: "intensity, normalized",
+  intensity: "intensity, log and normalized",
   count: "count",
 };
 
