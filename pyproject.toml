@@ -14,9 +14,6 @@ python-decouple = "^3.8"
 networkx = "^3.4.2"
 protgraph = {git = "https://github.com/Tisch-hinten-rechts/ProtGraph.git", rev = "dev"}
 requests = "^2.32.4"
-tqdm = "^4.67.1"
-igraph = "^0.11.9"
-bio = "^1.8.0"
 
 
 [tool.poetry.group.dev.dependencies]

@@ -15,16 +15,16 @@ def sheeesh():
     path_to_protein_file = load_protein_file(protein_id)
     output_folder_path = f"{PROJECT_ROOT_DIR}/data"
 
-    features = ""
+    features = "-ft VAR_SEQ "
     if "features" in data:  #arg sollte eine Liste sein, werte in der List nur aus dieser Auswahl MUTAGEN, VARIANT, CONFLICT, VAR_SEQ
         for feature in data.get("features"):
             features = features + f"-ft {feature} "
     
-    peptide_file = ""#quasi optional, aber müssen wa nochmal drüber reden
+    peptide_file = ""#quasi optional, aber müssen wa nochmal drüber reden #csv mit Sample,Protein ID,Sequence,Intensity
     if "peptide_file" in data:    #ein pfad 
         peptide_file = "-sg -pf " + data.get("peptide_file")
 
-    metadata_file = ""
+    metadata_file = ""          #Sample,XX,..,ZZ
     if "metadata_file" in data:    #einpfad, optional
         metadata_file = "-mf " + data.get("metadata_file")
     
@@ -40,15 +40,15 @@ def sheeesh():
     if "count" in data:
         count = "-cpep"
     
-    merge_peptides = "" #optional
+    merge_peptides = "" #optional ABC B AB
     if "merge_peptides" in data:
         merge_peptides = "-mp"
     
-    o_aggregation = "" # optional
+    o_aggregation = "" # optional Graph ABC ->  Peptide AB BC  01,10 
     if "o_aggregation" in data: #string, auswahl aus median, sum, mean
         o_aggregation = "-oi " + data.get("o_aggregation")
     
-    m_aggregation = ""
+    m_aggregation = "" 
     if "m_aggregation" in data:#string, auswahl aus median, sum, mean (default median)
         m_aggregation = "-oi " + data.get("m_aggregation")
 
