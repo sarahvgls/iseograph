@@ -74,6 +74,7 @@ const MenuStackContainer = styled.div`
 
 const Flow = () => {
   const [isInitializing, setIsInitializing] = useState(true);
+  const [hasNoData, setHasNoData] = useState(false);
   const {
     nodes,
     edges,
@@ -126,6 +127,16 @@ const Flow = () => {
     const nodes = useGraphStore.getState().nodes;
     const layoutMode = useGraphStore.getState().layoutMode;
     const nodeWidthMode = useGraphStore.getState().nodeWidthMode;
+
+    if (nodes.length === 0) {
+      console.warn(
+        "No nodes available in the graph. Please check the data source.",
+      );
+      setIsInitializing(false);
+      setIsSideMenuOpen(true);
+      setHasNoData(true);
+      return;
+    }
 
     setTimeout(() => {
       setLayoutMode(layoutMode);
@@ -188,6 +199,16 @@ const Flow = () => {
     },
     [focusNode, focusNodeWithDelay, setPeptideMonitorForNode],
   );
+
+  // if loaded without data, information marker shall disappear after a few seconds
+  useEffect(() => {
+    if (!hasNoData) {
+      return;
+    }
+    setTimeout(() => {
+      setHasNoData(false);
+    }, 5000);
+  }, [hasNoData]);
 
   const fitViewOptions = {
     minZoom: 0.4,
@@ -320,6 +341,7 @@ const Flow = () => {
       <SettingsBackdrop
         isSettingsOpen={isSideMenuOpen}
         setIsSettingsOpen={setIsSideMenuOpen}
+        startUpInfo={hasNoData}
       />
       <LoadingBackdrop isLoading={isInitializing} />
     </>

@@ -10,8 +10,8 @@ import {
 } from "@xyflow/react";
 import { createWithEqualityFn } from "zustand/traditional";
 
-import nodes from "../../../generated/nodes.json";
-import edges from "../../../generated/edges.json";
+import { default as nodesData } from "../../../generated/nodes.json" assert { type: "json" };
+import { default as edgesData } from "../../../generated/edges.json" assert { type: "json" };
 import type { SequenceNodeProps } from "../components/sequence-node/sequence-node.props.tsx";
 import { defaultValues, theme } from "../theme";
 import {
@@ -84,15 +84,32 @@ export type RFState = {
 };
 
 // ----- create nodes and edges -----
+const nodes =
+  Array.isArray(nodesData) && Object.keys(nodesData).length > 0
+    ? nodesData
+    : [];
+const edges =
+  Array.isArray(edgesData) && Object.keys(edgesData).length > 0
+    ? edgesData
+    : [];
+
+const isDataMissing = nodes.length === 0 || edges.length === 0;
+
+// Create empty defaults if data is missing
 const [
   customNodes,
   nodesMaxPeptides,
   nodeExtremes,
   intensitySources,
   peptidesDictNodes,
-] = createNodes(nodes as unknown as SequenceNodeProps[]);
+] = isDataMissing
+  ? [[], 0, {}, [], {}]
+  : createNodes(nodes as unknown as SequenceNodeProps[]);
+
 const [customEdges, edgesMaxPeptides, edgeExtremes, peptidesDictEdges] =
-  createEdges(edges as ArrowEdgeProps[], intensitySources);
+  isDataMissing
+    ? [[], 0, {}, {}]
+    : createEdges(edges as ArrowEdgeProps[], intensitySources);
 
 // Generate color mapping for isoforms
 const initialIsoformColorMapping = generateIsoformColorMatching(
