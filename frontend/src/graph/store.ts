@@ -104,7 +104,7 @@ const [
   peptidesDictNodes,
 ] = isDataMissing
   ? [[], 0, {}, [], {}]
-  : createNodes(nodes as unknown as SequenceNodeProps[]);
+  : createNodes(nodes as SequenceNodeProps[]);
 
 const [customEdges, edgesMaxPeptides, edgeExtremes, peptidesDictEdges] =
   isDataMissing
