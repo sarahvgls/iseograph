@@ -57,7 +57,8 @@ def load_protein_file(id):
     """
     url = f"https://rest.uniprot.org/uniprotkb/{id}.txt"
     r = requests.get(url)
-    r.raise_for_status()
+    if r.status_code != 200:
+        return ""
     download_dir = PROJECT_ROOT_DIR / "downloads"
     if not os.path.exists(download_dir):
         os.makedirs(download_dir)
@@ -144,18 +145,21 @@ def generate_base_graph(request):
     protein_id = data.get("protein_id")
 
     path_to_protein_file = load_protein_file(protein_id)
+    if not path_to_protein_file:
+        return JsonResponse({"success": False, "message": f"Failed to download protein file for {protein_id}."},
+                            status=500)
     output_folder_path = f"{PROJECT_ROOT_DIR}/data"
 
-    features = ""
+    features = "-ft VAR_SEQ "
     if "features" in data:  # arg sollte eine Liste sein, werte in der List nur aus dieser Auswahl MUTAGEN, VARIANT, CONFLICT, VAR_SEQ
         for feature in data.get("features"):
             features = features + f"-ft {feature} "
 
-    peptide_file = ""  # quasi optional, aber müssen wa nochmal drüber reden
+    peptide_file = ""  # quasi optional, aber müssen wa nochmal drüber reden #csv mit Sample,Protein ID,Sequence,Intensity
     if "peptide_file" in data:  # ein pfad
         peptide_file = "-sg -pf " + data.get("peptide_file")
 
-    metadata_file = ""
+    metadata_file = ""  # Sample,XX,..,ZZ
     if "metadata_file" in data:  # einpfad, optional
         metadata_file = "-mf " + data.get("metadata_file")
 
@@ -171,30 +175,30 @@ def generate_base_graph(request):
     if "count" in data:
         count = "-cpep"
 
-    merge_peptides = ""  # optional
+    merge_peptides = ""  # optional ABC B AB
     if "merge_peptides" in data:
         merge_peptides = "-mp"
 
-    o_aggregation = ""  # optional
+    o_aggregation = ""  # optional Graph ABC ->  Peptide AB BC  01,10
     if "o_aggregation" in data:  # string, auswahl aus median, sum, mean
-        o_aggregation = "-oi " + data.get("o_aggregation")
+        o_aggregation = "-oi " + data.get("o_aggregation").lower()
 
     m_aggregation = ""
     if "m_aggregation" in data:  # string, auswahl aus median, sum, mean (default median)
-        m_aggregation = "-oi " + data.get("m_aggregation")
+        m_aggregation = "-mi " + data.get("m_aggregation").lower()
 
     cmd_string = f"protgraph -egraphml {path_to_protein_file} \
-                --export_output_folder={output_folder_path} \
-                {features} \
-                {peptide_file} \
-                {metadata_file} \
-                {compare_column} \
-                {intensity} \
-                {count} \
-                {merge_peptides} \
-                {m_aggregation} \
-                {o_aggregation} \
-                -d skip -o {output_folder_path}/statistics.csv"
+                    --export_output_folder={output_folder_path} \
+                    {features} \
+                    {peptide_file} \
+                    {metadata_file} \
+                    {compare_column} \
+                    {intensity} \
+                    {count} \
+                    {merge_peptides} \
+                    {m_aggregation} \
+                    {o_aggregation} \
+                    -d skip -o {output_folder_path}/statistics.csv"
 
     subprocess.run(cmd_string, shell=True)
 
