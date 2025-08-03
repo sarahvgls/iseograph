@@ -44,7 +44,7 @@ export const createNodes = (
   );
 
   // map node id to peptideLogs
-  let peptidesDict: Record<string, PeptideLog> = {};
+  const peptidesDict: Record<string, PeptideLog> = {};
 
   let overallIntensityExtremesBySource: ExtremesBySource = {};
   intensitySources.forEach((source) => {
