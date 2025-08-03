@@ -4,7 +4,7 @@ import styled from "styled-components";
 const InfoBox = styled(StyledSection)`
   position: absolute;
   top: 50%;
-  left: 60%;
+  left: 40%;
   transform: translate(-50%, -50%);
   z-index: 9999;
   background-color: #f9f9f9;
