@@ -50,6 +50,7 @@ const selector = (state: RFState) => ({
   isPeptideMenuFullSize: state.isPeptideMenuFullSize,
   isIsoformMenuFullSize: state.isIsoformMenuFullSize,
   glowMethod: state.glowMethod,
+  shouldRerender: state.shouldRerender,
 });
 
 // this places the node origin in the center of a node
@@ -87,6 +88,7 @@ const Flow = () => {
     isPeptideMenuFullSize,
     isIsoformMenuFullSize,
     glowMethod,
+    shouldRerender,
   } = useGraphStore(selector, shallow); // using shallow to make sure the component only re-renders when one of the values changes
   const [focusedNode, setFocusedNode] = useState<SequenceNodeProps>();
   const { focusNode, onFocusNextNode, onFocusPreviousNode } = useFocusHandlers(
@@ -111,17 +113,14 @@ const Flow = () => {
     [focusNode],
   );
 
+  useEffect(() => {
+    setIsInitializing(shouldRerender);
+  }, [shouldRerender]);
+
   // Initialize graph
   useEffect(() => {
     if (!isInitializing) return;
-    // Apply any localStorage values immediately
     applyLocalStorageValues(setSelectedFile);
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    if (!isInitializing) return;
 
     const nodes = useGraphStore.getState().nodes;
     const layoutMode = useGraphStore.getState().layoutMode;
@@ -155,6 +154,7 @@ const Flow = () => {
 
     setTimeout(() => {
       setIsInitializing(false);
+      store.setState({ shouldRerender: false });
     }, 1500);
   }, [isInitializing, focusNodeWithDelay, setLayoutMode, setNodeWidthMode]);
 

@@ -15,6 +15,8 @@ import { TextComponent } from "../base-components/textfield.tsx";
 import { tooltips } from "./tooltip-content.tsx";
 import { FileUpload } from "../base-components/file-upload.tsx";
 import { getFileNames } from "./protein-selection-helper.tsx";
+import useGraphStore from "../../graph/store.ts";
+import { CircularProgress } from "@mui/material";
 
 export const ProteinSelection = ({
   previousSelectedFile,
@@ -24,6 +26,8 @@ export const ProteinSelection = ({
   const [fileNames, setFileNames] = useState<string[]>([]);
   const [selectedFile, setSelectedFile] =
     useState<string>(previousSelectedFile);
+  const [isAddLoading, setIsAddLoading] = useState<boolean>(false);
+  const [isLoadLoading, setIsLoadLoading] = useState<boolean>(false);
 
   useEffect(() => {
     void getFileNames(setFileNames);
@@ -34,6 +38,7 @@ export const ProteinSelection = ({
       alert("Please select a file.");
       return;
     }
+    setIsLoadLoading(true);
 
     try {
       const response = await callApiWithParameters("api/convert_file/", {
@@ -49,9 +54,14 @@ export const ProteinSelection = ({
         localStorage.removeItem(localStorageKeys.isoformColorMapping);
         localStorage.removeItem(localStorageKeys.glowMethod);
         localStorage.removeItem(localStorageKeys.intensitySource);
+
+        // force rerender
+        useGraphStore.setState({ shouldRerender: true });
       }
     } catch (error) {
       console.error("Error executing script:", error);
+    } finally {
+      setIsLoadLoading(false); // Stop loading
     }
   };
 
@@ -84,6 +94,8 @@ export const ProteinSelection = ({
       alert("Please enter a protein name.");
       return;
     }
+
+    setIsAddLoading(true); // Start loading
 
     // clear dropdown
     setSelectedFile("");
@@ -119,6 +131,7 @@ export const ProteinSelection = ({
       alert(
         "Overlapping aggregation method is not allowed to be selected when a comparison column is selected. Please choose either one of them.",
       );
+      setIsAddLoading(false); // Stop loading
       return;
     }
 
@@ -135,6 +148,9 @@ export const ProteinSelection = ({
         // reset local storage
         localStorage.removeItem(localStorageKeys.selectedIsoforms);
         localStorage.removeItem(localStorageKeys.isoformColorMapping);
+
+        // force rerender
+        useGraphStore.setState({ shouldRerender: true });
 
         // reset file dropdown
         const names = await getFileNames(setFileNames);
@@ -156,6 +172,8 @@ export const ProteinSelection = ({
       // Optionally, refresh the file names or handle success
     } catch (error) {
       console.error("Error adding protein:", error);
+    } finally {
+      setIsAddLoading(false); // Stop loading
     }
   };
 
@@ -174,8 +192,11 @@ export const ProteinSelection = ({
             setValue={setSelectedFile}
             options={fileNames}
           />
-          <SecondaryButton onClick={handleRecentFileSubmit}>
-            Load
+          <SecondaryButton
+            onClick={handleRecentFileSubmit}
+            disabled={isLoadLoading}
+          >
+            {isLoadLoading ? <CircularProgress size={20} /> : "Load"}{" "}
           </SecondaryButton>
         </FlexRow>
       </div>
@@ -276,8 +297,17 @@ export const ProteinSelection = ({
           </>
         )}
 
-        <SecondaryButton style={{ width: "100%" }} onClick={handleAddProtein}>
-          Add
+        <SecondaryButton
+          style={{
+            width: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+          onClick={handleAddProtein}
+          disabled={isAddLoading}
+        >
+          {isAddLoading ? <CircularProgress size={20} /> : "Add"}{" "}
         </SecondaryButton>
       </div>
     </StyledSection>

@@ -38,6 +38,7 @@ export type RFState = {
   edges: Edge[];
   onNodesChange: OnNodesChange;
   onEdgesChange: OnEdgesChange;
+  shouldRerender: boolean;
   nodeWidthMode: nodeWidthModes;
   setGlobalNodeWidthMode: (nodeWidthMode: nodeWidthModes) => void;
   layoutMode: layoutModes;
@@ -129,6 +130,7 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
       edges: applyEdgeChanges(changes, get().edges),
     });
   },
+  shouldRerender: true,
 
   // --- layouting ---
   layoutMode: defaultValues.layoutMode,
