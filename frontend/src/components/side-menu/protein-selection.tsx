@@ -85,6 +85,7 @@ export const ProteinSelection = ({
 
     // clear dropdown
     setSelectedFile("");
+    localStorage.removeItem(localStorageKeys.selectedFile);
 
     // prepare parameters dynamically
     const bodyParameters: Record<string, any> = {

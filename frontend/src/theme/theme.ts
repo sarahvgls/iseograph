@@ -1,5 +1,12 @@
 import { action, makeObservable, observable } from "mobx";
-import { labelVisibilities, layoutModes, nodeWidthModes } from "./types.tsx";
+import {
+  ColorScaleOptions,
+  glowMethods,
+  intensityMethods,
+  labelVisibilities,
+  layoutModes,
+  nodeWidthModes,
+} from "./types.tsx";
 
 export const defaultPalette = {
   mode: "light",
@@ -82,6 +89,7 @@ export const defaultValues = {
   numberOfAllowedIsoforms: 4,
   rowWidth: 3000,
   labelVisibility: labelVisibilities.always,
+  zeroValuesPeptides: true,
 };
 
 export const theme = {
@@ -105,6 +113,11 @@ export const theme = {
       yOffsetBetweenRows: 300,
       xOffsetBetweenNodes: 150,
     },
+  },
+  edgeGlow: {
+    defaultMethod: glowMethods.count,
+    defaultColorScale: ColorScaleOptions.disabled,
+    defaultMultiplePeptidesMethod: intensityMethods.median,
   },
   colors: [
     defaultPalette.green,

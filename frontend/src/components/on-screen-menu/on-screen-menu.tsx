@@ -1,7 +1,7 @@
 import {
   SecondaryButton,
   StyledSection,
-  StyledSectionTitle,
+  StyledSectionTitleWithButton,
 } from "../base-components";
 import { HexColorPicker } from "react-colorful";
 import { useRef, useState } from "react";
@@ -19,12 +19,25 @@ const MenuContainer = styled.div<{ isOpen: boolean }>`
   flex-direction: row;
   align-items: flex-end;
   gap: 15px;
-  pointer-events: none; /* Allow clicks to pass through to the graph by default */
-  position: fixed;
-  right: ${({ isOpen }) => (isOpen ? "20px" : "-100%")};
-  bottom: 20px;
-  transition: right 0.3s ease-in-out;
-  z-index: 10;
+  transform: translateX(${({ isOpen }) => (isOpen ? "0" : "100%")});
+  transition: transform 0.3s ease-in-out;
+  pointer-events: none;
+`;
+
+const ColorSelection = styled.div`
+  margin-top: 15px;
+  max-height: 200px;
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    width: 4px;
+    background-color: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 20px;
+  }
 `;
 
 const ColorPickerBox = styled.div`
@@ -120,6 +133,7 @@ export const OnScreenMenu = ({
   return (
     <div>
       <MenuContainer isOpen={isOpen}>
+        {/*--- Graph Settings Switches ---*/}
         <Switch
           label={"Layout Mode"}
           options={allLayoutModes}
@@ -137,39 +151,22 @@ export const OnScreenMenu = ({
           isShy={false}
         />
 
+        {/*--- Isoform color selection ---*/}
         <StyledSection
           style={{
             marginBottom: 0,
             boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
-            pointerEvents:
-              "auto" /* Re-enable pointer events for this element */,
+            pointerEvents: "auto",
           }}
         >
-          <StyledSectionTitle>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <div>Isoforms and Colors</div>
-              <button
-                style={{ border: "none", height: "30px" }}
-                onClick={() => {
-                  setIsOpen(false);
-                }}
-              >{`>>`}</button>
-            </div>
-          </StyledSectionTitle>
-          <div
-            style={{
-              marginTop: "15px",
-              maxHeight: "250px",
-              overflowY: "auto",
+          <StyledSectionTitleWithButton
+            onClose={() => {
+              setIsOpen(false);
+              useGraphStore.setState({ isIsoformMenuFullSize: false });
             }}
-          >
+            title={"Isoform-colored edges"}
+          />
+          <ColorSelection>
             {Object.entries(isoformColorMapping).map(([isoform, color]) => (
               <div
                 key={isoform}
@@ -251,7 +248,7 @@ export const OnScreenMenu = ({
                 )}
               </div>
             ))}
-          </div>
+          </ColorSelection>
           <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
             <SecondaryButton onClick={resetColors}>
               Reset colors

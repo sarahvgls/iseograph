@@ -7,6 +7,16 @@ export const StyledSection = styled.div`
   background-color: #f8f9fa;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+
+  &::-webkit-scrollbar {
+    width: 5px;
+    height: 8px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 8px;
+  }
 `;
 
 export const StyledSectionTitle = styled.h3`
@@ -17,6 +27,35 @@ export const StyledSectionTitle = styled.h3`
   border-bottom: 1px solid #e1e4e8;
   padding-bottom: 8px;
 `;
+
+export const StyledSectionTitleWithButton = ({
+  onClose,
+  title,
+}: {
+  onClose: () => void;
+  title: string;
+}) => {
+  return (
+    <StyledSectionTitle>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <div>{title}</div>
+        <button
+          style={{ border: "none", height: "30px" }}
+          onClick={() => {
+            onClose();
+          }}
+        >{`>>`}</button>
+      </div>
+    </StyledSectionTitle>
+  );
+};
 
 export const StyledLabel = styled.label`
   display: block;
@@ -37,6 +76,16 @@ export const StyledDropdown = styled.select`
   background-color: white;
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
   font-size: 14px;
+`;
+
+export const StyledSlimmDropdown = styled.select`
+  width: 100%;
+  padding: 6px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  background-color: white;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+  font-size: 12px;
 `;
 
 export const StyledInputTextField = styled.input`
