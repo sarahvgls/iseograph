@@ -1,4 +1,7 @@
 import styled from "styled-components";
+import { SecondaryButton } from "./base-components.tsx";
+import { Modal } from "./modal.tsx";
+import { useState } from "react";
 
 const CheckboxContainer = styled.label`
   display: flex;
@@ -48,6 +51,8 @@ interface CheckboxProps {
   checked: boolean;
   onChange: (checked: boolean) => void;
   className?: string;
+  tooltip?: string;
+  tooltipTitle?: string;
 }
 
 export const Checkbox: React.FC<CheckboxProps> = ({
@@ -55,7 +60,10 @@ export const Checkbox: React.FC<CheckboxProps> = ({
   checked,
   onChange,
   className,
+  tooltip,
+  tooltipTitle,
 }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   return (
     <CheckboxContainer className={className}>
       <HiddenCheckbox
@@ -66,6 +74,19 @@ export const Checkbox: React.FC<CheckboxProps> = ({
         {checked && <CheckMark>✓</CheckMark>}
       </StyledCheckboxControl>
       <CheckboxLabel>{label}</CheckboxLabel>
+      {tooltip && (
+        <SecondaryButton onClick={() => setIsModalOpen(!isModalOpen)}>
+          i
+        </SecondaryButton>
+      )}
+      {tooltip && (
+        <Modal
+          text={tooltip}
+          title={tooltipTitle}
+          onClose={() => setIsModalOpen(false)}
+          isOpen={isModalOpen}
+        />
+      )}
     </CheckboxContainer>
   );
 };
