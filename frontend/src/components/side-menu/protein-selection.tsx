@@ -8,12 +8,13 @@ import {
 } from "../base-components";
 import { MultiCompatibleCheckbox } from "../base-components/checkbox.tsx";
 import { useEffect, useState } from "react";
-import { callApi, callApiWithParameters } from "../../helper/api-call.ts";
+import { callApiWithParameters } from "../../helper/api-call.ts";
 import { localStorageKeys } from "../../theme/types.tsx";
 import { DropdownComponent } from "../base-components/dropdown.tsx";
 import { TextComponent } from "../base-components/textfield.tsx";
 import { tooltips } from "./tooltip-content.tsx";
 import { FileUpload } from "../base-components/file-upload.tsx";
+import { getFileNames } from "./protein-selection-helper.tsx";
 
 export const ProteinSelection = ({
   previousSelectedFile,
@@ -25,19 +26,7 @@ export const ProteinSelection = ({
     useState<string>(previousSelectedFile);
 
   useEffect(() => {
-    const getFileNames = async () => {
-      const response = await callApi("api/get_available_files/");
-      if (!response.success) {
-        console.error("Failed to fetch file names");
-        return;
-      } else {
-        const names = response.data || [];
-
-        setFileNames(names);
-      }
-    };
-
-    void getFileNames();
+    void getFileNames(setFileNames);
   }, []);
 
   const handleRecentFileSubmit = async () => {
@@ -141,10 +130,25 @@ export const ProteinSelection = ({
         return;
       } else {
         // reset local storage
-        localStorage.setItem(localStorageKeys.newProteinName, newProteinName);
-        localStorage.setItem(localStorageKeys.selectedFile, "");
         localStorage.removeItem(localStorageKeys.selectedIsoforms);
         localStorage.removeItem(localStorageKeys.isoformColorMapping);
+
+        // reset file dropdown
+        const names = await getFileNames(setFileNames);
+        // search in fileNames for newProteinName.graphml
+        const newFileName = `${newProteinName}.graphml`;
+        if (names.includes(newFileName)) {
+          setSelectedFile(newFileName);
+          localStorage.setItem(localStorageKeys.selectedFile, newFileName);
+          setNewProteinName(""); // Reset new protein name input
+          localStorage.removeItem(localStorageKeys.newProteinName);
+        } else {
+          console.warn(
+            `New protein file ${newFileName} not found in fileNames.`,
+          );
+          setSelectedFile(""); // Reset if not found
+          localStorage.setItem(localStorageKeys.selectedFile, "");
+        }
       }
       // Optionally, refresh the file names or handle success
     } catch (error) {
