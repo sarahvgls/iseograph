@@ -1,5 +1,5 @@
 // ----- functions for layouting nodes and edges -----
-import { type Edge, type InternalNode } from "@xyflow/react";
+import { type Edge } from "@xyflow/react";
 import {
   layoutModes,
   nodeTypes,
@@ -10,6 +10,7 @@ import Dagre from "@dagrejs/dagre";
 import type { SequenceNodeProps } from "../../components/sequence-node/sequence-node.props.tsx";
 import { defaultValues, theme } from "../../theme";
 import { applySnakeLayout } from "./snake-layout.tsx";
+import { getNodeWidth } from "./helper.tsx";
 
 const applyBasicLayoutDagre = (
   nodes: NodeTypes[],
@@ -18,9 +19,7 @@ const applyBasicLayoutDagre = (
   const g = new Dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
   g.setGraph({
     rankdir: "LR",
-    ranksep: 60,
     nodesep: 50,
-    align: "UL",
   });
 
   edges.forEach((edge) => g.setEdge(edge.source, edge.target));
@@ -28,15 +27,13 @@ const applyBasicLayoutDagre = (
     if (node.type !== nodeTypes.SequenceNode) {
       return;
     }
-    const sequence: string = node.data.sequence as string;
-    const sequenceLength = sequence.length * 12 + 100; // 12 is the approximated width of each character, plus 50px on each side
-
     g.setNode(node.id, {
       ...node,
       width:
-        node.data.nodeWidthMode === nodeWidthModes.Expanded
-          ? sequenceLength
-          : theme.node.defaultWidth,
+        getNodeWidth(
+          node.data.nodeWidthMode as nodeWidthModes,
+          node.data.sequence as string,
+        ) + theme.layout.linear.xOffsetBetweenNodes,
       height: theme.node.defaultHeight,
     });
   });
@@ -59,25 +56,28 @@ const applyBasicLayoutDagre = (
   ];
 };
 
-function addSymmetricalOffsetForVariations(
+function assignPositionIndices(
   nodes: NodeTypes[],
   edges: Edge[],
-): [NodeTypes[], Edge[]] {
-  const spacing = theme.debugMode
-    ? theme.offsets.debugYSpacingBetweenNodes
-    : theme.offsets.defaultYSpacingBetweenNodes; // vertical distance between variations
+): Record<
+  string,
+  {
+    positionIndex: number;
+    targets: string[];
+  }
+> {
   // Create a map to track the parent nodes and their children with correct index
   const sourceToTargets: Record<
     string,
-    { positionId: number; targets: string[] }
+    { positionIndex: number; targets: string[] }
   > = {};
 
   edges.forEach(({ source, target }) => {
     if (!sourceToTargets[source]) {
-      sourceToTargets[source] = { positionId: -1, targets: [] };
+      sourceToTargets[source] = { positionIndex: -1, targets: [] };
     }
     if (!sourceToTargets[target]) {
-      sourceToTargets[target] = { positionId: -1, targets: [] };
+      sourceToTargets[target] = { positionIndex: -1, targets: [] };
     }
     sourceToTargets[source].targets.push(target);
   });
@@ -86,11 +86,10 @@ function addSymmetricalOffsetForVariations(
     (node) => node.type === nodeTypes.SequenceNode,
   );
   if (!firstSequenceNode) {
-    console.warn("No sequence node found, skipping layout adjustment.");
-    return [nodes, edges];
+    throw new Error("No sequence node found, layout not possible.");
   }
   let parentIdStack = [firstSequenceNode.id];
-  sourceToTargets[firstSequenceNode.id].positionId = 0;
+  sourceToTargets[firstSequenceNode.id].positionIndex = 0;
 
   // loop through all nodes and assign positionId
   while (parentIdStack.length > 0) {
@@ -101,14 +100,42 @@ function addSymmetricalOffsetForVariations(
       const children = sourceToTargets[parent].targets;
       if (children.length === 0) break;
       for (const childId of children) {
-        sourceToTargets[childId].positionId =
-          sourceToTargets[parent].positionId + 1;
+        sourceToTargets[childId].positionIndex =
+          sourceToTargets[parent].positionIndex + 1;
         if (!parentIdStack.includes(childId)) {
           parentIdStack.push(childId);
         }
       }
     }
   }
+
+  return sourceToTargets;
+}
+
+// correct positions of node siblings due to unwanted x coordinate in some cases
+function correctNodePositions(nodes: NodeTypes[]) {
+  const positionIndexToX: Record<number, number> = {};
+  nodes.forEach((node) => {
+    if (node.type !== nodeTypes.SequenceNode) {
+      return;
+    }
+    const positionIndex = node.data.positionIndex as number;
+    if (
+      positionIndexToX[positionIndex] === undefined ||
+      node.position.x < positionIndexToX[positionIndex]
+    ) {
+      positionIndexToX[positionIndex] = node.position.x;
+    } else {
+      node.position.x = positionIndexToX[positionIndex];
+    }
+  });
+}
+
+function addSymmetricalOffsetForVariations(
+  nodes: NodeTypes[],
+  edges: Edge[],
+): [NodeTypes[], Edge[]] {
+  const sourceToTargets = assignPositionIndices(nodes, edges);
 
   const alteredNodes = nodes.map((node) => {
     const parent = Object.entries(sourceToTargets).find(([, targets]) =>
@@ -129,9 +156,18 @@ function addSymmetricalOffsetForVariations(
       );
     });
     const intensityIndex = siblings.indexOf(node.id);
-    const positionIndex = sourceToTargets[node.id].positionId;
+    const positionIndex = sourceToTargets[node.id].positionIndex;
+    const spacing = theme.debugMode
+      ? theme.offsets.debugYSpacingBetweenNodes
+      : theme.offsets.defaultYSpacingBetweenNodes; // vertical distance between variations
 
     const yOffset = (intensityIndex - (siblings.length - 1) / 2) * spacing;
+
+    // const siblingXs = siblings.map((siblingId) => {
+    //   const siblingNode = nodes.find((n) => n.id === siblingId);
+    //   return siblingNode ? siblingNode.position.x : Infinity;
+    // });
+    // const smallestXOfSiblings = Math.min(...siblingXs);
 
     return {
       ...node,
@@ -154,7 +190,6 @@ export const applyLayout = (
   edges: Edge[],
   layoutMode: layoutModes,
   maxWidthPerRow: number,
-  getInternalNode: ((id: string) => InternalNode | undefined) | null,
 ): Promise<[NodeTypes[], Edge[]]> => {
   // remove groups and reset layouting properties
   const filteredNodes = nodes
@@ -183,6 +218,8 @@ export const applyLayout = (
       layoutedEdges,
     );
 
+    correctNodePositions(layoutedNodes);
+
     if (layoutMode !== layoutModes.Snake) {
       const finalNodes = layoutedNodes.map((node) => {
         if (node.type === nodeTypes.SequenceNode) {
@@ -200,14 +237,13 @@ export const applyLayout = (
       return;
     }
 
-    // Wait for two animation frames to ensure DOM is updated with new node widths
+    // Wait for two animation frames
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         const [snakeNodes, snakeEdges] = applySnakeLayout(
           layoutedNodes,
           layoutedEdges,
           maxWidthPerRow,
-          getInternalNode,
         );
 
         const finalNodes = snakeNodes.map((node) => {

@@ -128,7 +128,7 @@ export const OnScreenPeptidesMenu = ({
           }}
         >
           <StyledSectionTitleWithButton
-            title={"Peptide edge colorscale:"}
+            title={"Peptide glow colorscale:"}
             onClose={() => {
               setIsOpen(false);
               useGraphStore.setState({ isPeptideMenuFullSize: false });

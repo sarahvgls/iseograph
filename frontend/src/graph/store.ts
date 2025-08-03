@@ -3,7 +3,6 @@ import {
   applyNodeChanges,
   type Edge,
   type EdgeChange,
-  type InternalNode,
   type Node,
   type NodeChange,
   type OnEdgesChange,
@@ -11,8 +10,8 @@ import {
 } from "@xyflow/react";
 import { createWithEqualityFn } from "zustand/traditional";
 
-import nodes from "../../../generated/nodes.json";
-import edges from "../../../generated/edges.json";
+import { default as nodesData } from "../../../generated/nodes.json" assert { type: "json" };
+import { default as edgesData } from "../../../generated/edges.json" assert { type: "json" };
 import type { SequenceNodeProps } from "../components/sequence-node/sequence-node.props.tsx";
 import { defaultValues, theme } from "../theme";
 import {
@@ -37,10 +36,6 @@ import {
 export type RFState = {
   nodes: Node[];
   edges: Edge[];
-  getInternalNodeFn: ((id: string) => InternalNode | undefined) | null;
-  setInternalNodeGetter: (
-    getter: (id: string) => InternalNode | undefined,
-  ) => void;
   onNodesChange: OnNodesChange;
   onEdgesChange: OnEdgesChange;
   nodeWidthMode: nodeWidthModes;
@@ -89,44 +84,41 @@ export type RFState = {
 };
 
 // ----- create nodes and edges -----
+const nodes =
+  Array.isArray(nodesData) && Object.keys(nodesData).length > 0
+    ? nodesData
+    : [];
+const edges =
+  Array.isArray(edgesData) && Object.keys(edgesData).length > 0
+    ? edgesData
+    : [];
+
+const isDataMissing = nodes.length === 0 || edges.length === 0;
+
+// Create empty defaults if data is missing
 const [
   customNodes,
   nodesMaxPeptides,
   nodeExtremes,
   intensitySources,
   peptidesDictNodes,
-] = createNodes(nodes as unknown as SequenceNodeProps[]);
+] = isDataMissing
+  ? [[], 0, {}, [], {}]
+  : createNodes(nodes as SequenceNodeProps[]);
+
 const [customEdges, edgesMaxPeptides, edgeExtremes, peptidesDictEdges] =
-  createEdges(edges as ArrowEdgeProps[], intensitySources);
+  isDataMissing
+    ? [[], 0, {}, {}]
+    : createEdges(edges as ArrowEdgeProps[], intensitySources);
 
 // Generate color mapping for isoforms
 const initialIsoformColorMapping = generateIsoformColorMatching(
   customEdges as ArrowEdgeProps[],
 );
 
-// Load selected isoforms from localStorage if available
-// TODO function probably redundant
-const loadSelectedIsoforms = (): string[] => {
-  try {
-    const savedSelection = localStorage.getItem(
-      localStorageKeys.selectedIsoforms,
-    );
-    return savedSelection
-      ? JSON.parse(savedSelection)
-      : Object.keys(initialIsoformColorMapping);
-  } catch (error) {
-    console.error("Error loading selected isoforms", error);
-    return Object.keys(initialIsoformColorMapping);
-  }
-};
-
 const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
   nodes: customNodes,
   edges: customEdges,
-  getInternalNodeFn: null,
-  setInternalNodeGetter: (getter) => {
-    set({ getInternalNodeFn: getter });
-  },
   onNodesChange: (changes: NodeChange[]) => {
     set({
       nodes: applyNodeChanges(changes, get().nodes),
@@ -143,14 +135,13 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
   setLayoutMode: async (layoutMode: layoutModes) => {
     set({ layoutMode });
 
-    const { nodes, edges, rowWidth, getInternalNodeFn } = get();
+    const { nodes, edges, rowWidth } = get();
 
     const [layoutedNodes, layoutedEdges] = await applyLayout(
       nodes,
       edges,
       layoutMode,
       rowWidth,
-      getInternalNodeFn,
     );
 
     set({
@@ -164,7 +155,7 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
   setGlobalNodeWidthMode: async (nodeWidthMode: nodeWidthModes) => {
     set({ nodeWidthMode });
 
-    const { nodes, edges, getInternalNodeFn, layoutMode, rowWidth } = get();
+    const { nodes, edges, layoutMode, rowWidth } = get();
 
     // create altered nodes to be available for the internal nodes
     const alteredNodes = nodes.map((node) => ({
@@ -181,7 +172,6 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
       edges,
       layoutMode,
       rowWidth,
-      getInternalNodeFn,
     );
 
     set({
@@ -212,7 +202,6 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
         state.edges,
         state.layoutMode,
         state.rowWidth,
-        state.getInternalNodeFn,
       ).then(([layoutedNodes, layoutedEdges]) => {
         set({
           nodes: layoutedNodes,
@@ -226,7 +215,6 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
           state.edges,
           state.layoutMode,
           state.rowWidth,
-          state.getInternalNodeFn,
         ).then(([layoutedNodes, layoutedEdges]) => {
           set({
             nodes: layoutedNodes,
@@ -248,7 +236,7 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
   isPeptideMenuFullSize: false,
   // --- isoform colored edges ---
   isoformColorMapping: initialIsoformColorMapping,
-  selectedIsoforms: loadSelectedIsoforms(),
+  selectedIsoforms: [],
   toggleIsoformSelection: (isoform: string) => {
     const { selectedIsoforms } = get();
     const newSelection = selectedIsoforms.includes(isoform)

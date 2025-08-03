@@ -96,6 +96,8 @@ export const theme = {
   debugMode: false, // only used in development
   node: {
     defaultWidth: 150,
+    defaultWidthSmall: 80,
+    defaultWidthCollapsed: 20,
     defaultHeight: 100,
     // TODO decide what is better
     delayedRerendering: false, // if true, on node click the size of the node changes but the rerendering of the snake graph is delayed,
@@ -109,6 +111,9 @@ export const theme = {
     debugYSpacingBetweenNodes: 500,
   },
   layout: {
+    linear: {
+      xOffsetBetweenNodes: 100,
+    },
     snake: {
       yOffsetBetweenRows: 300,
       xOffsetBetweenNodes: 150,
@@ -118,6 +123,8 @@ export const theme = {
     defaultMethod: glowMethods.count,
     defaultColorScale: ColorScaleOptions.disabled,
     defaultMultiplePeptidesMethod: intensityMethods.median,
+    edgeOpacity: 0.07,
+    nodeOpacity: 0.5,
   },
   colors: [
     defaultPalette.green,

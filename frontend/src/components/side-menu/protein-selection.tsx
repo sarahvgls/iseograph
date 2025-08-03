@@ -47,6 +47,8 @@ export const ProteinSelection = ({
         localStorage.setItem(localStorageKeys.selectedFile, selectedFile);
         localStorage.removeItem(localStorageKeys.selectedIsoforms);
         localStorage.removeItem(localStorageKeys.isoformColorMapping);
+        localStorage.removeItem(localStorageKeys.glowMethod);
+        localStorage.removeItem(localStorageKeys.intensitySource);
       }
     } catch (error) {
       console.error("Error executing script:", error);

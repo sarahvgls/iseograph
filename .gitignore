@@ -35,3 +35,4 @@ Thumbs.db
 *.graphml
 *.json
 data/
+./generated
