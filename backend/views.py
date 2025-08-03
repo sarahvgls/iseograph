@@ -10,6 +10,8 @@ import requests
 from backend.consts import PROJECT_ROOT_DIR, TEST_MODE
 from scripts.convert_graphml_to_json import convert_graphml_to_json
 from django.middleware.csrf import get_token
+from django.views.decorators.csrf import csrf_exempt
+from django.core.files.storage import default_storage
 
 
 def get_available_file_names() -> list[str]:
@@ -203,3 +205,28 @@ def generate_base_graph(request):
     clean_up(protein_id)
 
     return JsonResponse({"success": True, "message": f"Generated {protein_id} a graph as .graphml successfully."})
+
+
+@csrf_exempt
+def upload_file(request):
+    """
+    API endpoint to handle file uploads.
+    """
+    if request.method != "POST":
+        return JsonResponse({"success": False, "message": "Invalid request method. Use POST."}, status=405)
+
+    uploaded_file = request.FILES.get("file")
+    if not uploaded_file:
+        return JsonResponse({"success": False, "message": "No file provided."}, status=400)
+
+    upload_dir = PROJECT_ROOT_DIR / "uploads"
+    if not os.path.exists(upload_dir):
+        os.makedirs(upload_dir)
+
+    valid_file_name = uploaded_file.name.replace(" ", "_").replace("..", ".")
+    file_path = upload_dir / valid_file_name
+    with default_storage.open(file_path, "wb+") as destination:
+        for chunk in uploaded_file.chunks():
+            destination.write(chunk)
+
+    return JsonResponse({"success": True, "filePath": str(file_path), "message": "File uploaded successfully."})
