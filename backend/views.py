@@ -7,7 +7,7 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from django.http import JsonResponse
 import requests
 
-from backend.consts import PROJECT_ROOT_DIR, TEST_MODE
+from backend.consts import PROJECT_ROOT_DIR, TEST_MODE, MAX_GRAPHML_FILES
 from scripts.convert_graphml_to_json import convert_graphml_to_json
 from django.middleware.csrf import get_token
 from django.views.decorators.csrf import csrf_exempt
@@ -37,7 +37,7 @@ def run_conversion_script(file_name: str) -> None:
     Runs the conversion script for the specified file name.
     """
     if not file_name.endswith(".graphml"):
-        raise ValueError("File must be a .graphml file")
+        raise ValueError("File must be a .graphml file: " + file_name)
 
     input_file = os.path.join(PROJECT_ROOT_DIR / "test_data" if TEST_MODE else PROJECT_ROOT_DIR / "data", file_name)
     output_dir = PROJECT_ROOT_DIR / "generated"
@@ -82,24 +82,30 @@ def clean_up(protein_id: str) -> None:
         with open(last_recently_added_file, "r") as f:
             last_recently_added = json.load(f)
 
-        last_10_proteins = last_recently_added.get("last_10_protein_ids", [])
-        if protein_id not in last_10_proteins:
-            # remove first, if there are already 10 entries
-            if len(last_10_proteins) >= 10:
-                last_10_proteins.pop(0)
-            # add new protein id
-            last_10_proteins.append(protein_id)
-            with open(last_recently_added_file, "w") as f:
-                json.dump(last_recently_added, f)
+        last_n_proteins = last_recently_added.get("last_n_protein_ids", [])
+        if protein_id in last_n_proteins:
+            # if protein_id is already in the list, remove it
+            last_n_proteins.remove(protein_id)
+        # remove first, if there are already too many entries
+        if len(last_n_proteins) >= MAX_GRAPHML_FILES:
+            oldest_id = last_n_proteins[0]
+            last_n_proteins.pop(0)
+            # remove old protein file
+            old_protein_file = PROJECT_ROOT_DIR / "data" / f"{oldest_id}.graphml"
+            if os.path.exists(old_protein_file):
+                os.remove(old_protein_file)
+
+        # add new protein id
+        last_n_proteins.append(protein_id)
+        last_recently_added["last_n_protein_ids"] = last_n_proteins
+        with open(last_recently_added_file, "w") as f:
+            json.dump(last_recently_added, f, indent=4)
     else:
         last_recently_added = {
-            "last_10_protein_ids": [protein_id],
+            "last_n_protein_ids": [protein_id],
         }
-
         with open(last_recently_added_file, "w") as f:
-            json.dump(last_recently_added, f)
-
-    return True
+            json.dump(last_recently_added, f, indent=4)
 
 
 # --- api calls ---
@@ -131,6 +137,7 @@ def convert_file(request):
         raise ValueError("File name must be provided")
 
     run_conversion_script(file_name)
+    clean_up(file_name.split(".")[0])  # remove file extension for clean_up
     return JsonResponse({"success": True, "message": f"File '{file_name}' converted successfully."})
 
 
@@ -206,6 +213,7 @@ def generate_base_graph(request):
     if not os.path.exists(output_file):
         return JsonResponse({"success": False, "message": f"Failed to generate graph for {protein_id}."}, status=500)
 
+    run_conversion_script(f"{protein_id}.graphml")
     clean_up(protein_id)
 
     return JsonResponse({"success": True, "message": f"Generated {protein_id} a graph as .graphml successfully."})
