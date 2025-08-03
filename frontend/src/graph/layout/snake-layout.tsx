@@ -1,45 +1,19 @@
-import { type Edge, type InternalNode, type Node } from "@xyflow/react";
+import { type Edge, type Node } from "@xyflow/react";
 import { defaultValues, theme } from "../../theme";
-import type { NodeTypes } from "../../theme/types.tsx";
+import { type NodeTypes, nodeWidthModes } from "../../theme/types.tsx";
 import type { SequenceNodeProps } from "../../components/sequence-node/sequence-node.props.tsx";
 import { GroupNode } from "./group-node.tsx";
+import { getNodeWidth } from "./helper.tsx";
 
 // Function that aligns nodes in a snake-like layout on the screen
 // - expects nodes to have correct node.data.positionIndex attributes
-// - row length is determined by theme.layout.snake.maxWidthPerRow
+// - row width is determined values set in settings or defaultValues.rowWidth
 export const applySnakeLayout = (
   nodes: NodeTypes[],
   edges: Edge[],
   maxWidthPerRow: number = defaultValues.rowWidth,
-  getInternalNode: ((id: string) => InternalNode | undefined) | null,
 ): [NodeTypes[], Edge[]] => {
   // --- helper functions ---
-  // Function to get the visual width of a node via the internal node
-  const getMeasuredWidth = (node: Node) => {
-    let internalNode: InternalNode | undefined;
-    if (getInternalNode) {
-      internalNode = getInternalNode(node.id);
-    }
-    if (!internalNode) {
-      console.warn(`Internal node not found for ${node.id}`);
-      return 0;
-    }
-    return internalNode?.measured.width ?? 0;
-  };
-
-  const getMeasuredWidthPerIndex = (node: Node): number => {
-    if (getInternalNode) {
-      const siblings = nodes.filter(
-        (n) => n.data.positionIndex === node.data.positionIndex,
-      );
-      return Math.max(...siblings.map((sibling) => getMeasuredWidth(sibling)));
-    } else {
-      console.warn("getInternalNode is not defined, cannot measure width.");
-      return 0;
-    }
-  };
-
-  // Function that sorts nodes by their positionIndex
   const sortNodesByPositionIndex = () => {
     return nodes.sort((a, b) => {
       const positionA = a.data.positionIndex as number;
@@ -85,16 +59,18 @@ export const applySnakeLayout = (
 
     previousPositionIndex = node.data.positionIndex as number;
 
-    // width in row as metric to determine if a new row is needed
-    const measuredWidth = getMeasuredWidthPerIndex(node);
-    widthInCurrentRow += measuredWidth + theme.layout.snake.xOffsetBetweenNodes; // 100px offset between nodes
+    // width in row is used as metric to determine if a new row is needed
+    const nodeWidth = getNodeWidth(
+      node.data.nodeWidthMode as nodeWidthModes,
+      node.data.sequence as string,
+    );
+    widthInCurrentRow += nodeWidth + theme.layout.snake.xOffsetBetweenNodes; // 100px offset between nodes
 
     // --- new row ---
     if (widthInCurrentRow > 0.95 * maxWidthPerRow) {
       // 95% to not overflow the row
       isCurrentRowReversed = !isCurrentRowReversed;
-      widthInCurrentRow =
-        measuredWidth + theme.layout.snake.xOffsetBetweenNodes; // reset to current node width
+      widthInCurrentRow = nodeWidth + theme.layout.snake.xOffsetBetweenNodes; // reset to current node width
       rowCount++;
 
       rowId = `group-${rowCount}`;
@@ -107,9 +83,9 @@ export const applySnakeLayout = (
     xPosition = isCurrentRowReversed
       ? maxWidthPerRow -
         widthInCurrentRow +
-        measuredWidth / 2 -
+        nodeWidth / 2 -
         theme.layout.snake.xOffsetBetweenNodes
-      : widthInCurrentRow - measuredWidth / 2;
+      : widthInCurrentRow - nodeWidth / 2;
 
     return {
       ...node,

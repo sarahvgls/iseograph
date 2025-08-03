@@ -26,12 +26,10 @@ def convert_graphml_to_json(input_file, output_dir):
             "id": node[0],
             "type": "custom",
             "data": {"sequence": node[1]["aminoacid"],
-                     "intensity": randint(1, 5),
-                     "feature": node[1].get("feature", ""),
                      "peptidesString": node[1].get("peptides", ""),
                      "intensitiesString": node[1].get("intensity", ""),
                      },
-            "position": {"x": node[1]["position"] * 100 if "position" in node[1] else -100, "y": 0},  # basic layout
+            "position": {"x": 0, "y": 0},
         }
         for i, node in enumerate(G.nodes(data=True))
     ]

@@ -44,22 +44,22 @@ export const createNodes = (
   );
 
   // map node id to peptideLogs
-  let peptidesDict: Record<string, PeptideLog> = {};
+  const peptidesDict: Record<string, PeptideLog> = {};
 
-  let overallIntensityExtremesBySource: ExtremesBySource = {};
+  let intensityExtremesBySource: ExtremesBySource = {};
   intensitySources.forEach((source) => {
-    overallIntensityExtremesBySource[source] = {
+    intensityExtremesBySource[source] = {
       min: Infinity,
       max: -Infinity,
-      median: -Infinity,
-      mean: -Infinity,
-      minMax: -Infinity,
+      normalizedMedian: -Infinity,
+      normalizedMean: -Infinity,
+      normalizedMinMax: -Infinity,
+      normalizedMax: -Infinity,
     };
   });
 
   const newNodes = nodes.map((node) => {
     const peptides = convertStringToList(node.data.peptidesString);
-    const intensities = convertStringToList(node.data.intensitiesString || "");
     const peptideLog: PeptideLog = convertStringsToPeptideLog(
       intensitySources,
       peptides,
@@ -67,10 +67,10 @@ export const createNodes = (
     );
 
     // update overall intensity extremes
-    overallIntensityExtremesBySource = updateExtremes(
+    intensityExtremesBySource = updateExtremes(
       intensitySources,
       peptideLog,
-      overallIntensityExtremesBySource,
+      intensityExtremesBySource,
     );
 
     return {
@@ -79,32 +79,32 @@ export const createNodes = (
       data: {
         ...node.data,
         sequence: node.data.sequence,
-        feature: node.data.feature,
         nodeWidthMode: node.data.nodeWidthMode || nodeWidthModes.Collapsed, // default to Collapsed if not provided
         positionIndex: 0,
         intensityRank: 0,
-        peptides: peptides,
-        intensities: intensities,
         peptideLog: peptideLog,
       },
     };
   });
 
   // iterate over all nodes, normalize and calculate the maximum number of peptides
-  let maxPeptides = 0;
+  let maxNumberOfPeptides = 0;
   newNodes.map((node) => {
     peptidesDict[node.id] = normalize(
       intensitySources,
-      overallIntensityExtremesBySource,
+      intensityExtremesBySource,
       node,
     );
-    maxPeptides = Math.max(maxPeptides, node.data.peptides.length);
+    maxNumberOfPeptides = Math.max(
+      maxNumberOfPeptides,
+      node.data.peptideLog.peptideEntries.length,
+    );
   });
 
   return [
     newNodes,
-    maxPeptides,
-    overallIntensityExtremesBySource,
+    maxNumberOfPeptides,
+    intensityExtremesBySource,
     intensitySources,
     peptidesDict,
   ];
@@ -146,15 +146,15 @@ export const createEdges = (
     overallIntensityExtremesBySource[source] = {
       min: Infinity,
       max: -Infinity,
-      mean: -Infinity,
-      median: -Infinity,
-      minMax: -Infinity,
+      normalizedMean: -Infinity,
+      normalizedMedian: -Infinity,
+      normalizedMinMax: -Infinity,
+      normalizedMax: -Infinity,
     };
   });
 
   const newEdges = edges.map((edge) => {
     const peptides = convertStringToList(edge.data.peptidesString || "");
-    const intensities = convertStringToList(edge.data.intensitiesString || "");
     const peptideLog = convertStringsToPeptideLog(
       intensitySources,
       peptides,
@@ -179,8 +179,6 @@ export const createEdges = (
         isoforms: convertStringToList(edge.data.isoformString || ""),
         isoformsToColors: isoformsToColors || [],
         generic: edge.data.generic || "",
-        peptides: peptides,
-        intensities: intensities,
         peptideLog: peptideLog,
       },
     };
@@ -196,7 +194,10 @@ export const createEdges = (
       edge,
     );
 
-    maxPeptides = Math.max(maxPeptides, edge.data.peptides.length);
+    maxPeptides = Math.max(
+      maxPeptides,
+      edge.data.peptideLog.peptideEntries.length,
+    );
   });
 
   return [

@@ -1,4 +1,5 @@
 import type {
+  Extremes,
   ExtremesBySource,
   IntensitiesPerPeptide,
   IntensityStatsBySource,
@@ -128,6 +129,18 @@ export const updateExtremes = (
   return extremes;
 };
 
+function calcLogAndNormalized(extremes: Extremes, value: number): number {
+  if (extremes.max === extremes.min) {
+    return 0; // Avoid division by zero
+  }
+
+  value = Math.log(value + 1); // Adding 1 to avoid log(0)
+  const min = Math.log(extremes.min + 1);
+  const max = Math.log(extremes.max + 1);
+
+  return (value - min) / (max - min);
+}
+
 export const normalize = (
   intensitySources: string[],
   overallIntensityExtremesBySource: ExtremesBySource,
@@ -145,8 +158,7 @@ export const normalize = (
 
   intensitySources.forEach((source) => {
     const extremes = overallIntensityExtremesBySource[source];
-    const normalizedOverallMax = extremes.max - extremes.min + 1;
-    const normalizedOverallMin = 0;
+    extremes.normalizedMax = calcLogAndNormalized(extremes, extremes.max);
 
     // cases no peptides
     if (node && node.data.peptideLog?.peptideEntries.length === 0) {
@@ -159,10 +171,6 @@ export const normalize = (
         normalizedMedian: 0,
         normalizedMin: 0,
         normalizedMax: 0,
-        overallMax: extremes.max,
-        overallMin: extremes.min,
-        normalizedOverallMax: normalizedOverallMax,
-        normalizedOverallMin: normalizedOverallMin,
       };
       return node.data.peptideLog;
     } else if (edge && edge.data.peptideLog?.peptideEntries.length === 0) {
@@ -175,10 +183,6 @@ export const normalize = (
         normalizedMedian: 0,
         normalizedMin: 0,
         normalizedMax: 0,
-        overallMax: extremes.max,
-        overallMin: extremes.min,
-        normalizedOverallMax: normalizedOverallMax,
-        normalizedOverallMin: normalizedOverallMin,
       };
       return edge.data.peptideLog;
     }
@@ -204,7 +208,7 @@ export const normalize = (
     // normalize values by subtracting min
     const normalizedIntensities = plainIntensitiesBySource[source].map(
       (intensity) => {
-        return intensity - extremes.min + 1;
+        return calcLogAndNormalized(extremes, intensity);
       },
     );
 
@@ -218,14 +222,14 @@ export const normalize = (
     const max = Math.max(...normalizedIntensities);
 
     // update extremes
-    if (median > extremes.median) {
-      extremes.median = median;
+    if (median > extremes.normalizedMedian) {
+      extremes.normalizedMedian = median;
     }
-    if (mean > extremes.mean) {
-      extremes.mean = mean;
+    if (mean > extremes.normalizedMean) {
+      extremes.normalizedMean = mean;
     }
-    if (min > extremes.minMax) {
-      extremes.minMax = min;
+    if (min > extremes.normalizedMinMax) {
+      extremes.normalizedMinMax = min;
     }
 
     if (node) {
@@ -235,10 +239,6 @@ export const normalize = (
         normalizedMedian: median,
         normalizedMin: min,
         normalizedMax: max,
-        overallMax: extremes.max,
-        overallMin: extremes.min,
-        normalizedOverallMax: normalizedOverallMax,
-        normalizedOverallMin: normalizedOverallMin,
       };
     } else if (edge) {
       edge.data.peptideLog!.intensityStats[source] = {
@@ -247,10 +247,6 @@ export const normalize = (
         normalizedMedian: median,
         normalizedMin: min,
         normalizedMax: max,
-        overallMax: extremes.max,
-        overallMin: extremes.min,
-        normalizedOverallMax: normalizedOverallMax,
-        normalizedOverallMin: normalizedOverallMin,
       };
     }
   });

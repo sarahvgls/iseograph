@@ -43,7 +43,7 @@ export type labelVisibilities =
   (typeof labelVisibilities)[keyof typeof labelVisibilities];
 
 export const glowMethods = {
-  intensity: "intensity",
+  intensity: "intensity, log and normalized",
   count: "count",
 };
 
@@ -81,10 +81,6 @@ export interface IntensityStats {
   normalizedMean?: number;
   normalizedMax?: number;
   normalizedMin?: number;
-  overallMax?: number;
-  overallMin?: number;
-  normalizedOverallMax?: number;
-  normalizedOverallMin?: number;
 }
 
 export type IntensityStatsBySource = Record<string, IntensityStats>;
@@ -97,9 +93,10 @@ export interface PeptideLog {
 export interface Extremes {
   min: number;
   max: number;
-  median: number;
-  mean: number;
-  minMax: number;
+  normalizedMedian: number;
+  normalizedMean: number;
+  normalizedMinMax: number;
+  normalizedMax: number;
 }
 
 export type ExtremesBySource = Record<string, Extremes>;
