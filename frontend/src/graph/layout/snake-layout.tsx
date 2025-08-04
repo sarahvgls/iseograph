@@ -67,8 +67,7 @@ export const applySnakeLayout = (
     widthInCurrentRow += nodeWidth + theme.layout.snake.xOffsetBetweenNodes; // 100px offset between nodes
 
     // --- new row ---
-    if (widthInCurrentRow > 0.95 * maxWidthPerRow) {
-      // 95% to not overflow the row
+    if (widthInCurrentRow > maxWidthPerRow) {
       isCurrentRowReversed = !isCurrentRowReversed;
       widthInCurrentRow = nodeWidth + theme.layout.snake.xOffsetBetweenNodes; // reset to current node width
       rowCount++;
@@ -81,10 +80,7 @@ export const applySnakeLayout = (
 
     // calculate x position
     xPosition = isCurrentRowReversed
-      ? maxWidthPerRow -
-        widthInCurrentRow +
-        nodeWidth / 2 -
-        theme.layout.snake.xOffsetBetweenNodes
+      ? maxWidthPerRow - widthInCurrentRow + nodeWidth / 2
       : widthInCurrentRow - nodeWidth / 2;
 
     return {
