@@ -194,6 +194,10 @@ def generate_base_graph(request):
     if "m_aggregation" in data:  # string, auswahl aus median, sum, mean (default median)
         m_aggregation = "-mi " + data.get("m_aggregation").lower()
 
+    output_file = ""
+    if "new_file_name" in data:  # string, optional
+        output_file = "-of" + data.get('new_file_name')
+
     cmd_string = f"protgraph -egraphml {path_to_protein_file} \
                     --export_output_folder={output_folder_path} \
                     {features} \
@@ -205,6 +209,7 @@ def generate_base_graph(request):
                     {merge_peptides} \
                     {m_aggregation} \
                     {o_aggregation} \
+                    {output_file} \
                     -d skip -o {output_folder_path}/statistics.csv"
 
     subprocess.run(cmd_string, shell=True)

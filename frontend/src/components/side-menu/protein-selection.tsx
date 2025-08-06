@@ -67,6 +67,7 @@ export const ProteinSelection = ({
 
   // configurations for new protein
   const [newProteinName, setNewProteinName] = useState<string>("");
+  const [newFileName, setNewFileName] = useState<string>("");
   const [shouldGenerateVariant, setShouldGenerateVariant] =
     useState<boolean>(true);
   const [shouldGenerateMutagen, setShouldGenerateMutagen] =
@@ -104,6 +105,7 @@ export const ProteinSelection = ({
     // prepare parameters dynamically
     const bodyParameters: Record<string, any> = {
       protein_id: newProteinName,
+      new_file_name: newFileName,
     };
 
     const features: string[] = [];
@@ -297,6 +299,13 @@ export const ProteinSelection = ({
           </>
         )}
 
+        <TextComponent
+          placeholder={"Optional: Custom file name"}
+          value={newFileName}
+          setValue={setNewFileName}
+          tooltipTitle={"File Name"}
+          tooltip={tooltips.FileName}
+        />
         <SecondaryButton
           style={{
             width: "100%",

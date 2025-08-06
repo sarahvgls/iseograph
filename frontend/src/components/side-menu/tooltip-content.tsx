@@ -16,4 +16,7 @@ export const tooltips = {
     "Select the peptide intensity aggregation when there are overlapping different peptides with (different) intensities on one node/edge. " +
     "Accepted options are: sum, mean, median. When not set, all peptide intensities are displayed like this: XX, ..., ZZ " +
     "Important: This method is not compatible with selecting a compare column. Please choose either of them. If both are chosen, only compare column will be set.",
+  FileName:
+    "Optional, if not set, the file will be saved with the name of the protein." +
+    "The file name with which it will be saved in /data. Example: enter 'P10636_cancer_research' will create a file named 'P10636_cancer_research.graphml' in /data. ",
 };
