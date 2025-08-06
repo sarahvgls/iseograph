@@ -67,12 +67,18 @@ def load_protein_file(id):
     return protein_file
 
 
-def clean_up(protein_id: str) -> None:
-    # clear downloads folder
+def clean_up(file_name: str) -> None:
+    # clear downloads and uploads folder
     downloads_dir = PROJECT_ROOT_DIR / "downloads"
     if os.path.exists(downloads_dir):
         for file in os.listdir(downloads_dir):
             file_path = os.path.join(downloads_dir, file)
+            if os.path.isfile(file_path):
+                os.remove(file_path)
+    uplaods_dir = PROJECT_ROOT_DIR / "uploads"
+    if os.path.exists(uplaods_dir):
+        for file in os.listdir(uplaods_dir):
+            file_path = os.path.join(uplaods_dir, file)
             if os.path.isfile(file_path):
                 os.remove(file_path)
 
@@ -83,9 +89,9 @@ def clean_up(protein_id: str) -> None:
             last_recently_added = json.load(f)
 
         last_n_proteins = last_recently_added.get("last_n_protein_ids", [])
-        if protein_id in last_n_proteins:
-            # if protein_id is already in the list, remove it
-            last_n_proteins.remove(protein_id)
+        if file_name in last_n_proteins:
+            # if file is already in the list, remove it
+            last_n_proteins.remove(file_name)
         # remove first, if there are already too many entries
         if len(last_n_proteins) >= MAX_GRAPHML_FILES:
             oldest_id = last_n_proteins[0]
@@ -96,13 +102,13 @@ def clean_up(protein_id: str) -> None:
                 os.remove(old_protein_file)
 
         # add new protein id
-        last_n_proteins.append(protein_id)
+        last_n_proteins.append(file_name)
         last_recently_added["last_n_protein_ids"] = last_n_proteins
         with open(last_recently_added_file, "w") as f:
             json.dump(last_recently_added, f, indent=4)
     else:
         last_recently_added = {
-            "last_n_protein_ids": [protein_id],
+            "last_n_protein_ids": [file_name],
         }
         with open(last_recently_added_file, "w") as f:
             json.dump(last_recently_added, f, indent=4)
@@ -195,8 +201,10 @@ def generate_base_graph(request):
         m_aggregation = "-mi " + data.get("m_aggregation").lower()
 
     output_file = ""
+    custom_file_name = f"{protein_id}"  # default file name
     if "new_file_name" in data:  # string, optional
-        output_file = "-of" + data.get('new_file_name')
+        custom_file_name = data.get("new_file_name", "")
+        output_file = "-of " + custom_file_name
 
     cmd_string = f"protgraph -egraphml {path_to_protein_file} \
                     --export_output_folder={output_folder_path} \
@@ -214,12 +222,12 @@ def generate_base_graph(request):
 
     subprocess.run(cmd_string, shell=True)
 
-    output_file = os.path.join(output_folder_path, f"{protein_id}.graphml")
+    output_file = os.path.join(output_folder_path, f"{custom_file_name}.graphml")
     if not os.path.exists(output_file):
         return JsonResponse({"success": False, "message": f"Failed to generate graph for {protein_id}."}, status=500)
 
-    run_conversion_script(f"{protein_id}.graphml")
-    clean_up(protein_id)
+    run_conversion_script(f"{custom_file_name}.graphml")
+    clean_up(custom_file_name)
 
     return JsonResponse({"success": True, "message": f"Generated {protein_id} a graph as .graphml successfully."})
 

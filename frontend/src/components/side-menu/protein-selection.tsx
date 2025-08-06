@@ -157,16 +157,14 @@ export const ProteinSelection = ({
         // reset file dropdown
         const names = await getFileNames(setFileNames);
         // search in fileNames for newProteinName.graphml
-        const newFileName = `${newProteinName}.graphml`;
-        if (names.includes(newFileName)) {
-          setSelectedFile(newFileName);
-          localStorage.setItem(localStorageKeys.selectedFile, newFileName);
+        const fileName = `${newFileName}.graphml`;
+        if (names.includes(fileName)) {
+          setSelectedFile(fileName);
+          localStorage.setItem(localStorageKeys.selectedFile, fileName);
           setNewProteinName(""); // Reset new protein name input
           localStorage.removeItem(localStorageKeys.newProteinName);
         } else {
-          console.warn(
-            `New protein file ${newFileName} not found in fileNames.`,
-          );
+          console.warn(`New protein file ${fileName} not found in fileNames.`);
           setSelectedFile(""); // Reset if not found
           localStorage.setItem(localStorageKeys.selectedFile, "");
         }
