@@ -114,7 +114,7 @@ export const OnScreenPeptidesMenu = ({
       getColor(i, steps - 1, colorScaleOption),
     );
 
-    return `linear-gradient(to bottom, ${colors.join(", ")})`;
+    return `linear-gradient(to top, ${colors.join(", ")})`;
   };
 
   return (
@@ -161,8 +161,8 @@ export const OnScreenPeptidesMenu = ({
                         height: "60px",
                       }}
                     >
-                      <div>0</div>
                       <div>∞</div>
+                      <div>0</div>
                     </div>
                   </>
                 )}
@@ -225,8 +225,8 @@ export const OnScreenPeptidesMenu = ({
                         marginLeft: "30px",
                       }}
                     >
-                      <div>0</div>
                       <div>∞</div>
+                      <div>0</div>
                     </div>
                     <ColorScaleOption
                       style={{
