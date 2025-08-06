@@ -27,7 +27,10 @@ const convertIntensities = (
   return intensities.map((intensity, index) => {
     return {
       source: intensitySources[index] || "unknown",
-      intensity: parseFloat(intensity) || -1, // default to -1 if parsing fails
+      intensity:
+        Number.isNaN(parseFloat(intensity)) || parseFloat(intensity) < 0
+          ? 0
+          : parseFloat(intensity),
     };
   });
 };
