@@ -28,7 +28,7 @@ export class GroupNode {
         isReversed,
       },
       style: {
-        width: rowWidth,
+        width: rowWidth * 1.1, // 10% padding
         ...GroupNode.style,
       },
       draggable: false,
