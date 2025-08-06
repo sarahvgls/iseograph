@@ -229,7 +229,7 @@ export const ProteinSelection = ({
         <div>
           <FileUpload
             title={"Upload Peptide File"}
-            acceptedFileTypes=".csv, .txt"
+            acceptedFileTypes=".csv"
             onChange={(filePath) => setPeptideFilePath(filePath)} // Store full path
             tooltip={tooltips.peptideFile}
             tooltipTitle={"Peptide File"}
