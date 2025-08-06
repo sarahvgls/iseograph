@@ -172,7 +172,7 @@ def generate_base_graph(request):
 
     compare_column = ""
     if "compare_column" in data:  # ein string, der einem Spaltennamen aus metadata file entspricht, welcher nicht Sample ist, optional
-        compare_column = "-cc " + data.get("compare_colum")
+        compare_column = "-cc " + data.get("compare_column")
 
     intensity = ""  # optional
     if "intensity" in data:
