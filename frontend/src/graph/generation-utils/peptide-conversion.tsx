@@ -114,7 +114,8 @@ export const updateExtremes = (
         (item) => item.source === source,
       )?.intensity;
       if (value === undefined) {
-        throw new Error("Unexpected error while normalizing intensities.");
+        console.warn("No intensities provided for peptide " + entry.peptide);
+        return;
       }
 
       if (value < extremes[source].min) {
