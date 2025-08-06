@@ -6,7 +6,7 @@ import { API_ROOT } from "../../helper/constants.ts";
 export const FileUpload = ({
   title = "Upload File",
   onChange,
-  acceptedFileTypes = ".csv, .txt",
+  acceptedFileTypes = ".csv",
   tooltip,
   tooltipTitle,
 }: {
