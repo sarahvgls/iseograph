@@ -161,9 +161,9 @@ export const GraphSettings = ({ onClose }: { onClose: () => void }) => {
             }}
           />
           <Checkbox
-            label={"Include zero values in peptide edge glow."}
-            checked={selectedZeroValues}
-            onChange={(checked) => setSelectedZeroValues(checked)}
+            label={"Disable glow for nodes without peptides."}
+            checked={!selectedZeroValues}
+            onChange={(checked) => setSelectedZeroValues(!checked)}
           />
 
           <Switch
