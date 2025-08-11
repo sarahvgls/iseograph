@@ -63,7 +63,7 @@ export default function ArrowEdge({
     shallow,
   );
   // Peptide attributes for edge
-  const peptideCount = data.peptideLog?.peptideEntries?.length || 0;
+  const peptideCount = data.peptideCount || 0;
   const peptideLog = getPeptides(id);
 
   // Isoform attributes for edge
