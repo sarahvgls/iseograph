@@ -22,6 +22,18 @@ export const applySnakeLayout = (
     });
   };
 
+  const getMaxWidthPerDirectSiblings = (positionIndex: number): number => {
+    return nodes
+      .filter((node) => node.data.positionIndex === positionIndex)
+      .reduce((maxWidth, node) => {
+        const nodeWidth = getNodeWidth(
+          node.data.nodeWidthMode as nodeWidthModes,
+          node.data.sequence as string,
+        );
+        return Math.max(maxWidth, nodeWidth);
+      }, 0);
+  };
+
   // --- constants and initializations ---
   let widthInCurrentRow = 0; // var to keep track of the width of the current row to limit it
   let previousPositionIndex = -1; // var to track the positionIndex of the previous node to handle siblings correctly
@@ -60,9 +72,8 @@ export const applySnakeLayout = (
     previousPositionIndex = node.data.positionIndex as number;
 
     // width in row is used as metric to determine if a new row is needed
-    const nodeWidth = getNodeWidth(
-      node.data.nodeWidthMode as nodeWidthModes,
-      node.data.sequence as string,
+    const nodeWidth = getMaxWidthPerDirectSiblings(
+      node.data.positionIndex as number,
     );
     widthInCurrentRow += nodeWidth + theme.layout.snake.xOffsetBetweenNodes; // 100px offset between nodes
 

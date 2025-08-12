@@ -107,7 +107,7 @@ export const theme = {
     height: 300,
   },
   offsets: {
-    defaultYSpacingBetweenNodes: 100, // vertical distance between variations
+    defaultYSpacingBetweenNodes: 85, // vertical distance between variations
     debugYSpacingBetweenNodes: 500,
   },
   layout: {

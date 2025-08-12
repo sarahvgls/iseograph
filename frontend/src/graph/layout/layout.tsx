@@ -63,23 +63,35 @@ function assignPositionIndices(
   string,
   {
     positionIndex: number;
-    targets: string[];
+    nodes_at_next_position: string[]; // targets that have the following position index of the parent
   }
 > {
   // Create a map to track the parent nodes and their children with correct index
   const sourceToTargets: Record<
     string,
-    { positionIndex: number; targets: string[] }
+    {
+      positionIndex: number;
+      all_targets: string[];
+      nodes_at_next_position: string[];
+    }
   > = {};
 
   edges.forEach(({ source, target }) => {
     if (!sourceToTargets[source]) {
-      sourceToTargets[source] = { positionIndex: -1, targets: [] };
+      sourceToTargets[source] = {
+        positionIndex: -1,
+        all_targets: [],
+        nodes_at_next_position: [],
+      };
     }
     if (!sourceToTargets[target]) {
-      sourceToTargets[target] = { positionIndex: -1, targets: [] };
+      sourceToTargets[target] = {
+        positionIndex: -1,
+        all_targets: [],
+        nodes_at_next_position: [],
+      };
     }
-    sourceToTargets[source].targets.push(target);
+    sourceToTargets[source].all_targets.push(target);
   });
 
   const firstSequenceNode = nodes.find(
@@ -92,12 +104,13 @@ function assignPositionIndices(
   sourceToTargets[firstSequenceNode.id].positionIndex = 0;
 
   // loop through all nodes and assign positionId
+  // all_targets is used as correct iterator
   while (parentIdStack.length > 0) {
     for (const parent of parentIdStack) {
       //remove parent from stack
       parentIdStack = parentIdStack.filter((id) => id !== parent);
 
-      const children = sourceToTargets[parent].targets;
+      const children = sourceToTargets[parent].all_targets;
       if (children.length === 0) break;
       for (const childId of children) {
         sourceToTargets[childId].positionIndex =
@@ -109,26 +122,17 @@ function assignPositionIndices(
     }
   }
 
-  return sourceToTargets;
-}
-
-// correct positions of node siblings due to unwanted x coordinate in some cases
-function correctNodePositions(nodes: NodeTypes[]) {
-  const positionIndexToX: Record<number, number> = {};
-  nodes.forEach((node) => {
-    if (node.type !== nodeTypes.SequenceNode) {
-      return;
-    }
-    const positionIndex = node.data.positionIndex as number;
-    if (
-      positionIndexToX[positionIndex] === undefined ||
-      node.position.x < positionIndexToX[positionIndex]
-    ) {
-      positionIndexToX[positionIndex] = node.position.x;
-    } else {
-      node.position.x = positionIndexToX[positionIndex];
-    }
+  // assign directly following targets
+  Object.entries(sourceToTargets).forEach(([source, targets]) => {
+    targets.nodes_at_next_position = Object.keys(sourceToTargets).filter(
+      (target) =>
+        sourceToTargets[target].positionIndex ===
+        sourceToTargets[source].positionIndex + 1,
+    );
   });
+
+
+  return sourceToTargets;
 }
 
 function addSymmetricalOffsetForVariations(
@@ -138,41 +142,40 @@ function addSymmetricalOffsetForVariations(
   const sourceToTargets = assignPositionIndices(nodes, edges);
 
   const alteredNodes = nodes.map((node) => {
-    const parent = Object.entries(sourceToTargets).find(([, targets]) =>
-      targets.targets.includes(node.id),
+    const previous = Object.entries(sourceToTargets).find(([, targets]) =>
+      targets.nodes_at_next_position.includes(node.id),
     );
-    if (!parent) return node;
+    if (!previous) return node;
 
-    const siblings = parent[1].targets;
-    // sort siblings by peptide count
-    siblings.sort((a, b) => {
-      const aString =
-        (nodes.find((n) => n.id === a)?.data.peptidesString as string) || "";
-      const bString =
-        (nodes.find((n) => n.id === b)?.data.peptidesString as string) || "";
-
+    const neighbors = previous[1].nodes_at_next_position;
+    // sort neighbors by peptide count
+    neighbors.sort((a, b) => {
+      const aNode = nodes.find((n) => n.id === a);
+      const bNode = nodes.find((n) => n.id === b);
+      if (!aNode || !bNode) return 0;
       return (
-        (bString.match(/,/g) || []).length - (aString.match(/,/g) || []).length
+        (Number(bNode.data.peptideCount) || 0) -
+        (Number(aNode.data.peptideCount) || 0)
       );
     });
-    const intensityIndex = siblings.indexOf(node.id);
+    const intensityIndex = neighbors.indexOf(node.id);
     const positionIndex = sourceToTargets[node.id].positionIndex;
     const spacing = theme.debugMode
       ? theme.offsets.debugYSpacingBetweenNodes
       : theme.offsets.defaultYSpacingBetweenNodes; // vertical distance between variations
 
-    const yOffset = (intensityIndex - (siblings.length - 1) / 2) * spacing;
+    const yOffset = (intensityIndex - (neighbors.length - 1) / 2) * spacing;
 
-    // const siblingXs = siblings.map((siblingId) => {
-    //   const siblingNode = nodes.find((n) => n.id === siblingId);
-    //   return siblingNode ? siblingNode.position.x : Infinity;
-    // });
-    // const smallestXOfSiblings = Math.min(...siblingXs);
+    const neighborXs = neighbors.map((nodeId) => {
+      const neighbor = nodes.find((n) => n.id === nodeId);
+      return neighbor ? neighbor.position.x : Infinity;
+    });
+    const smallestXofNeighbors = Math.min(...neighborXs);
 
     return {
       ...node,
       position: {
-        x: node.position.x,
+        x: smallestXofNeighbors,
         y: node.position.y + yOffset,
       },
       data: {
@@ -221,19 +224,7 @@ export const applyLayout = (
     correctNodePositions(layoutedNodes);
 
     if (layoutMode !== layoutModes.Snake) {
-      const finalNodes = layoutedNodes.map((node) => {
-        if (node.type === nodeTypes.SequenceNode) {
-          return {
-            ...node,
-            data: {
-              ...node.data,
-              isReversed: false,
-            },
-          };
-        }
-        return node;
-      });
-      resolve([finalNodes, layoutedEdges]);
+      resolve([layoutedNodes, layoutedEdges]);
       return;
     }
 
