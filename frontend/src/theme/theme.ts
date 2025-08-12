@@ -116,7 +116,7 @@ export const theme = {
       xOffsetBetweenNodes: 100,
     },
     snake: {
-      yOffsetBetweenRows: 300,
+      yOffsetBetweenRows: 100,
       xOffsetBetweenNodes: 150,
     },
   },
