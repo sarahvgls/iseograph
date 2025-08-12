@@ -51,18 +51,59 @@ def run_conversion_script(file_name: str) -> None:
     convert_graphml_to_json(input_file, output_dir)
 
 
-def load_protein_file(id):
+def force_uniprot_ids(file_name: str, uniprot_id: str, alternative_id: str) -> None:
+    """
+    Replaces alternative identifiers in the file with the correct UniProt ID.
+    """
+    uploads_dir = PROJECT_ROOT_DIR / "uploads"
+    file_path = uploads_dir / file_name
+
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(f"File '{file_path}' does not exist")
+
+    with open(file_path, "r") as file:
+        content = file.read()
+
+    # Replace alternative ID with UniProt ID
+    content = content.replace(alternative_id, uniprot_id)
+
+    with open(file_path, "w") as file:
+        file.write(content)
+
+
+def load_protein_file(id, peptide_file):
     """
     Downloads a protein file from UniProt and saves it to the data directory.
+    If an alternative identifier is provided, first searches for the correct UniProt ID.
     """
-    url = f"https://rest.uniprot.org/uniprotkb/{id}.txt"
+    # First try to find the correct UniProt ID if necessary
+    uniprot_id = id
+    if not id.startswith('P') and not id.startswith('Q') and not id.startswith('O'):
+        search_url = f"https://rest.uniprot.org/uniprotkb/search?query={id}&fields=accession&format=json"
+        search_response = requests.get(search_url)
+        if search_response.status_code == 200:
+            search_data = search_response.json()
+            if search_data.get('results') and len(search_data['results']) > 0:
+                uniprot_id = search_data['results'][0]['primaryAccession']
+            else:
+                return ""  # No matching UniProt ID found
+        else:
+            return ""  # Search request failed
+
+        if peptide_file:
+            force_uniprot_ids(peptide_file, uniprot_id, id)
+
+    # Now download the protein file with the correct UniProt ID
+    url = f"https://rest.uniprot.org/uniprotkb/{uniprot_id}.txt"
     r = requests.get(url)
     if r.status_code != 200:
         return ""
+
     download_dir = PROJECT_ROOT_DIR / "downloads"
     if not os.path.exists(download_dir):
         os.makedirs(download_dir)
-    protein_file = f"{download_dir}/{id}.txt"
+
+    protein_file = f"{download_dir}/{uniprot_id}.txt"
     Path(protein_file).write_bytes(r.content)
     return protein_file
 
