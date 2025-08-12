@@ -104,7 +104,8 @@ export const theme = {
     // meaning only applied when the next node is clicked for the last one
   },
   rowNode: {
-    height: 300,
+    defaultHeight: 400,
+    heightPerVariation: 100, // height of each variation in a row
   },
   offsets: {
     defaultYSpacingBetweenNodes: 85, // vertical distance between variations

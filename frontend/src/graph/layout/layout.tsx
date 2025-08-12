@@ -221,8 +221,6 @@ export const applyLayout = (
       layoutedEdges,
     );
 
-    correctNodePositions(layoutedNodes);
-
     if (layoutMode !== layoutModes.Snake) {
       resolve([layoutedNodes, layoutedEdges]);
       return;
