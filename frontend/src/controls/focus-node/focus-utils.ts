@@ -4,12 +4,16 @@ import type { SequenceNodeProps } from "../../components/sequence-node/sequence-
 import { focusNextNode, focusPreviousNode } from "./index.tsx";
 import { theme } from "../../theme";
 import { nodeTypes, type NodeTypes } from "../../theme/types.tsx";
+import useGraphStore from "../../graph/store.ts";
 
 export const useFocusHandlers = (
   nodes: NodeTypes[],
   setFocusedNode: (node: SequenceNodeProps) => void,
 ) => {
   const { setCenter, getInternalNode, setNodes, getNodes } = useReactFlow();
+  const { setPeptideMonitorForNode } = useGraphStore((state) => ({
+    setPeptideMonitorForNode: state.setClickedNode,
+  }));
 
   const focusNode = useCallback(
     (node: NodeTypes) => {
@@ -20,6 +24,7 @@ export const useFocusHandlers = (
       if (theme.debugMode) {
         console.log("Focusing node:", node);
       }
+      setPeptideMonitorForNode(node.id);
       setFocusedNode(node as SequenceNodeProps);
       const internalNode = getInternalNode(node.id);
       if (!internalNode) {

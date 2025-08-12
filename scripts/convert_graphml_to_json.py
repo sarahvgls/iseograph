@@ -28,6 +28,7 @@ def convert_graphml_to_json(input_file, output_dir):
             "data": {"sequence": node[1]["aminoacid"],
                      "peptidesString": node[1].get("peptides", ""),
                      "intensitiesString": node[1].get("intensity", ""),
+                     "peptideCount": node[1].get("count", ""),
                      },
             "position": {"x": 0, "y": 0},
         }
@@ -51,6 +52,7 @@ def convert_graphml_to_json(input_file, output_dir):
                 "generic": data.get("generic", ""),
                 "peptidesString": data.get("peptides", ""),
                 "intensitiesString": data.get("intensity", ""),
+                "peptideCount": data.get("count", ""),
             },
         }
         for source, target, data in G.edges(data=True)

@@ -87,7 +87,7 @@ export const createNodes = (
     };
   });
 
-  // iterate over all nodes, normalize and calculate the maximum number of peptides
+  // iterate over all nodes, normalize and track the maximum number of peptides
   let maxNumberOfPeptides = 0;
   newNodes.map((node) => {
     peptidesDict[node.id] = normalize(
@@ -97,7 +97,7 @@ export const createNodes = (
     );
     maxNumberOfPeptides = Math.max(
       maxNumberOfPeptides,
-      node.data.peptideLog.peptideEntries.length,
+      node.data.peptideCount || 0,
     );
   });
 

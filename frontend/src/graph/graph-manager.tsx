@@ -189,8 +189,9 @@ const Flow = () => {
           if (lastClickTimeRef.current > 0) {
             // single click
             focusNode(node as SequenceNodeProps);
-            setIsPeptideMonitorOpen(true);
-            setPeptideMonitorForNode(node.id);
+            if (node.type === nodeTypes.SequenceNode) {
+              setIsPeptideMonitorOpen(true);
+            }
           }
           clickTimerRef.current = null;
         }, 300);
