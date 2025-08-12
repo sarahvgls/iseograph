@@ -2,9 +2,9 @@ export const tooltips = {
   peptideFile:
     "Select a csv file with peptide and intensity information. It should have the format: Sample,Protein ID,Sequence,Intensity. " +
     "Only the peptides that belong to the protein (including isoforms) from the EMBL-Entry will be searched on the graph. " +
-    "Intensity will not be displayed automatically, click the intensity checkbox for this.",
+    "Intensity will not be displayed automatically, make sure the intensity checkbox is clicked for this.",
   metadataFile:
-    "Select a csv file with metadata information for the peptide file. It should have the format: Sample,Column1,...,ColumnX",
+    "Select a csv file with metadata information for the peptide file. It should have the format: Sample,Column1,...,ColumnX. Column{N} may then be selected as comparison column.",
   compareColumn:
     "Select the column from the metadata file which will be used to compare the intensities of the different categories",
   mergePeptides:
