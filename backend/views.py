@@ -157,7 +157,10 @@ def generate_base_graph(request):
     data = json.loads(request.body)
     protein_id = data.get("protein_id")
 
-    path_to_protein_file = load_protein_file(protein_id)
+    peptide_file = data.get("peptide_file", "")
+    path_to_protein_file = load_protein_file(protein_id, peptide_file)
+    uniprot_id = path_to_protein_file.split("/")[-1].split(".")[0]
+
     if not path_to_protein_file:
         return JsonResponse({"success": False, "message": f"Failed to download protein file for {protein_id}."},
                             status=500)
@@ -204,6 +207,10 @@ def generate_base_graph(request):
     custom_file_name = f"{protein_id}"  # default file name
     if "new_file_name" in data:  # string, optional
         custom_file_name = data.get("new_file_name", "")
+        custom_file_name = custom_file_name.replace(" ", "_")
+        output_file = "-of " + custom_file_name
+    elif protein_id != uniprot_id:
+        # case: given protein name was converted to uniprot id: name file with original id
         output_file = "-of " + custom_file_name
 
     cmd_string = f"protgraph -egraphml {path_to_protein_file} \

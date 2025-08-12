@@ -105,9 +105,9 @@ export const ProteinSelection = ({
     // prepare parameters dynamically
     const bodyParameters: Record<string, any> = {
       protein_id: newProteinName,
-      new_file_name: newFileName,
     };
 
+    if (newFileName) bodyParameters.new_file_name = newFileName;
     const features: string[] = [];
     if (shouldGenerateConflict) features.push("CONFLICT");
     if (shouldGenerateMutagen) features.push("MUTAGEN");
