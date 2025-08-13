@@ -1,5 +1,6 @@
 import { nodeWidthModes } from "../../theme/types.tsx";
 import { theme } from "../../theme";
+import type { SequenceNodeProps } from "../../components/sequence-node/sequence-node.props.tsx";
 
 export const toggleNodeWidthMode = (mode: nodeWidthModes): nodeWidthModes => {
   switch (mode) {
@@ -24,4 +25,27 @@ export const getNodeWidth = (
     : mode === nodeWidthModes.Small
       ? theme.node.defaultWidthSmall
       : theme.node.defaultWidthCollapsed;
+};
+
+export const sortNodesByPositionIndex = (nodes: SequenceNodeProps[]) => {
+  return nodes.sort((a, b) => {
+    const positionA = a.data.positionIndex as number;
+    const positionB = b.data.positionIndex as number;
+    return positionA - positionB;
+  });
+};
+
+export const getMaxWidthPerDirectSiblings = (
+  positionIndex: number,
+  nodes: SequenceNodeProps[],
+): number => {
+  return nodes
+    .filter((node) => node.data.positionIndex === positionIndex)
+    .reduce((maxWidth, node) => {
+      const nodeWidth = getNodeWidth(
+        node.data.nodeWidthMode as nodeWidthModes,
+        node.data.sequence as string,
+      );
+      return Math.max(maxWidth, nodeWidth);
+    }, 0);
 };

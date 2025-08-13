@@ -1,27 +1,22 @@
 import { type Edge, type Node } from "@xyflow/react";
 import { defaultValues, theme } from "../../theme";
-import { type NodeTypes, nodeWidthModes } from "../../theme/types.tsx";
+import { type NodeTypes } from "../../theme/types.tsx";
 import type { SequenceNodeProps } from "../../components/sequence-node/sequence-node.props.tsx";
 import { GroupNode } from "./group-node.tsx";
-import { getNodeWidth } from "./helper.tsx";
+import {
+  getMaxWidthPerDirectSiblings,
+  sortNodesByPositionIndex,
+} from "./helper.tsx";
 
 // Function that aligns nodes in a snake-like layout on the screen
 // - expects nodes to have correct node.data.positionIndex attributes
 // - row width is determined values set in settings or defaultValues.rowWidth
 export const applySnakeLayout = (
-  nodes: NodeTypes[],
+  nodes: SequenceNodeProps[],
   edges: Edge[],
   maxWidthPerRow: number = defaultValues.rowWidth,
 ): [NodeTypes[], Edge[]] => {
   // --- helper functions ---
-  const sortNodesByPositionIndex = () => {
-    return nodes.sort((a, b) => {
-      const positionA = a.data.positionIndex as number;
-      const positionB = b.data.positionIndex as number;
-      return positionA - positionB;
-    });
-  };
-
   const createRowNode = (nodeWidth: number) => {
     // create group node of finished row
     const heigthOfCurrentRow =
@@ -46,18 +41,6 @@ export const applySnakeLayout = (
     maxNumberOfNeighbors = 1;
   };
 
-  const getMaxWidthPerDirectSiblings = (positionIndex: number): number => {
-    return nodes
-      .filter((node) => node.data.positionIndex === positionIndex)
-      .reduce((maxWidth, node) => {
-        const nodeWidth = getNodeWidth(
-          node.data.nodeWidthMode as nodeWidthModes,
-          node.data.sequence as string,
-        );
-        return Math.max(maxWidth, nodeWidth);
-      }, 0);
-  };
-
   // --- constants and initializations ---
   let widthInCurrentRow = 0; // var to keep track of the width of the current row to limit it
   let countNeighbors = 1; // var to count the number of siblings of the current node
@@ -73,7 +56,7 @@ export const applySnakeLayout = (
   const groupNodes: Node[] = [];
 
   // --- main layouting logic ---
-  nodes = sortNodesByPositionIndex();
+  nodes = sortNodesByPositionIndex(nodes);
 
   const layoutedNodes: SequenceNodeProps[] = nodes.map((node) => {
     // No new calculation if node is a sibling to previous
@@ -101,6 +84,7 @@ export const applySnakeLayout = (
     // width in row is used as metric to determine if a new row is needed
     const nodeWidth = getMaxWidthPerDirectSiblings(
       node.data.positionIndex as number,
+      nodes,
     );
     widthInCurrentRow += nodeWidth + theme.layout.snake.xOffsetBetweenNodes;
 
