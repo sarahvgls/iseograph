@@ -38,6 +38,8 @@ export type RFState = {
   edges: Edge[];
   onNodesChange: OnNodesChange;
   onEdgesChange: OnEdgesChange;
+  secondaryNodes: Node[];
+  secondaryEdges: Edge[];
   shouldRerender: boolean;
   nodeWidthMode: nodeWidthModes;
   setGlobalNodeWidthMode: (nodeWidthMode: nodeWidthModes) => void;
@@ -73,6 +75,12 @@ export type RFState = {
   setIntensityMethod: (intensityMethod: string) => void;
   intensitySource: string;
   setIntensitySource: (intensitySource: string) => void;
+  showDualScreen: boolean;
+  setShowDualScreen: (showDualScreen: boolean) => void;
+  intensitySourceTop: string;
+  setIntensitySourceTop: (intensitySource: string) => void;
+  intensitySourceBottom: string;
+  setIntensitySourceBottom: (intensitySource: string) => void;
 
   isAnimated: boolean;
   setIsAnimated: (isAnimated: boolean) => void;
@@ -120,6 +128,8 @@ const initialIsoformColorMapping = generateIsoformColorMatching(
 const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
   nodes: customNodes,
   edges: customEdges,
+  secondaryNodes: [],
+  secondaryEdges: [],
   onNodesChange: (changes: NodeChange[]) => {
     set({
       nodes: applyNodeChanges(changes, get().nodes),
@@ -300,7 +310,21 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
     set({ intensitySource });
     localStorage.setItem(localStorageKeys.intensitySource, intensitySource);
   },
-
+  showDualScreen: false,
+  setShowDualScreen: (showDualScreen: boolean) => {
+    set({ showDualScreen });
+    localStorage.setItem("showDualScreen", String(showDualScreen));
+  },
+  intensitySourceTop: intensitySources[0] || "",
+  setIntensitySourceTop: (intensitySource: string) => {
+    set({ intensitySourceTop: intensitySource });
+    localStorage.setItem("intensitySourceTop", intensitySource);
+  },
+  intensitySourceBottom: intensitySources[1] || intensitySources[0] || "",
+  setIntensitySourceBottom: (intensitySource: string) => {
+    set({ intensitySourceBottom: intensitySource });
+    localStorage.setItem("intensitySourceBottom", intensitySource);
+  },
   // --- settings variables ---
   isAnimated: defaultValues.isAnimated,
   setIsAnimated: (isAnimated: boolean) => {

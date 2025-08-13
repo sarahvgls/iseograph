@@ -106,6 +106,7 @@ export const calculatedPeptideColor = (
     }
     return getColor(numberOfPeptides, maxPeptides, colorScale, opacity);
   } else if (type === glowMethods.intensity) {
+    // console.log(source);
     let validStats = {} as IntensityStats;
     let validExtremes = {} as Extremes;
     if (source !== undefined) {

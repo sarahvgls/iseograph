@@ -44,7 +44,6 @@ export default function ArrowEdge({
     colorScale,
     glowMethod,
     intensityMethod,
-    intensitySource,
     getPeptides,
   } = useGraphStore(
     (state) => ({
@@ -57,7 +56,6 @@ export default function ArrowEdge({
       colorScale: state.colorScale,
       glowMethod: state.glowMethod,
       intensityMethod: state.intensityMethod,
-      intensitySource: state.intensitySource,
       getPeptides: state.getPeptidesForEdge,
     }),
     shallow,
@@ -101,7 +99,7 @@ export default function ArrowEdge({
           maxPeptides,
           extremes,
           intensityMethod,
-          intensitySource,
+          data.intensitySource,
           peptideLog,
         ),
       }}

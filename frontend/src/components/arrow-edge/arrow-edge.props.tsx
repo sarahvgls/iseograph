@@ -11,5 +11,6 @@ export interface ArrowEdgeProps extends EdgeProps {
     intensitiesString?: string;
     peptideLog?: PeptideLog;
     peptideCount?: number;
+    intensitySource?: string;
   };
 }

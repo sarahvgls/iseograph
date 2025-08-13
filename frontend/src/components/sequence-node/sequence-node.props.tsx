@@ -18,6 +18,7 @@ export interface SequenceNodeProps extends NodeProps {
     intensitiesString?: string;
     peptideLog?: PeptideLog;
     peptideCount?: number;
+    intensitySource?: string;
   };
   id: string;
   type: typeof nodeTypes.SequenceNode;
