@@ -103,6 +103,10 @@ export const theme = {
     delayedRerendering: false, // if true, on node click the size of the node changes but the rerendering of the snake graph is delayed,
     // meaning only applied when the next node is clicked for the last one
   },
+  delay: {
+    graphRerendering: 500,
+    shortest: 10,
+  },
   rowNode: {
     defaultHeight: 400,
     heightPerVariation: 100, // height of each variation in a row

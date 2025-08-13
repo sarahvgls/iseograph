@@ -106,7 +106,7 @@ const Flow = () => {
     (nodeToBeFocused: SequenceNodeProps) => {
       const timer = setTimeout(() => {
         focusNode(nodeToBeFocused);
-      }, 500);
+      }, theme.delay.graphRerendering);
 
       return () => clearTimeout(timer);
     },
