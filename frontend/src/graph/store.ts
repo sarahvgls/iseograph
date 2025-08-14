@@ -131,13 +131,6 @@ const deepCopiedNodes: SequenceNodeProps[] = JSON.parse(
 const deepCopiedEdges: ArrowEdgeProps[] = JSON.parse(
   JSON.stringify(customEdges),
 );
-// assign isSecondary
-deepCopiedNodes.forEach((node) => {
-  node.data.isSecondary = true;
-});
-deepCopiedEdges.forEach((edge) => {
-  edge.data.isSecondary = true;
-});
 
 const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
   nodes: customNodes,
