@@ -4,8 +4,6 @@ import {
   Panel,
   type NodeMouseHandler,
   MiniMap,
-  applyNodeChanges,
-  applyEdgeChanges,
 } from "@xyflow/react";
 import DevTools from "./devtools/devtools.tsx";
 
@@ -336,7 +334,7 @@ const Flow = () => {
           <GraphControls
             allowInteraction={allowInteraction}
             onFocusNextNode={() => onFocusNextNode(focusedNode)}
-            onFococusPreviousNode={() => onFocusPreviousNode(focusedNode)}
+            onFocusPreviousNode={() => onFocusPreviousNode(focusedNode)}
             onFocusCurrentNode={() => {
               if (focusedNode) {
                 focusNode(focusedNode);
