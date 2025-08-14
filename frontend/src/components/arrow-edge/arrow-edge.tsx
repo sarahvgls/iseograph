@@ -49,6 +49,7 @@ export default function ArrowEdge({
     glowMethod,
     intensityMethod,
     getPeptides,
+    showDualScreen,
   } = useGraphStore(
     (state) => ({
       isoformColorMapping: state.isoformColorMapping,
@@ -61,6 +62,7 @@ export default function ArrowEdge({
       glowMethod: state.glowMethod,
       intensityMethod: state.intensityMethod,
       getPeptides: state.getPeptidesForEdge,
+      showDualScreen: state.showDualScreen,
     }),
     shallow,
   );
@@ -126,8 +128,10 @@ export default function ArrowEdge({
       <BaseEdge
         path={hoverPath}
         style={{
-          strokeWidth: 20,
-          stroke: "rgba(218,218,218,0.48)",
+          strokeWidth: showDualScreen ? 40 : 20,
+          stroke: showDualScreen
+            ? "rgba(218,218,218,0.98)"
+            : "rgba(218,218,218,0.48)",
         }}
         key={`${id}-hover`}
         id={id}
