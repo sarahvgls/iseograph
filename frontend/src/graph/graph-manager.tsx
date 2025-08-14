@@ -89,7 +89,7 @@ const GraphSection = styled.div<{ isTop?: boolean; isDualMode?: boolean }>`
   flex: 1;
   position: relative;
   border-bottom: ${(props) =>
-    props.isDualMode && props.isTop ? "2px solid #ccc" : "none"};
+    props.isDualMode && props.isTop ? "8px solid #ccc" : "none"};
   display: ${(props) => (!props.isDualMode && !props.isTop ? "none" : "block")};
 `;
 

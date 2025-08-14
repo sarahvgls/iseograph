@@ -103,7 +103,7 @@ export default function ArrowEdge({
           maxPeptides,
           extremes,
           intensityMethod,
-          currentIntensitySource, // Use context instead of data.intensitySource
+          currentIntensitySource,
           peptideLog,
         ),
       }}
