@@ -19,6 +19,7 @@ export interface SequenceNodeProps extends NodeProps {
     peptideLog?: PeptideLog;
     peptideCount?: number;
     intensitySource?: string;
+    isSecondary?: boolean; // indicates if this node is node of the secondary graph
   };
   id: string;
   type: typeof nodeTypes.SequenceNode;

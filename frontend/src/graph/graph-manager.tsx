@@ -14,7 +14,7 @@ import useGraphStore, { type RFState } from "./store.ts";
 import { shallow } from "zustand/vanilla/shallow";
 
 import SequenceNode from "../components/sequence-node/sequence-node.tsx";
-import { useCallback, useEffect, useRef, useState, useMemo } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { SequenceNodeProps } from "../components/sequence-node/sequence-node.props.tsx";
 import GraphControls from "./controls.tsx";
 import { useFocusHandlers } from "../controls/focus-node/focus-utils.ts";
@@ -152,72 +152,6 @@ const Flow = () => {
   const [isMapOpen, setIsMapOpen] = useState(true);
   const shouldShiftButtons = isPeptideMenuFullSize && isIsoformMenuFullSize;
 
-  const topGraphUpdateRef = useRef(false);
-  const bottomGraphUpdateRef = useRef(false);
-
-  // Optimize the createGraphData function to avoid deep cloning when possible
-  const createGraphData = useCallback(
-    (intensitySource: string) => {
-      return {
-        nodes: nodes.map((node) => ({
-          ...node,
-          data: {
-            ...node.data,
-            intensitySource,
-          },
-        })),
-        edges: edges.map((edge) => ({
-          ...edge,
-          data: {
-            ...edge.data,
-            intensitySource,
-          },
-        })),
-      };
-    },
-    [nodes, edges],
-  );
-
-  // Update top graph when intensity source changes
-  useEffect(() => {
-    if (!intensitySourceTop || isInitializing || topGraphUpdateRef.current)
-      return;
-
-    topGraphUpdateRef.current = true;
-    const topGraphData = createGraphData(intensitySourceTop);
-
-    // Use a timeout to break the rendering cycle
-    setTimeout(() => {
-      useGraphStore.setState({
-        nodes: topGraphData.nodes,
-        edges: topGraphData.edges,
-      });
-      topGraphUpdateRef.current = false;
-    }, 0);
-  }, [intensitySourceTop, createGraphData, isInitializing]);
-
-  // Update bottom graph when intensity source changes
-  useEffect(() => {
-    if (
-      !intensitySourceBottom ||
-      isInitializing ||
-      bottomGraphUpdateRef.current
-    )
-      return;
-
-    bottomGraphUpdateRef.current = true;
-    const bottomGraphData = createGraphData(intensitySourceBottom);
-
-    // Use a timeout to break the rendering cycle
-    setTimeout(() => {
-      useGraphStore.setState({
-        secondaryNodes: bottomGraphData.nodes,
-        secondaryEdges: bottomGraphData.edges,
-      });
-      bottomGraphUpdateRef.current = false;
-    }, 0);
-  }, [intensitySourceBottom, createGraphData, isInitializing]);
-
   const focusNodeWithDelay = useCallback(
     (nodeToBeFocused: SequenceNodeProps) => {
       const timer = setTimeout(() => {
@@ -233,7 +167,7 @@ const Flow = () => {
     setIsInitializing(shouldRerender);
   }, [shouldRerender]);
 
-  // Modify the initialization effect to avoid multiple state updates
+  // --- Initialization logic ---
   useEffect(() => {
     if (!isInitializing) return;
     console.log("Initializing graph...");
@@ -254,19 +188,7 @@ const Flow = () => {
       return;
     }
 
-    // Batch state updates to avoid cascading renders
     setTimeout(() => {
-      // Initialize both graphs with proper intensity sources only once during initialization
-      const topGraphData = createGraphData(intensitySourceTop);
-      const bottomGraphData = createGraphData(intensitySourceBottom);
-
-      useGraphStore.setState({
-        nodes: topGraphData.nodes,
-        edges: topGraphData.edges,
-        secondaryNodes: bottomGraphData.nodes,
-        secondaryEdges: bottomGraphData.edges,
-      });
-
       setLayoutMode(layoutMode);
       setNodeWidthMode(nodeWidthMode);
 
@@ -292,10 +214,53 @@ const Flow = () => {
     focusNodeWithDelay,
     setLayoutMode,
     setNodeWidthMode,
-    createGraphData,
     intensitySourceTop,
     intensitySourceBottom,
   ]);
+
+  useEffect(() => {
+    // update primary nodes and edges when first selected source changes
+    useGraphStore.setState({
+      nodes: useGraphStore.getState().nodes.map((node) => ({
+        ...node,
+        data: {
+          ...node.data,
+          intensitySource: intensitySourceTop,
+        },
+      })),
+      edges: useGraphStore.getState().edges.map((edge) => ({
+        ...edge,
+        data: {
+          ...edge.data,
+          intensitySource: intensitySourceTop,
+        },
+      })),
+    });
+    setLayoutMode(useGraphStore.getState().layoutMode);
+    setNodeWidthMode(useGraphStore.getState().nodeWidthMode);
+  }, [intensitySourceTop]);
+
+  useEffect(() => {
+    // update secondary nodes and edges when bottom selected source changes
+    useGraphStore.setState({
+      secondaryNodes: useGraphStore.getState().secondaryNodes.map((node) => ({
+        ...node,
+        data: {
+          ...node.data,
+          intensitySource: intensitySourceBottom,
+        },
+      })),
+      secondaryEdges: useGraphStore.getState().secondaryEdges.map((edge) => ({
+        ...edge,
+        data: {
+          ...edge.data,
+          intensitySource: intensitySourceBottom,
+        },
+      })),
+    });
+    setLayoutMode(useGraphStore.getState().layoutMode);
+    setNodeWidthMode(useGraphStore.getState().nodeWidthMode);
+  }, [intensitySourceBottom]);
 
   const lastClickTimeRef = useRef<number>(0);
   const clickTimerRef = useRef<number | null>(null);
@@ -355,26 +320,6 @@ const Flow = () => {
     nodes: nodes.slice(0, 3),
   };
 
-  // If you're directly accessing store state in renderGraph, use memoized values to prevent re-renders
-  const topGraphData = useMemo(
-    () => ({
-      nodes: useGraphStore.getState().nodes,
-      edges: useGraphStore.getState().edges,
-    }),
-    [nodes, edges],
-  );
-
-  const bottomGraphData = useMemo(
-    () => ({
-      nodes: useGraphStore.getState().secondaryNodes,
-      edges: useGraphStore.getState().secondaryEdges,
-    }),
-    [
-      useGraphStore.getState().secondaryNodes,
-      useGraphStore.getState().secondaryEdges,
-    ],
-  );
-
   const renderGraph = (graphData: any, isTop: boolean, label: string) => (
     <GraphSection isTop={isTop} isDualMode={isDualGraphMode}>
       <GraphLabel isDualMode={isDualGraphMode}>{label}</GraphLabel>
@@ -432,18 +377,28 @@ const Flow = () => {
         {isDualGraphMode ? (
           <>
             {renderGraph(
-              topGraphData,
+              { nodes, edges },
               true,
               `Top Graph: ${intensitySourceTop}`,
             )}
             {renderGraph(
-              bottomGraphData,
+              {
+                nodes: useGraphStore.getState().secondaryNodes,
+                edges: useGraphStore.getState().secondaryEdges,
+              },
               false,
               `Bottom Graph: ${intensitySourceBottom}`,
             )}
           </>
         ) : (
-          renderGraph(topGraphData, true, "")
+          renderGraph(
+            {
+              nodes,
+              edges,
+            },
+            true,
+            "",
+          )
         )}
 
         {/* Overlay controls that apply to both graphs */}

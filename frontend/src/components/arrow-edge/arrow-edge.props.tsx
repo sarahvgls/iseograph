@@ -12,5 +12,6 @@ export interface ArrowEdgeProps extends EdgeProps {
     peptideLog?: PeptideLog;
     peptideCount?: number;
     intensitySource?: string;
+    isSecondary?: boolean; // indicates if this node is node of the secondary graph
   };
 }

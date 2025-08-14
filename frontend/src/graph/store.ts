@@ -125,11 +125,25 @@ const initialIsoformColorMapping = generateIsoformColorMatching(
   customEdges as ArrowEdgeProps[],
 );
 
+const deepCopiedNodes: SequenceNodeProps[] = JSON.parse(
+  JSON.stringify(customNodes),
+);
+const deepCopiedEdges: ArrowEdgeProps[] = JSON.parse(
+  JSON.stringify(customEdges),
+);
+// assign isSecondary
+deepCopiedNodes.forEach((node) => {
+  node.data.isSecondary = true;
+});
+deepCopiedEdges.forEach((edge) => {
+  edge.data.isSecondary = true;
+});
+
 const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
   nodes: customNodes,
   edges: customEdges,
-  secondaryNodes: [],
-  secondaryEdges: [],
+  secondaryNodes: deepCopiedNodes,
+  secondaryEdges: deepCopiedEdges,
   onNodesChange: (changes: NodeChange[]) => {
     set({
       nodes: applyNodeChanges(changes, get().nodes),
