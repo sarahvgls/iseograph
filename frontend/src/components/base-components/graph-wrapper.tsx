@@ -40,7 +40,7 @@ export const GraphLabel = styled.div<{ isDualMode?: boolean }>`
   font-weight: bold;
   z-index: 50;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  font-size: 14px;
+  font-size: 18px;
   display: ${(props) => (props.isDualMode ? "block" : "none")};
 `;
 

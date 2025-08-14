@@ -320,17 +320,14 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
   showDualScreen: false,
   setShowDualScreen: (showDualScreen: boolean) => {
     set({ showDualScreen });
-    localStorage.setItem("showDualScreen", String(showDualScreen));
   },
   intensitySourceTop: intensitySources[0] || "",
   setIntensitySourceTop: (intensitySource: string) => {
     set({ intensitySourceTop: intensitySource });
-    localStorage.setItem("intensitySourceTop", intensitySource);
   },
   intensitySourceBottom: intensitySources[1] || intensitySources[0] || "",
   setIntensitySourceBottom: (intensitySource: string) => {
     set({ intensitySourceBottom: intensitySource });
-    localStorage.setItem("intensitySourceBottom", intensitySource);
   },
   // --- settings variables ---
   isAnimated: defaultValues.isAnimated,
