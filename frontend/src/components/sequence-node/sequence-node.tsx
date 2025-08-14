@@ -4,7 +4,7 @@ import {
   Position,
   useStore,
   useUpdateNodeInternals,
-} from "@xyflow/react"; //changed to type NodeProps? is that correct?
+} from "@xyflow/react";
 import styled from "styled-components";
 import type { SequenceNodeProps } from "./sequence-node.props.tsx";
 import { theme } from "../../theme";
@@ -13,6 +13,7 @@ import { memo, useEffect, useRef, useState } from "react";
 import useGraphStore, { type RFState } from "../../graph/store.ts";
 import { nodePeptideColor } from "../../controls/peptides-color.tsx";
 import { shallow } from "zustand/vanilla/shallow";
+import { useIntensitySource } from "../../graph/IntensitySourceContext.tsx";
 
 const NodeWrapper = styled.div`
   display: flex;
@@ -71,6 +72,8 @@ const SequenceNode = memo(function SequenceNode({
   const updateNodeInternals = useUpdateNodeInternals();
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
+  const { currentIntensitySource } = useIntensitySource();
+
   const {
     maxPeptides,
     extremes,
@@ -163,7 +166,7 @@ const SequenceNode = memo(function SequenceNode({
             maxPeptides,
             extremes,
             intensityMethod,
-            data.intensitySource,
+            currentIntensitySource, // Use context instead of data.intensitySource
             peptideLog,
           ),
           borderRadius: "15px",

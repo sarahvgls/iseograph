@@ -11,6 +11,7 @@ import { shallow } from "zustand/shallow";
 import { theme } from "../../theme";
 import { labelVisibilities } from "../../theme/types.tsx";
 import { edgePeptideColor } from "../../controls/peptides-color.tsx";
+import { useIntensitySource } from "../../graph/IntensitySourceContext.tsx";
 
 export default function ArrowEdge({
   id,
@@ -34,6 +35,9 @@ export default function ArrowEdge({
     targetY,
     targetPosition,
   });
+
+  const { currentIntensitySource } = useIntensitySource();
+
   const {
     isoformColorMapping,
     selectedIsoforms,
@@ -99,7 +103,7 @@ export default function ArrowEdge({
           maxPeptides,
           extremes,
           intensityMethod,
-          data.intensitySource,
+          currentIntensitySource, // Use context instead of data.intensitySource
           peptideLog,
         ),
       }}

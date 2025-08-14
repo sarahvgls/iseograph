@@ -39,6 +39,7 @@ import { OnScreenPeptidesMenu } from "../components/on-screen-peptides-menu/on-s
 import styled from "styled-components";
 import { applyLocalStorageValues } from "./generation-utils/apply-local-storage.tsx";
 import { ToggleMenuButton } from "../components/on-screen-menu/toggle-button.tsx";
+import { IntensitySourceProvider } from "./IntensitySourceContext.tsx";
 
 const selector = (state: RFState) => ({
   nodes: state.nodes,
@@ -177,7 +178,6 @@ const Flow = () => {
     const layoutMode = useGraphStore.getState().layoutMode;
     const nodeWidthMode = useGraphStore.getState().nodeWidthMode;
 
-    // Initialize both graphs with proper intensity sources
     if (nodes.length === 0) {
       console.warn(
         "No nodes available in the graph. Please check the data source.",
@@ -203,7 +203,6 @@ const Flow = () => {
         }
       }
 
-      // Use a single timeout to complete initialization
       setTimeout(() => {
         setIsInitializing(false);
         store.setState({ shouldRerender: false });
@@ -217,50 +216,6 @@ const Flow = () => {
     intensitySourceTop,
     intensitySourceBottom,
   ]);
-
-  useEffect(() => {
-    // update primary nodes and edges when first selected source changes
-    useGraphStore.setState({
-      nodes: useGraphStore.getState().nodes.map((node) => ({
-        ...node,
-        data: {
-          ...node.data,
-          intensitySource: intensitySourceTop,
-        },
-      })),
-      edges: useGraphStore.getState().edges.map((edge) => ({
-        ...edge,
-        data: {
-          ...edge.data,
-          intensitySource: intensitySourceTop,
-        },
-      })),
-    });
-    setLayoutMode(useGraphStore.getState().layoutMode);
-    setNodeWidthMode(useGraphStore.getState().nodeWidthMode);
-  }, [intensitySourceTop]);
-
-  useEffect(() => {
-    // update secondary nodes and edges when bottom selected source changes
-    useGraphStore.setState({
-      secondaryNodes: useGraphStore.getState().secondaryNodes.map((node) => ({
-        ...node,
-        data: {
-          ...node.data,
-          intensitySource: intensitySourceBottom,
-        },
-      })),
-      secondaryEdges: useGraphStore.getState().secondaryEdges.map((edge) => ({
-        ...edge,
-        data: {
-          ...edge.data,
-          intensitySource: intensitySourceBottom,
-        },
-      })),
-    });
-    setLayoutMode(useGraphStore.getState().layoutMode);
-    setNodeWidthMode(useGraphStore.getState().nodeWidthMode);
-  }, [intensitySourceBottom]);
 
   const lastClickTimeRef = useRef<number>(0);
   const clickTimerRef = useRef<number | null>(null);
@@ -320,54 +275,39 @@ const Flow = () => {
     nodes: nodes.slice(0, 3),
   };
 
-  const renderGraph = (graphData: any, isTop: boolean, label: string) => (
+  const renderGraph = (
+    intensitySource: string,
+    isTop: boolean,
+    label: string,
+  ) => (
     <GraphSection isTop={isTop} isDualMode={isDualGraphMode}>
       <GraphLabel isDualMode={isDualGraphMode}>{label}</GraphLabel>
-      <ReactFlow
-        nodes={graphData.nodes}
-        edges={graphData.edges}
-        nodeTypes={myNodeTypes}
-        edgeTypes={edgeTypes}
-        onNodesChange={
-          isTop
-            ? onNodesChange
-            : (changes) => {
-                // Apply changes to secondary nodes
-                useGraphStore.setState({
-                  secondaryNodes: applyNodeChanges(
-                    changes,
-                    useGraphStore.getState().secondaryNodes,
-                  ),
-                });
-              }
-        }
-        onEdgesChange={
-          isTop
-            ? onEdgesChange
-            : (changes) => {
-                // Apply changes to secondary edges
-                useGraphStore.setState({
-                  secondaryEdges: applyEdgeChanges(
-                    changes,
-                    useGraphStore.getState().secondaryEdges,
-                  ),
-                });
-              }
-        }
-        nodeOrigin={nodeOrigin}
-        minZoom={0.05}
-        maxZoom={5}
-        zoomOnDoubleClick={false}
-        width={100}
-        onNodeClick={onNodeClick}
-        fitView
-        fitViewOptions={fitViewOptions}
-        nodesDraggable={allowInteraction}
-        nodesConnectable={false}
-        edgesReconnectable={false}
+      <IntensitySourceProvider
+        intensitySource={intensitySource}
+        isSecondaryGraph={!isTop}
       >
-        {theme.debugMode && <DevTools />}
-      </ReactFlow>
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          nodeTypes={myNodeTypes}
+          edgeTypes={edgeTypes}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          nodeOrigin={nodeOrigin}
+          minZoom={0.05}
+          maxZoom={5}
+          zoomOnDoubleClick={false}
+          width={100}
+          onNodeClick={onNodeClick}
+          fitView
+          fitViewOptions={fitViewOptions}
+          nodesDraggable={allowInteraction}
+          nodesConnectable={false}
+          edgesReconnectable={false}
+        >
+          {theme.debugMode && <DevTools />}
+        </ReactFlow>
+      </IntensitySourceProvider>
     </GraphSection>
   );
 
@@ -377,28 +317,18 @@ const Flow = () => {
         {isDualGraphMode ? (
           <>
             {renderGraph(
-              { nodes, edges },
+              intensitySourceTop,
               true,
               `Top Graph: ${intensitySourceTop}`,
             )}
             {renderGraph(
-              {
-                nodes: useGraphStore.getState().secondaryNodes,
-                edges: useGraphStore.getState().secondaryEdges,
-              },
+              intensitySourceBottom,
               false,
               `Bottom Graph: ${intensitySourceBottom}`,
             )}
           </>
         ) : (
-          renderGraph(
-            {
-              nodes,
-              edges,
-            },
-            true,
-            "",
-          )
+          renderGraph(intensitySourceTop, true, "")
         )}
 
         {/* Overlay controls that apply to both graphs */}
@@ -406,7 +336,7 @@ const Flow = () => {
           <GraphControls
             allowInteraction={allowInteraction}
             onFocusNextNode={() => onFocusNextNode(focusedNode)}
-            onFocusPreviousNode={() => onFocusPreviousNode(focusedNode)}
+            onFococusPreviousNode={() => onFocusPreviousNode(focusedNode)}
             onFocusCurrentNode={() => {
               if (focusedNode) {
                 focusNode(focusedNode);
