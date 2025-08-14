@@ -263,6 +263,7 @@ export const OnScreenPeptidesMenu = ({
                   useGraphStore.setState({ isPeptideMenuFullSize: true });
                 } else {
                   useGraphStore.setState({ isPeptideMenuFullSize: false });
+                  setShowDualScreen(false);
                 }
               }}
             >

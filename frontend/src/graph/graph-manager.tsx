@@ -34,10 +34,16 @@ import { SettingsButton } from "../components/side-menu/settings-button.tsx";
 import { MiniMapContainer } from "../components/minimap/minimap-container.tsx";
 import { PeptideMonitor } from "../components/peptide-monitor/peptide-monitor.tsx";
 import { OnScreenPeptidesMenu } from "../components/on-screen-peptides-menu/on-screen-peptides-menu.tsx";
-import styled from "styled-components";
 import { applyLocalStorageValues } from "./generation-utils/apply-local-storage.tsx";
 import { ToggleMenuButton } from "../components/on-screen-menu/toggle-button.tsx";
 import { IntensitySourceProvider } from "../controls/intensity-source-context.tsx";
+import {
+  GraphContainer,
+  GraphLabel,
+  GraphSection,
+  MenuStackContainer,
+  OverlayContainer,
+} from "../components/base-components/graph-wrapper.tsx";
 
 const selector = (state: RFState) => ({
   nodes: state.nodes,
@@ -52,7 +58,6 @@ const selector = (state: RFState) => ({
   isIsoformMenuFullSize: state.isIsoformMenuFullSize,
   glowMethod: state.glowMethod,
   shouldRerender: state.shouldRerender,
-  allIntensitySources: state.allIntensitySources,
   intensitySourceTop: state.intensitySourceTop,
   intensitySourceBottom: state.intensitySourceBottom,
   isDualGraphMode: state.showDualScreen,
@@ -66,57 +71,6 @@ const myNodeTypes = {
 const edgeTypes = {
   arrow: ArrowEdge,
 };
-
-const MenuStackContainer = styled.div`
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  gap: 15px;
-`;
-
-const GraphContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  width: 100vw;
-  position: relative;
-`;
-
-const GraphSection = styled.div<{ isTop?: boolean; isDualMode?: boolean }>`
-  flex: 1;
-  position: relative;
-  border-bottom: ${(props) =>
-    props.isDualMode && props.isTop ? "8px solid #ccc" : "none"};
-  display: ${(props) => (!props.isDualMode && !props.isTop ? "none" : "block")};
-`;
-
-const GraphLabel = styled.div<{ isDualMode?: boolean }>`
-  position: absolute;
-  top: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(255, 255, 255, 0.9);
-  padding: 5px 15px;
-  border-radius: 20px;
-  font-weight: bold;
-  z-index: 50;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  font-size: 14px;
-  display: ${(props) => (props.isDualMode ? "block" : "none")};
-`;
-
-const OverlayContainer = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  pointer-events: none;
-  z-index: 100;
-`;
 
 const Flow = () => {
   const [isInitializing, setIsInitializing] = useState(true);
@@ -279,7 +233,7 @@ const Flow = () => {
     label: string,
   ) => (
     <GraphSection isTop={isTop} isDualMode={isDualGraphMode}>
-      <GraphLabel isDualMode={isDualGraphMode}>{label}</GraphLabel>
+      <GraphLabel isDualMode={true}>{label}</GraphLabel>
       <IntensitySourceProvider
         intensitySource={intensitySource}
         isSecondaryGraph={!isTop}
@@ -317,16 +271,22 @@ const Flow = () => {
             {renderGraph(
               intensitySourceTop,
               true,
-              `Top Graph: ${intensitySourceTop}`,
+              `Intensity source: ${intensitySourceTop}`,
             )}
             {renderGraph(
               intensitySourceBottom,
               false,
-              `Bottom Graph: ${intensitySourceBottom}`,
+              `Intensity source: ${intensitySourceBottom}`,
             )}
           </>
         ) : (
-          renderGraph(intensitySourceTop, true, "")
+          renderGraph(
+            intensitySourceTop,
+            true,
+            glowMethod === glowMethods.intensity
+              ? `Intensity source: ${intensitySourceTop}`
+              : `Intensity highlighted by count of peptides`,
+          )
         )}
 
         {/* Overlay controls that apply to both graphs */}

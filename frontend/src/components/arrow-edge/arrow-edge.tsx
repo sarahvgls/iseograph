@@ -11,7 +11,7 @@ import { shallow } from "zustand/shallow";
 import { theme } from "../../theme";
 import { labelVisibilities } from "../../theme/types.tsx";
 import { edgePeptideColor } from "../../controls/peptides-color.tsx";
-import { useIntensitySource } from "../../graph/intensity-source-context.tsx";
+import { useIntensitySource } from "../../controls/intensity-source-context.tsx";
 
 export default function ArrowEdge({
   id,

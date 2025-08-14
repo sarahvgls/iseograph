@@ -13,7 +13,7 @@ import { memo, useEffect, useRef, useState } from "react";
 import useGraphStore, { type RFState } from "../../graph/store.ts";
 import { nodePeptideColor } from "../../controls/peptides-color.tsx";
 import { shallow } from "zustand/vanilla/shallow";
-import { useIntensitySource } from "../../graph/intensity-source-context.tsx";
+import { useIntensitySource } from "../../controls/intensity-source-context.tsx";
 
 const NodeWrapper = styled.div`
   display: flex;
