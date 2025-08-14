@@ -130,7 +130,7 @@ export default function ArrowEdge({
         style={{
           strokeWidth: showDualScreen ? 40 : 20,
           stroke: showDualScreen
-            ? "rgba(218,218,218,0.98)"
+            ? "rgba(100,100,100,0.3)"
             : "rgba(218,218,218,0.48)",
         }}
         key={`${id}-hover`}
