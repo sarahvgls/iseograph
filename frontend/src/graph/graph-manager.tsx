@@ -14,7 +14,7 @@ import { shallow } from "zustand/vanilla/shallow";
 import SequenceNode from "../components/sequence-node/sequence-node.tsx";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { SequenceNodeProps } from "../components/sequence-node/sequence-node.props.tsx";
-import GraphControls from "./controls.tsx";
+import GraphControls from "../controls/graph-controls.tsx";
 import { useFocusHandlers } from "../controls/focus-node/focus-utils.ts";
 import { glowMethods, nodeTypes, nodeWidthModes } from "../theme/types.tsx";
 import { theme } from "../theme";
@@ -37,7 +37,7 @@ import { OnScreenPeptidesMenu } from "../components/on-screen-peptides-menu/on-s
 import styled from "styled-components";
 import { applyLocalStorageValues } from "./generation-utils/apply-local-storage.tsx";
 import { ToggleMenuButton } from "../components/on-screen-menu/toggle-button.tsx";
-import { IntensitySourceProvider } from "./IntensitySourceContext.tsx";
+import { IntensitySourceProvider } from "../controls/intensity-source-context.tsx";
 
 const selector = (state: RFState) => ({
   nodes: state.nodes,
