@@ -2,45 +2,35 @@ import {
   BoldStyledLabel,
   FlexRow,
   SecondaryButton,
-  StyledDropdown,
-  StyledInputTextField,
   StyledLabel,
   StyledSection,
   StyledSectionTitle,
 } from "../base-components";
 import { MultiCompatibleCheckbox } from "../base-components/checkbox.tsx";
 import { useEffect, useState } from "react";
-import { callApi, callApiWithParameters } from "../../helper/api-call.ts";
+import { callApiWithParameters } from "../../helper/api-call.ts";
 import { localStorageKeys } from "../../theme/types.tsx";
+import { DropdownComponent } from "../base-components/dropdown.tsx";
+import { TextComponent } from "../base-components/textfield.tsx";
+import { tooltips } from "./tooltip-content.tsx";
+import { FileUpload } from "../base-components/file-upload.tsx";
+import { getFileNames } from "./protein-selection-helper.tsx";
+import useGraphStore from "../../graph/store.ts";
+import { CircularProgress } from "@mui/material";
 
 export const ProteinSelection = ({
   previousSelectedFile,
-  previousSelectedNewProtein,
 }: {
   previousSelectedFile: string;
-  previousSelectedNewProtein: string;
 }) => {
   const [fileNames, setFileNames] = useState<string[]>([]);
   const [selectedFile, setSelectedFile] =
     useState<string>(previousSelectedFile);
-  const [newProteinName, setNewProteinName] = useState<string>(
-    previousSelectedNewProtein,
-  );
+  const [isAddLoading, setIsAddLoading] = useState<boolean>(false);
+  const [isLoadLoading, setIsLoadLoading] = useState<boolean>(false);
 
   useEffect(() => {
-    const getFileNames = async () => {
-      const response = await callApi("api/get_available_files/");
-      if (!response.success) {
-        console.error("Failed to fetch file names");
-        return;
-      } else {
-        const names = response.data || [];
-
-        setFileNames(names);
-      }
-    };
-
-    void getFileNames();
+    void getFileNames(setFileNames);
   }, []);
 
   const handleRecentFileSubmit = async () => {
@@ -48,6 +38,7 @@ export const ProteinSelection = ({
       alert("Please select a file.");
       return;
     }
+    setIsLoadLoading(true);
 
     try {
       const response = await callApiWithParameters("api/convert_file/", {
@@ -63,18 +54,41 @@ export const ProteinSelection = ({
         localStorage.removeItem(localStorageKeys.isoformColorMapping);
         localStorage.removeItem(localStorageKeys.glowMethod);
         localStorage.removeItem(localStorageKeys.intensitySource);
+
+        // force rerender
+        useGraphStore.setState({ shouldRerender: true });
       }
     } catch (error) {
       console.error("Error executing script:", error);
+    } finally {
+      setIsLoadLoading(false); // Stop loading
     }
   };
 
-  const [shouldGenerateVariation, setShouldGenerateVariation] =
-    useState<boolean>(false);
+  // configurations for new protein
+  const [newProteinName, setNewProteinName] = useState<string>("");
+  const [newFileName, setNewFileName] = useState<string>("");
+  const [shouldGenerateVariant, setShouldGenerateVariant] =
+    useState<boolean>(true);
   const [shouldGenerateMutagen, setShouldGenerateMutagen] =
-    useState<boolean>(false);
+    useState<boolean>(true);
   const [shouldGenerateConflict, setShouldGenerateConflict] =
+    useState<boolean>(true);
+  const [peptideFilePath, setPeptideFilePath] = useState<string>(""); // Store full path
+  const [metadataFilePath, setMetadataFilePath] = useState<string>(""); // Store full path
+  const [compareColumn, setCompareColumn] = useState<string>("");
+  const [hasIntensity, setHasIntensity] = useState<boolean>(true);
+  const [shouldCountPeptides, setShouldCountPeptides] = useState<boolean>(true);
+  const [shouldMergePeptides, setShouldMergePeptides] =
     useState<boolean>(false);
+
+  const AggregationOptions = ["Median", "Sum", "Mean", "None"];
+  type AggregationOptions =
+    (typeof AggregationOptions)[keyof typeof AggregationOptions];
+  const [selectedOAggregation, setSelectedOAggregation] =
+    useState<AggregationOptions>(AggregationOptions[3]);
+  const [selectedMAggregation, setSelectedMAggregation] =
+    useState<AggregationOptions>(AggregationOptions[0]);
 
   const handleAddProtein = async () => {
     if (!newProteinName) {
@@ -82,71 +96,124 @@ export const ProteinSelection = ({
       return;
     }
 
+    setIsAddLoading(true); // Start loading
+
     // clear dropdown
     setSelectedFile("");
     localStorage.removeItem(localStorageKeys.selectedFile);
 
-    // TODO use shouldGenerate... booleans
+    // prepare parameters dynamically
+    const bodyParameters: Record<string, any> = {
+      protein_id: newProteinName,
+    };
 
-    alert("not implemented yet. Protein: " + newProteinName);
-    // try {
-    //   const response = await callApiWithParameters("api/add_protein/", {
-    //     protein_name: proteinName,
-    //   });
-    //   console.log("Response from add_protein:", response);
-    //   if (!response.success) {
-    //     console.error("Failed to add protein:", response.error);
-    //     return;
-    //   }
-    //   // Optionally, refresh the file names or handle success
-    // } catch (error) {
-    //   console.error("Error adding protein:", error);
-    // }
+    if (newFileName) bodyParameters.new_file_name = newFileName;
+    const features: string[] = [];
+    if (shouldGenerateConflict) features.push("CONFLICT");
+    if (shouldGenerateMutagen) features.push("MUTAGEN");
+    if (shouldGenerateVariant) features.push("VARIANT");
+    if (features.length > 0) bodyParameters.features = features;
+
+    if (peptideFilePath) {
+      bodyParameters.peptide_file = peptideFilePath;
+      if (metadataFilePath) {
+        bodyParameters.metadata_file = metadataFilePath;
+        if (compareColumn) bodyParameters.compare_column = compareColumn;
+      }
+      if (hasIntensity) bodyParameters.intensity = true;
+      if (shouldCountPeptides) bodyParameters.count = true;
+      if (shouldMergePeptides) bodyParameters.merge_peptides = true;
+      if (selectedOAggregation !== "None")
+        bodyParameters.o_aggregation = selectedOAggregation;
+      if (selectedMAggregation !== "None")
+        bodyParameters.m_aggregation = selectedMAggregation;
+    }
+
+    if (bodyParameters.o_aggregation && bodyParameters.compare_column) {
+      alert(
+        "Overlapping aggregation method is not allowed to be selected when a comparison column is selected. Please choose either one of them.",
+      );
+      setIsAddLoading(false); // Stop loading
+      return;
+    }
+
+    try {
+      const response = await callApiWithParameters(
+        "api/generate_base_graph/",
+        bodyParameters,
+      );
+      console.log("Response from add_protein:", response);
+      if (!response.success) {
+        alert("Failed to add protein: " + response.message);
+        return;
+      } else {
+        // reset local storage
+        localStorage.removeItem(localStorageKeys.selectedIsoforms);
+        localStorage.removeItem(localStorageKeys.isoformColorMapping);
+
+        // force rerender
+        useGraphStore.setState({ shouldRerender: true });
+
+        // reset file dropdown
+        const names = await getFileNames(setFileNames);
+        // search in fileNames for newProteinName.graphml
+        const fileName = `${newFileName}.graphml`;
+        if (names.includes(fileName)) {
+          setSelectedFile(fileName);
+          localStorage.setItem(localStorageKeys.selectedFile, fileName);
+          setNewProteinName(""); // Reset new protein name input
+          localStorage.removeItem(localStorageKeys.newProteinName);
+        } else {
+          console.warn(`New protein file ${fileName} not found in fileNames.`);
+          setSelectedFile(""); // Reset if not found
+          localStorage.setItem(localStorageKeys.selectedFile, "");
+        }
+      }
+      // Optionally, refresh the file names or handle success
+    } catch (error) {
+      console.error("Error adding protein:", error);
+    } finally {
+      setIsAddLoading(false); // Stop loading
+    }
   };
 
   return (
-    <StyledSection>
+    <StyledSection
+      style={{ maxHeight: "75vh", overflowY: "scroll", marginBottom: 0 }}
+    >
       <StyledSectionTitle>Protein Selection</StyledSectionTitle>
 
       <div style={{ marginBottom: "16px" }}>
         <BoldStyledLabel>Select protein from recently used:</BoldStyledLabel>
         <FlexRow>
-          <StyledDropdown
+          <DropdownComponent
+            placeholder={"--- Select a file ---"}
             value={selectedFile}
-            onChange={(e) => {
-              setSelectedFile(e.target.value);
-            }}
+            setValue={setSelectedFile}
+            options={fileNames}
+          />
+          <SecondaryButton
+            onClick={handleRecentFileSubmit}
+            disabled={isLoadLoading}
           >
-            <option value="" disabled>
-              -- Select a file --
-            </option>
-            {fileNames.map((file) => (
-              <option key={file} value={file}>
-                {file}
-              </option>
-            ))}
-          </StyledDropdown>
-          <SecondaryButton onClick={handleRecentFileSubmit}>
-            Load
+            {isLoadLoading ? <CircularProgress size={20} /> : "Load"}{" "}
           </SecondaryButton>
         </FlexRow>
       </div>
 
+      {/* --- New protein configurations --- */}
       <div>
         <BoldStyledLabel>Add new protein:</BoldStyledLabel>
-        <FlexRow>
-          <StyledInputTextField
-            type="text"
-            placeholder="Enter protein name"
-            value={newProteinName}
-            onChange={(e) => setNewProteinName(e.target.value)}
-          />
-        </FlexRow>
+        <TextComponent
+          placeholder={"Enter a protein name"}
+          value={newProteinName}
+          setValue={setNewProteinName}
+        />
         <StyledLabel>Generate graph with:</StyledLabel>
         <MultiCompatibleCheckbox
-          label={"Variation"}
-          checked={shouldGenerateVariation}
-          onChange={(checked) => setShouldGenerateVariation(checked)}
+          label={"Variant"}
+          checked={shouldGenerateVariant}
+          onChange={(checked) => setShouldGenerateVariant(checked)}
         />
         <MultiCompatibleCheckbox
           label={"Mutagen"}
@@ -158,9 +225,96 @@ export const ProteinSelection = ({
           checked={shouldGenerateConflict}
           onChange={(checked) => setShouldGenerateConflict(checked)}
         />
+        <StyledLabel>If available, provide experiment background:</StyledLabel>
+        <div>
+          <FileUpload
+            title={"Upload Peptide File"}
+            acceptedFileTypes=".csv"
+            onChange={(filePath) => setPeptideFilePath(filePath)} // Store full path
+            tooltip={tooltips.peptideFile}
+            tooltipTitle={"Peptide File"}
+          />
+          {peptideFilePath !== "" && (
+            <>
+              <FileUpload
+                title={"Upload Metadata File"}
+                acceptedFileTypes=".csv"
+                onChange={(filePath) => setMetadataFilePath(filePath)} // Store full path
+                tooltip={tooltips.metadataFile}
+                tooltipTitle={"Metadata File"}
+              />
+              {metadataFilePath && (
+                <TextComponent
+                  placeholder={"Optional: Name of comparison column"}
+                  value={compareColumn}
+                  setValue={setCompareColumn}
+                  tooltipTitle={"Comparison column"}
+                  tooltip={tooltips.compareColumn}
+                />
+              )}
+            </>
+          )}
+        </div>
+        {peptideFilePath && (
+          <>
+            <MultiCompatibleCheckbox
+              label={`Include intensities from peptides file in graph`}
+              checked={hasIntensity}
+              onChange={(checked) => setHasIntensity(checked)}
+            />
+            <MultiCompatibleCheckbox
+              label={"Include count of peptides in graph"}
+              checked={shouldCountPeptides}
+              onChange={setShouldCountPeptides}
+            />
+            <MultiCompatibleCheckbox
+              label={"Merge completely overlapping peptides"}
+              checked={shouldMergePeptides}
+              onChange={(checked) => setShouldMergePeptides(checked)}
+              tooltip={tooltips.mergePeptides}
+              tooltipTitle={"Merge Peptides"}
+            />
+            <DropdownComponent
+              placeholder={"-- Select one of the methods below --"}
+              value={selectedOAggregation as string}
+              setValue={setSelectedOAggregation}
+              options={AggregationOptions}
+              label={
+                "How to handle overlapping different peptides with (different) intensities on one node/edge:"
+              }
+              tooltipTitle={"Overlapping intensities"}
+              tooltip={tooltips.OAggregation}
+            />
+            <DropdownComponent
+              placeholder={"-- Select one of the methods below --"}
+              value={selectedMAggregation as string}
+              setValue={setSelectedMAggregation}
+              options={AggregationOptions}
+              label={
+                "How to handle multiple instances of the same peptide with different intensities:"
+              }
+            />
+          </>
+        )}
 
-        <SecondaryButton style={{ width: "100%" }} onClick={handleAddProtein}>
-          Add
+        <TextComponent
+          placeholder={"Optional: Custom file name"}
+          value={newFileName}
+          setValue={setNewFileName}
+          tooltipTitle={"File Name"}
+          tooltip={tooltips.FileName}
+        />
+        <SecondaryButton
+          style={{
+            width: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+          onClick={handleAddProtein}
+          disabled={isAddLoading}
+        >
+          {isAddLoading ? <CircularProgress size={20} /> : "Add"}{" "}
         </SecondaryButton>
       </div>
     </StyledSection>

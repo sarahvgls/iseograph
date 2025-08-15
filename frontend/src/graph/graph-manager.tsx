@@ -50,6 +50,7 @@ const selector = (state: RFState) => ({
   isPeptideMenuFullSize: state.isPeptideMenuFullSize,
   isIsoformMenuFullSize: state.isIsoformMenuFullSize,
   glowMethod: state.glowMethod,
+  shouldRerender: state.shouldRerender,
 });
 
 // this places the node origin in the center of a node
@@ -87,6 +88,7 @@ const Flow = () => {
     isPeptideMenuFullSize,
     isIsoformMenuFullSize,
     glowMethod,
+    shouldRerender,
   } = useGraphStore(selector, shallow); // using shallow to make sure the component only re-renders when one of the values changes
   const [focusedNode, setFocusedNode] = useState<SequenceNodeProps>();
   const { focusNode, onFocusNextNode, onFocusPreviousNode } = useFocusHandlers(
@@ -94,7 +96,6 @@ const Flow = () => {
     setFocusedNode,
   );
   const [selectedFile, setSelectedFile] = useState<string>("");
-  const [selectedNewProtein, setSelectedNewProtein] = useState<string>("");
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
   const [isOnScreenMenuOpen, setIsOnScreenMenuOpen] = useState(true);
   const [isPeptideMonitorOpen, setIsPeptideMonitorOpen] = useState(false);
@@ -105,24 +106,21 @@ const Flow = () => {
     (nodeToBeFocused: SequenceNodeProps) => {
       const timer = setTimeout(() => {
         focusNode(nodeToBeFocused);
-      }, 500);
+      }, theme.delay.graphRerendering);
 
       return () => clearTimeout(timer);
     },
     [focusNode],
   );
 
+  useEffect(() => {
+    setIsInitializing(shouldRerender);
+  }, [shouldRerender]);
+
   // Initialize graph
   useEffect(() => {
     if (!isInitializing) return;
-    // Apply any localStorage values immediately
-    applyLocalStorageValues(setSelectedFile, setSelectedNewProtein);
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    if (!isInitializing) return;
+    applyLocalStorageValues(setSelectedFile);
 
     const nodes = useGraphStore.getState().nodes;
     const layoutMode = useGraphStore.getState().layoutMode;
@@ -156,6 +154,7 @@ const Flow = () => {
 
     setTimeout(() => {
       setIsInitializing(false);
+      store.setState({ shouldRerender: false });
     }, 1500);
   }, [isInitializing, focusNodeWithDelay, setLayoutMode, setNodeWidthMode]);
 
@@ -334,7 +333,6 @@ const Flow = () => {
         <SideMenu
           isOpen={isSideMenuOpen}
           previousSelectedFile={selectedFile}
-          previousSelectedNewProtein={selectedNewProtein}
           onClose={() => setIsSideMenuOpen(false)}
         />
       )}

@@ -27,7 +27,10 @@ const convertIntensities = (
   return intensities.map((intensity, index) => {
     return {
       source: intensitySources[index] || "unknown",
-      intensity: parseFloat(intensity) || -1, // default to -1 if parsing fails
+      intensity:
+        Number.isNaN(parseFloat(intensity)) || parseFloat(intensity) < 0
+          ? 0
+          : parseFloat(intensity),
     };
   });
 };
@@ -114,7 +117,8 @@ export const updateExtremes = (
         (item) => item.source === source,
       )?.intensity;
       if (value === undefined) {
-        throw new Error("Unexpected error while normalizing intensities.");
+        console.warn("No intensities provided for peptide " + entry.peptide);
+        return;
       }
 
       if (value < extremes[source].min) {

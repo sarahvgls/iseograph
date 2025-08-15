@@ -133,6 +133,10 @@ const TableCell = styled.td`
   padding: 4px;
   text-align: center;
   border-right: 1px solid #eee;
+  max-width: 50px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 
   &:last-child {
     border-right: none;

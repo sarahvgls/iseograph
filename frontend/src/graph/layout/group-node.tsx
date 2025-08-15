@@ -6,7 +6,6 @@ export class GroupNode {
   static style = {
     border: "none",
     backgroundColor: "transparent",
-    height: theme.rowNode.height,
     borderRadius: 0,
   };
 
@@ -15,13 +14,15 @@ export class GroupNode {
     rowCount: number,
     isReversed: boolean,
     rowWidth: number,
+    rowHeight: number = theme.rowNode.defaultHeight,
+    graphHeight: number,
   ): Node {
     return {
       id,
       type: "row",
       position: {
         x: 0,
-        y: theme.layout.snake.yOffsetBetweenRows * (rowCount - 1),
+        y: graphHeight + rowHeight / 2,
       },
       data: {
         label: `Row ${rowCount}`,
@@ -29,6 +30,7 @@ export class GroupNode {
       },
       style: {
         width: rowWidth * 1.1, // 10% padding
+        height: rowHeight,
         ...GroupNode.style,
       },
       draggable: false,

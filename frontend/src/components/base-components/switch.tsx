@@ -1,5 +1,8 @@
 import styled from "styled-components";
 import { SettingsBorder, StyledLabel } from "./base-components.tsx";
+import { useState } from "react";
+import { CircularProgress } from "@mui/material";
+import { theme } from "../../theme";
 
 const SwitchContainer = styled.div<{ isShy: boolean }>`
   background-color: #f8f9fa;
@@ -61,10 +64,29 @@ export const Switch = ({
   label?: string;
   options: string[];
   selected: string;
-  selectOption: (newOption: string) => void;
+  selectOption: (newOption: string) => void | Promise<void>;
   isShy?: boolean;
 }) => {
   const activeIndex = options.findIndex((option) => option === selected);
+  const [loadingOption, setLoadingOption] = useState<string | null>(null);
+
+  const handleOptionSelect = async (mode: string) => {
+    if (mode === selected || loadingOption) return;
+
+    setLoadingOption(mode);
+
+    setTimeout(async () => {
+      try {
+        const result = selectOption(mode);
+        if (result instanceof Promise) {
+          await result;
+        }
+      } finally {
+        setLoadingOption(null);
+      }
+    }, theme.delay.shortest); // Allow UI to update before executing selectOption
+  };
+
   return (
     <div>
       {isShy ? (
@@ -77,9 +99,13 @@ export const Switch = ({
                 <SwitchOption
                   key={mode}
                   isActive={selected === mode}
-                  onClick={() => selectOption(mode)}
+                  onClick={() => handleOptionSelect(mode)}
                 >
-                  {mode}
+                  {loadingOption === mode ? (
+                    <CircularProgress size={15} />
+                  ) : (
+                    mode
+                  )}
                 </SwitchOption>
               ))}
             </SwitchOptions>
@@ -94,9 +120,9 @@ export const Switch = ({
               <SwitchOption
                 key={mode}
                 isActive={selected === mode}
-                onClick={() => selectOption(mode)}
+                onClick={() => handleOptionSelect(mode)}
               >
-                {mode}
+                {loadingOption === mode ? <CircularProgress size={15} /> : mode}
               </SwitchOption>
             ))}
           </SwitchOptions>
