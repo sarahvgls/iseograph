@@ -123,7 +123,7 @@ const Flow = () => {
   // --- Initialization logic ---
   useEffect(() => {
     if (!isInitializing) return;
-    console.log("Initializing graph...");
+    applyLocalStorageValues(setSelectedFile);
     applyLocalStorageValues(setSelectedFile);
 
     const nodes = useGraphStore.getState().nodes;
