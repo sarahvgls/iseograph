@@ -4,7 +4,7 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 
 from django.http import JsonResponse
 
-from backend.consts import PROJECT_ROOT_DIR, TEST_MODE
+from backend.consts import PROJECT_ROOT_DIR, TEST_MODE, EVAL_MODE
 from scripts.convert_graphml_to_json import convert_graphml_to_json
 from django.middleware.csrf import get_token
 
