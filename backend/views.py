@@ -14,7 +14,13 @@ def get_available_file_names() -> list[str]:
     Returns a list of available files in the data directory.
     """
 
-    data_dir = PROJECT_ROOT_DIR / "test_data" if TEST_MODE else PROJECT_ROOT_DIR / "data"
+    if TEST_MODE:
+        data_dir = PROJECT_ROOT_DIR / "test_data"
+    elif EVAL_MODE:
+        data_dir = PROJECT_ROOT_DIR / "./../proteoform-graph-eval/generated/length_of_graph"
+    else:
+        data_dir = PROJECT_ROOT_DIR / "data"
+
     files = []
 
     if not os.path.exists(data_dir):
@@ -34,7 +40,13 @@ def run_conversion_script(file_name: str) -> None:
     if not file_name.endswith(".graphml"):
         raise ValueError("File must be a .graphml file")
 
-    input_file = os.path.join(PROJECT_ROOT_DIR / "test_data" if TEST_MODE else PROJECT_ROOT_DIR / "data", file_name)
+    if TEST_MODE:
+        data_dir = PROJECT_ROOT_DIR / "test_data"
+    elif EVAL_MODE:
+        data_dir = PROJECT_ROOT_DIR / "./../proteoform-graph-eval/generated/length_of_graph"
+    else:
+        data_dir = PROJECT_ROOT_DIR / "data"
+    input_file = os.path.join(data_dir, file_name)
     output_dir = PROJECT_ROOT_DIR / "generated"
 
     if not os.path.exists(input_file):
