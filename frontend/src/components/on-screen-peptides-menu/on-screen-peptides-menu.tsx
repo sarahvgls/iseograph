@@ -15,6 +15,7 @@ import {
 } from "../../theme/types.tsx";
 import { getColor } from "../../controls/peptides-color.tsx";
 import { useState } from "react";
+import { MultiCompatibleCheckbox } from "../base-components/checkbox.tsx";
 
 const MenuContainer = styled.div<{ isOpen: boolean }>`
   display: flex;
@@ -31,7 +32,7 @@ const MenuContainer = styled.div<{ isOpen: boolean }>`
 `;
 
 const PeptidesMenuContainer = styled.div`
-  width: 200px;
+  width: 250px;
   padding: 5px;
 `;
 
@@ -86,8 +87,12 @@ export const OnScreenPeptidesMenu = ({
     allIntensitySources,
     colorScale,
     setColorScale,
-    intensitySource,
-    setIntensitySource,
+    showDualScreen,
+    setShowDualScreen,
+    intensitySourceTop,
+    setIntensitySourceTop,
+    intensitySourceBottom,
+    setIntensitySourceBottom,
     intensityMethod,
     setIntensityMethod,
     glowMethod,
@@ -96,8 +101,12 @@ export const OnScreenPeptidesMenu = ({
     allIntensitySources: state.allIntensitySources,
     colorScale: state.colorScale,
     setColorScale: state.setColorScale,
-    intensitySource: state.intensitySource,
-    setIntensitySource: state.setIntensitySource,
+    showDualScreen: state.showDualScreen,
+    setShowDualScreen: state.setShowDualScreen,
+    intensitySourceTop: state.intensitySourceTop,
+    setIntensitySourceTop: state.setIntensitySourceTop,
+    intensitySourceBottom: state.intensitySourceBottom,
+    setIntensitySourceBottom: state.setIntensitySourceBottom,
     intensityMethod: state.intensityMethod,
     setIntensityMethod: state.setIntensityMethod,
     glowMethod: state.glowMethod,
@@ -254,6 +263,7 @@ export const OnScreenPeptidesMenu = ({
                   useGraphStore.setState({ isPeptideMenuFullSize: true });
                 } else {
                   useGraphStore.setState({ isPeptideMenuFullSize: false });
+                  setShowDualScreen(false);
                 }
               }}
             >
@@ -266,12 +276,12 @@ export const OnScreenPeptidesMenu = ({
             {glowMethod === glowMethods.intensity && (
               <div>
                 <BoldStyledLabel>
-                  Choose source for intensities:
+                  Choose top source for intensities:
                 </BoldStyledLabel>
                 <StyledSlimmDropdown
                   style={{ marginBottom: "10px" }}
-                  value={intensitySource}
-                  onChange={(e) => setIntensitySource(e.target.value)}
+                  value={intensitySourceTop}
+                  onChange={(e) => setIntensitySourceTop(e.target.value)}
                 >
                   {allIntensitySources.map((source) => (
                     <option key={source} value={source}>
@@ -279,10 +289,28 @@ export const OnScreenPeptidesMenu = ({
                     </option>
                   ))}
                 </StyledSlimmDropdown>
-              </div>
-            )}
-            {glowMethod === glowMethods.intensity && (
-              <div>
+                <MultiCompatibleCheckbox
+                  label={"Compare with second intensity"}
+                  checked={showDualScreen}
+                  onChange={(checked) => setShowDualScreen(checked)}
+                />
+                {showDualScreen && (
+                  <div>
+                    <BoldStyledLabel>
+                      Choose bottom source for intensities:
+                    </BoldStyledLabel>
+                    <StyledSlimmDropdown
+                      value={intensitySourceBottom}
+                      onChange={(e) => setIntensitySourceBottom(e.target.value)}
+                    >
+                      {allIntensitySources.map((source) => (
+                        <option key={source} value={source}>
+                          {source}
+                        </option>
+                      ))}
+                    </StyledSlimmDropdown>
+                  </div>
+                )}
                 <BoldStyledLabel>
                   Choose how to handle multiple peptides in one node:
                 </BoldStyledLabel>

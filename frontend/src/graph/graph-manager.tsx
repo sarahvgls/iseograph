@@ -14,7 +14,7 @@ import { shallow } from "zustand/vanilla/shallow";
 import SequenceNode from "../components/sequence-node/sequence-node.tsx";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { SequenceNodeProps } from "../components/sequence-node/sequence-node.props.tsx";
-import GraphControls from "./controls.tsx";
+import GraphControls from "../controls/graph-controls.tsx";
 import { useFocusHandlers } from "../controls/focus-node/focus-utils.ts";
 import { glowMethods, nodeTypes, nodeWidthModes } from "../theme/types.tsx";
 import { theme } from "../theme";
@@ -34,9 +34,16 @@ import { SettingsButton } from "../components/side-menu/settings-button.tsx";
 import { MiniMapContainer } from "../components/minimap/minimap-container.tsx";
 import { PeptideMonitor } from "../components/peptide-monitor/peptide-monitor.tsx";
 import { OnScreenPeptidesMenu } from "../components/on-screen-peptides-menu/on-screen-peptides-menu.tsx";
-import styled from "styled-components";
 import { applyLocalStorageValues } from "./generation-utils/apply-local-storage.tsx";
 import { ToggleMenuButton } from "../components/on-screen-menu/toggle-button.tsx";
+import { IntensitySourceProvider } from "../controls/intensity-source-context.tsx";
+import {
+  GraphContainer,
+  GraphLabel,
+  GraphSection,
+  MenuStackContainer,
+  OverlayContainer,
+} from "../components/base-components/graph-wrapper.tsx";
 
 const selector = (state: RFState) => ({
   nodes: state.nodes,
@@ -51,9 +58,11 @@ const selector = (state: RFState) => ({
   isIsoformMenuFullSize: state.isIsoformMenuFullSize,
   glowMethod: state.glowMethod,
   shouldRerender: state.shouldRerender,
+  intensitySourceTop: state.intensitySourceTop,
+  intensitySourceBottom: state.intensitySourceBottom,
+  isDualGraphMode: state.showDualScreen,
 });
 
-// this places the node origin in the center of a node
 const nodeOrigin: NodeOrigin = [0.5, 0.5];
 const myNodeTypes = {
   [nodeTypes.SequenceNode]: SequenceNode,
@@ -62,16 +71,6 @@ const myNodeTypes = {
 const edgeTypes = {
   arrow: ArrowEdge,
 };
-
-const MenuStackContainer = styled.div`
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  gap: 15px;
-`;
 
 const Flow = () => {
   const [isInitializing, setIsInitializing] = useState(true);
@@ -89,7 +88,11 @@ const Flow = () => {
     isIsoformMenuFullSize,
     glowMethod,
     shouldRerender,
-  } = useGraphStore(selector, shallow); // using shallow to make sure the component only re-renders when one of the values changes
+    intensitySourceTop,
+    intensitySourceBottom,
+    isDualGraphMode,
+  } = useGraphStore(selector, shallow);
+
   const [focusedNode, setFocusedNode] = useState<SequenceNodeProps>();
   const { focusNode, onFocusNextNode, onFocusPreviousNode } = useFocusHandlers(
     nodes,
@@ -117,9 +120,10 @@ const Flow = () => {
     setIsInitializing(shouldRerender);
   }, [shouldRerender]);
 
-  // Initialize graph
+  // --- Initialization logic ---
   useEffect(() => {
     if (!isInitializing) return;
+    applyLocalStorageValues(setSelectedFile);
     applyLocalStorageValues(setSelectedFile);
 
     const nodes = useGraphStore.getState().nodes;
@@ -150,13 +154,20 @@ const Flow = () => {
           focusNodeWithDelay(firstSequenceNode);
         }
       }
-    }, 500);
 
-    setTimeout(() => {
-      setIsInitializing(false);
-      store.setState({ shouldRerender: false });
-    }, 1500);
-  }, [isInitializing, focusNodeWithDelay, setLayoutMode, setNodeWidthMode]);
+      setTimeout(() => {
+        setIsInitializing(false);
+        store.setState({ shouldRerender: false });
+      }, 1000);
+    }, 500);
+  }, [
+    isInitializing,
+    focusNodeWithDelay,
+    setLayoutMode,
+    setNodeWidthMode,
+    intensitySourceTop,
+    intensitySourceBottom,
+  ]);
 
   const lastClickTimeRef = useRef<number>(0);
   const clickTimerRef = useRef<number | null>(null);
@@ -216,118 +227,167 @@ const Flow = () => {
     nodes: nodes.slice(0, 3),
   };
 
+  const renderGraph = (
+    intensitySource: string,
+    isTop: boolean,
+    label: string,
+  ) => (
+    <GraphSection isTop={isTop} isDualMode={isDualGraphMode}>
+      <GraphLabel isDualMode={true}>{label}</GraphLabel>
+      <IntensitySourceProvider
+        intensitySource={intensitySource}
+        isSecondaryGraph={!isTop}
+      >
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          nodeTypes={myNodeTypes}
+          edgeTypes={edgeTypes}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          nodeOrigin={nodeOrigin}
+          minZoom={0.05}
+          maxZoom={5}
+          zoomOnDoubleClick={false}
+          width={100}
+          onNodeClick={onNodeClick}
+          fitView
+          fitViewOptions={fitViewOptions}
+          nodesDraggable={allowInteraction}
+          nodesConnectable={false}
+          edgesReconnectable={false}
+        >
+          {theme.debugMode && <DevTools />}
+        </ReactFlow>
+      </IntensitySourceProvider>
+    </GraphSection>
+  );
+
   return (
     <>
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        nodeTypes={myNodeTypes}
-        edgeTypes={edgeTypes}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        nodeOrigin={nodeOrigin}
-        minZoom={0.05}
-        maxZoom={5}
-        zoomOnDoubleClick={false}
-        width={100}
-        onNodeClick={onNodeClick}
-        fitView
-        fitViewOptions={fitViewOptions}
-        nodesDraggable={allowInteraction}
-        nodesConnectable={false}
-        edgesReconnectable={false}
-      >
-        {theme.debugMode && <DevTools />}
-        <GraphControls
-          allowInteraction={allowInteraction}
-          onFocusNextNode={() => onFocusNextNode(focusedNode)}
-          onFocusPreviousNode={() => onFocusPreviousNode(focusedNode)}
-          onFocusCurrentNode={() => {
-            if (focusedNode) {
-              focusNode(focusedNode);
-            }
-          }}
-        />
-        <StyledPanel position="top-left">
-          Proteoform graph visualization with React Flow library
-          <PeptideMonitor
-            isOpen={isPeptideMonitorOpen}
-            setIsOpen={setIsPeptideMonitorOpen}
-          />
-        </StyledPanel>
-        <Panel position="top-right">
-          <ToggleMenuButton
-            onToggle={() => {
-              if (glowMethod === glowMethods.intensity) {
-                useGraphStore.setState({
-                  isPeptideMenuFullSize: !isOnScreenMenuOpen,
-                });
+      <GraphContainer>
+        {isDualGraphMode ? (
+          <>
+            {renderGraph(
+              intensitySourceTop,
+              true,
+              `Intensity source: ${intensitySourceTop}`,
+            )}
+            {renderGraph(
+              intensitySourceBottom,
+              false,
+              `Intensity source: ${intensitySourceBottom}`,
+            )}
+          </>
+        ) : (
+          renderGraph(
+            intensitySourceTop,
+            true,
+            glowMethod === glowMethods.intensity
+              ? `Intensity source: ${intensitySourceTop}`
+              : `Intensity highlighted by count of peptides`,
+          )
+        )}
+
+        {/* Overlay controls that apply to both graphs */}
+        <OverlayContainer>
+          <GraphControls
+            allowInteraction={allowInteraction}
+            onFocusNextNode={() => onFocusNextNode(focusedNode)}
+            onFocusPreviousNode={() => onFocusPreviousNode(focusedNode)}
+            onFocusCurrentNode={() => {
+              if (focusedNode) {
+                focusNode(focusedNode);
               }
             }}
-            setIsOpen={setIsOnScreenMenuOpen}
-            isOpen={isOnScreenMenuOpen}
-            icon={"pencil_brush"}
-            positionIndex={0}
-            isShifted={shouldShiftButtons}
           />
-          <ToggleMenuButton
-            setIsOpen={setIsMapOpen}
+          <StyledPanel position="top-left" style={{ pointerEvents: "auto" }}>
+            Proteoform graph visualization with React Flow library
+            <PeptideMonitor
+              isOpen={isPeptideMonitorOpen}
+              setIsOpen={setIsPeptideMonitorOpen}
+            />
+          </StyledPanel>
+          <Panel position="top-right" style={{ pointerEvents: "auto" }}>
+            <ToggleMenuButton
+              onToggle={() => {
+                if (glowMethod === glowMethods.intensity) {
+                  useGraphStore.setState({
+                    isPeptideMenuFullSize: !isOnScreenMenuOpen,
+                  });
+                }
+              }}
+              setIsOpen={setIsOnScreenMenuOpen}
+              isOpen={isOnScreenMenuOpen}
+              icon={"pencil_brush"}
+              positionIndex={0}
+              isShifted={shouldShiftButtons}
+            />
+            <ToggleMenuButton
+              setIsOpen={setIsMapOpen}
+              isOpen={isMapOpen}
+              icon={"map"}
+              positionIndex={1}
+              isShifted={shouldShiftButtons}
+            />
+            <SettingsButton
+              setIsSettingsOpen={setIsSideMenuOpen}
+              isShifted={shouldShiftButtons}
+            />
+          </Panel>
+          <MiniMapContainer
             isOpen={isMapOpen}
-            icon={"map"}
-            positionIndex={1}
-            isShifted={shouldShiftButtons}
-          />
-          <SettingsButton
-            setIsSettingsOpen={setIsSideMenuOpen}
-            isShifted={shouldShiftButtons}
-          />
-        </Panel>
-        <MiniMapContainer isOpen={isMapOpen}>
-          <button
-            style={{
-              border: "none",
-              position: "relative",
-              height: "30px",
-              left: 60,
-              bottom: 180,
-              zIndex: 110,
-            }}
-            onClick={() => {
-              setIsMapOpen(false);
-            }}
-          >{`<<`}</button>
-          <MiniMap
-            style={{
-              width: 350,
-              height: 200,
-              borderRadius: 10,
-              border: "1px solid #ccc",
-              boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
-              transform: "translate(10%, 0%)",
-            }}
-            nodeComponent={DirectionMiniMapNode}
-            maskColor={"rgba(240, 240, 240, 0.6)"}
-            nodeStrokeWidth={8}
-            zoomable
-            pannable
-            inversePan={false}
-            position={"bottom-left"}
-          />
-        </MiniMapContainer>
-        <StyledPanel position={"bottom-right"}>
-          <MenuStackContainer>
-            <OnScreenPeptidesMenu
-              isOpen={isOnScreenMenuOpen}
-              setIsOpen={setIsOnScreenMenuOpen}
+            style={{ pointerEvents: "auto" }}
+          >
+            <button
+              style={{
+                border: "none",
+                position: "relative",
+                height: "30px",
+                left: 60,
+                bottom: 180,
+                zIndex: 110,
+              }}
+              onClick={() => {
+                setIsMapOpen(false);
+              }}
+            >{`<<`}</button>
+            <MiniMap
+              style={{
+                width: 350,
+                height: 200,
+                borderRadius: 10,
+                border: "1px solid #ccc",
+                boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
+                transform: "translate(10%, 0%)",
+              }}
+              nodeComponent={DirectionMiniMapNode}
+              maskColor={"rgba(240, 240, 240, 0.6)"}
+              nodeStrokeWidth={8}
+              zoomable
+              pannable
+              inversePan={false}
+              position={"bottom-left"}
             />
-            <OnScreenMenu
-              isOpen={isOnScreenMenuOpen}
-              setIsOpen={setIsOnScreenMenuOpen}
-              focusNodeWithDelay={focusNodeWithDelay}
-            />
-          </MenuStackContainer>
-        </StyledPanel>
-      </ReactFlow>
+          </MiniMapContainer>
+          <StyledPanel
+            position={"bottom-right"}
+            style={{ pointerEvents: "auto" }}
+          >
+            <MenuStackContainer>
+              <OnScreenPeptidesMenu
+                isOpen={isOnScreenMenuOpen}
+                setIsOpen={setIsOnScreenMenuOpen}
+              />
+              <OnScreenMenu
+                isOpen={isOnScreenMenuOpen}
+                setIsOpen={setIsOnScreenMenuOpen}
+                focusNodeWithDelay={focusNodeWithDelay}
+              />
+            </MenuStackContainer>
+          </StyledPanel>
+        </OverlayContainer>
+      </GraphContainer>
 
       {isSideMenuOpen && (
         <SideMenu

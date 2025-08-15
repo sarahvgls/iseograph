@@ -11,6 +11,7 @@ import { shallow } from "zustand/shallow";
 import { theme } from "../../theme";
 import { labelVisibilities } from "../../theme/types.tsx";
 import { edgePeptideColor } from "../../controls/peptides-color.tsx";
+import { useIntensitySource } from "../../controls/intensity-source-context.tsx";
 
 export default function ArrowEdge({
   id,
@@ -34,6 +35,9 @@ export default function ArrowEdge({
     targetY,
     targetPosition,
   });
+
+  const { currentIntensitySource } = useIntensitySource();
+
   const {
     isoformColorMapping,
     selectedIsoforms,
@@ -44,8 +48,8 @@ export default function ArrowEdge({
     colorScale,
     glowMethod,
     intensityMethod,
-    intensitySource,
     getPeptides,
+    showDualScreen,
   } = useGraphStore(
     (state) => ({
       isoformColorMapping: state.isoformColorMapping,
@@ -57,8 +61,8 @@ export default function ArrowEdge({
       colorScale: state.colorScale,
       glowMethod: state.glowMethod,
       intensityMethod: state.intensityMethod,
-      intensitySource: state.intensitySource,
       getPeptides: state.getPeptidesForEdge,
+      showDualScreen: state.showDualScreen,
     }),
     shallow,
   );
@@ -101,7 +105,7 @@ export default function ArrowEdge({
           maxPeptides,
           extremes,
           intensityMethod,
-          intensitySource,
+          currentIntensitySource,
           peptideLog,
         ),
       }}
@@ -124,8 +128,10 @@ export default function ArrowEdge({
       <BaseEdge
         path={hoverPath}
         style={{
-          strokeWidth: 20,
-          stroke: "rgba(218,218,218,0.48)",
+          strokeWidth: showDualScreen ? 40 : 20,
+          stroke: showDualScreen
+            ? "rgba(100,100,100,0.3)"
+            : "rgba(218,218,218,0.48)",
         }}
         key={`${id}-hover`}
         id={id}
