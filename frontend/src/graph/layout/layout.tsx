@@ -4,48 +4,55 @@ import { layoutModes, nodeTypes, type NodeTypes } from "../../theme/types.tsx";
 import type { SequenceNodeProps } from "../../components/sequence-node/sequence-node.props.tsx";
 import { defaultValues, theme } from "../../theme";
 import { applySnakeLayout } from "./snake-layout.tsx";
-import {
-  getMaxWidthPerDirectSiblings,
-  sortNodesByPositionIndex,
-} from "./helper.tsx";
+import { applyLinearLayout } from "./linear-layout.tsx";
+
+function filterNodes(nodes: NodeTypes[]): SequenceNodeProps[] {
+  // remove groups and reset layouting properties
+  return nodes
+    .filter((node) => node.type === nodeTypes.SequenceNode)
+    .map((node) => ({
+      ...node,
+      parentId: undefined,
+      extent: undefined,
+      position: {
+        x: 0,
+        y: 0,
+      },
+      data: {
+        ...node.data,
+        positionIndex: 0,
+        intensityRank: 0,
+        isReversed: false, // Reset isReversed
+        nodeWidthMode: node.data.nodeWidthMode || defaultValues.nodeWidthMode,
+      },
+    })) as SequenceNodeProps[];
+}
 
 function assignPositionIndices(
   nodes: NodeTypes[],
   edges: Edge[],
-): [
-  Record<
-    string,
-    {
-      positionIndex: number;
-      nodes_at_next_position: string[]; // targets that have the following position index of the parent
-    }
-  >,
-  SequenceNodeProps[],
-] {
+): SequenceNodeProps[] {
   // Create a map to track the parent nodes and their children with correct index
   const sourceToTargets: Record<
     string,
     {
       positionIndex: number;
       all_targets: string[];
-      nodes_at_next_position: string[];
     }
   > = {};
 
-  // Initialization
+  // Initialization of data structure
   edges.forEach(({ source, target }) => {
     if (!sourceToTargets[source]) {
       sourceToTargets[source] = {
         positionIndex: -1,
         all_targets: [],
-        nodes_at_next_position: [],
       };
     }
     if (!sourceToTargets[target]) {
       sourceToTargets[target] = {
         positionIndex: -1,
         all_targets: [],
-        nodes_at_next_position: [],
       };
     }
     sourceToTargets[source].all_targets.push(target);
@@ -79,15 +86,6 @@ function assignPositionIndices(
     }
   }
 
-  // assign directly following targets
-  Object.entries(sourceToTargets).forEach(([source, targets]) => {
-    targets.nodes_at_next_position = Object.keys(sourceToTargets).filter(
-      (target) =>
-        sourceToTargets[target].positionIndex ===
-        sourceToTargets[source].positionIndex + 1,
-    );
-  });
-
   // assign positionIndices to nodes
   nodes.forEach((node) => {
     if (node.type === nodeTypes.SequenceNode) {
@@ -95,78 +93,43 @@ function assignPositionIndices(
     }
   });
 
-  return [sourceToTargets, nodes as SequenceNodeProps[]];
+  return nodes as SequenceNodeProps[];
 }
-
-const applyLinearLayout = (nodes: SequenceNodeProps[]): SequenceNodeProps[] => {
-  let previousPositionIndex = -1;
-  let graphWidth = 0;
-  let xPosition = 0;
-
-  const sortedNodes = sortNodesByPositionIndex(nodes);
-
-  return sortedNodes.map((node) => {
-    const width = getMaxWidthPerDirectSiblings(node.data.positionIndex, nodes);
-
-    if (node.data.positionIndex === previousPositionIndex) {
-      return {
-        ...node,
-        position: {
-          x: xPosition,
-          y: node.position.y,
-        },
-      };
-    }
-    // reset position count if position index changed
-    previousPositionIndex = node.data.positionIndex;
-    graphWidth += width + theme.layout.linear.xOffsetBetweenNodes;
-    xPosition = graphWidth - width / 2;
-
-    return {
-      ...node,
-      position: {
-        x: xPosition,
-        y: node.position.y,
-      },
-    };
-  });
-};
 
 function addSymmetricalOffsetForVariations(
   nodes: SequenceNodeProps[],
-  edges: Edge[],
-  sourceToTargets: Record<
-    string,
-    {
-      positionIndex: number;
-      nodes_at_next_position: string[]; // targets that have the following position index of the parent
-    }
-  >,
-): [SequenceNodeProps[], Edge[]] {
-  const alteredNodes = nodes.map((node) => {
-    const previous = Object.entries(sourceToTargets).find(([, targets]) =>
-      targets.nodes_at_next_position.includes(node.id),
-    );
-    if (!previous) return node;
+): SequenceNodeProps[] {
+  // Group nodes by positionIndex
+  const nodesByPosition: Record<number, SequenceNodeProps[]> = {};
 
-    const neighbors = previous[1].nodes_at_next_position;
-    // sort neighbors by peptide count
-    neighbors.sort((a, b) => {
-      const aNode = nodes.find((n) => n.id === a);
-      const bNode = nodes.find((n) => n.id === b);
-      if (!aNode || !bNode) return 0;
-      return (
-        (Number(bNode.data.peptideCount) || 0) -
-        (Number(aNode.data.peptideCount) || 0)
-      );
-    });
-    const intensityIndex = neighbors.indexOf(node.id);
-    const positionIndex = sourceToTargets[node.id].positionIndex;
+  nodes.forEach((node) => {
+    if (!nodesByPosition[node.data.positionIndex]) {
+      nodesByPosition[node.data.positionIndex] = [];
+    }
+    nodesByPosition[node.data.positionIndex].push(node);
+  });
+
+  // Sort each position group by peptide count (once per position)
+  Object.values(nodesByPosition).forEach((positionNodes) => {
+    positionNodes.sort(
+      (a, b) =>
+        (Number(b.data.peptideCount) || 0) - (Number(a.data.peptideCount) || 0),
+    );
+  });
+
+  // Apply positions to all nodes based on their rank in their position group
+  return nodes.map((node) => {
+    const positionNodes = nodesByPosition[node.data.positionIndex];
+
+    // If this is the only node at this position, no offset needed
+    if (positionNodes.length <= 1) return node;
+
+    const intensityRank = positionNodes.findIndex((n) => n.id === node.id);
     const spacing = theme.debugMode
       ? theme.offsets.debugYSpacingBetweenNodes
-      : theme.offsets.defaultYSpacingBetweenNodes; // vertical distance between variations
+      : theme.offsets.defaultYSpacingBetweenNodes;
 
-    const yOffset = (intensityIndex - (neighbors.length - 1) / 2) * spacing;
+    const yOffset = (intensityRank - (positionNodes.length - 1) / 2) * spacing;
 
     return {
       ...node,
@@ -176,12 +139,10 @@ function addSymmetricalOffsetForVariations(
       },
       data: {
         ...node.data,
-        positionIndex: positionIndex,
-        intensityRank: intensityIndex,
+        intensityRank,
       },
     };
   });
-  return [alteredNodes, edges];
 }
 
 export const applyLayout = (
@@ -189,53 +150,24 @@ export const applyLayout = (
   edges: Edge[],
   layoutMode: layoutModes,
   maxWidthPerRow: number,
-): Promise<[NodeTypes[], Edge[]]> => {
-  // remove groups and reset layouting properties
-  const filteredNodes: SequenceNodeProps[] = nodes
-    .filter((node) => node.type === nodeTypes.SequenceNode)
-    .map((node) => ({
-      ...node,
-      parentId: undefined,
-      extent: undefined,
-      position: {
-        x: 0,
-        y: 0,
-      },
-      data: {
-        ...node.data,
-        positionIndex: 0,
-        intensityRank: 0,
-        isReversed: false, // Reset isReversed
-        nodeWidthMode: node.data.nodeWidthMode || defaultValues.nodeWidthMode,
-      },
-    })) as SequenceNodeProps[];
+): Promise<NodeTypes[]> => {
+  const filteredNodes: SequenceNodeProps[] = filterNodes(nodes);
 
   return new Promise((resolve) => {
     // --- main layouting algorithm ---
-    const [sourceToTargets, positionedNodes] = assignPositionIndices(
-      filteredNodes,
-      edges,
-    );
+    const positionedNodes = assignPositionIndices(filteredNodes, edges);
 
-    const [layoutedNodes, layoutedEdges] = addSymmetricalOffsetForVariations(
-      positionedNodes,
-      edges,
-      sourceToTargets,
-    );
+    const layoutedNodes = addSymmetricalOffsetForVariations(positionedNodes);
 
     if (layoutMode === layoutModes.Basic) {
-      let linearNodes = applyLinearLayout(layoutedNodes as SequenceNodeProps[]);
+      let linearNodes = applyLinearLayout(layoutedNodes);
 
-      resolve([linearNodes, layoutedEdges]);
+      resolve(linearNodes);
       return;
     } else if (layoutMode === layoutModes.Snake) {
-      const [snakeNodes, snakeEdges] = applySnakeLayout(
-        layoutedNodes,
-        layoutedEdges,
-        maxWidthPerRow,
-      );
+      const snakeNodes = applySnakeLayout(layoutedNodes, maxWidthPerRow);
 
-      resolve([snakeNodes, snakeEdges]);
+      resolve(snakeNodes);
     }
   });
 };

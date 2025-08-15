@@ -1,4 +1,4 @@
-import { type Edge, type Node } from "@xyflow/react";
+import { type Node } from "@xyflow/react";
 import { defaultValues, theme } from "../../theme";
 import { type NodeTypes } from "../../theme/types.tsx";
 import type { SequenceNodeProps } from "../../components/sequence-node/sequence-node.props.tsx";
@@ -13,12 +13,11 @@ import {
 // - row width is determined values set in settings or defaultValues.rowWidth
 export const applySnakeLayout = (
   nodes: SequenceNodeProps[],
-  edges: Edge[],
   maxWidthPerRow: number = defaultValues.rowWidth,
-): [NodeTypes[], Edge[]] => {
+): NodeTypes[] => {
   // --- helper functions ---
   const createRowNode = (nodeWidth: number) => {
-    // create group node of finished row
+    // create grouping node for a finished row
     const heigthOfCurrentRow =
       maxNumberOfNeighbors * theme.rowNode.heightPerVariation;
     groupNodes.push(
@@ -59,7 +58,7 @@ export const applySnakeLayout = (
   nodes = sortNodesByPositionIndex(nodes);
 
   const layoutedNodes: SequenceNodeProps[] = nodes.map((node) => {
-    // No new calculation if node is a sibling to previous
+    // No new calculation if node is a neighbor to previous
     if (node.data.positionIndex === previousPositionIndex) {
       countNeighbors++;
       maxNumberOfNeighbors = Math.max(maxNumberOfNeighbors, countNeighbors);
@@ -83,7 +82,7 @@ export const applySnakeLayout = (
 
     // width in row is used as metric to determine if a new row is needed
     const nodeWidth = getMaxWidthPerDirectSiblings(
-      node.data.positionIndex as number,
+      node.data.positionIndex,
       nodes,
     );
     widthInCurrentRow += nodeWidth + theme.layout.snake.xOffsetBetweenNodes;
@@ -113,7 +112,7 @@ export const applySnakeLayout = (
     } as SequenceNodeProps;
   });
 
-  createRowNode(0); // finalize last row
+  createRowNode(0); // finalize last row, a mock-node of width 0 is used
 
   // iterate over all nodes and adjust y position by the height of their respective row
   layoutedNodes.forEach((node) => {
@@ -123,8 +122,6 @@ export const applySnakeLayout = (
     }
   });
 
-  // add group nodes to node collection
-  const allNodes: NodeTypes[] = [...groupNodes, ...layoutedNodes];
-
-  return [allNodes, edges];
+  // return both node types in a node collection
+  return [...groupNodes, ...layoutedNodes];
 };

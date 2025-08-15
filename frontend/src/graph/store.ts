@@ -156,16 +156,10 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
 
     const { nodes, edges, rowWidth } = get();
 
-    const [layoutedNodes, layoutedEdges] = await applyLayout(
-      nodes,
-      edges,
-      layoutMode,
-      rowWidth,
-    );
+    const layoutedNodes = await applyLayout(nodes, edges, layoutMode, rowWidth);
 
     set({
       nodes: layoutedNodes,
-      edges: layoutedEdges,
     });
   },
 
@@ -186,7 +180,7 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
     }));
     set({ nodes: alteredNodes });
 
-    const [layoutedNodes, layoutedEdges] = await applyLayout(
+    const layoutedNodes = await applyLayout(
       alteredNodes,
       edges,
       layoutMode,
@@ -195,7 +189,6 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
 
     set({
       nodes: layoutedNodes,
-      edges: layoutedEdges,
     });
   },
   setNodeWidthMode: (nodeId: string, mode: nodeWidthModes) => {
@@ -221,10 +214,9 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
         state.edges,
         state.layoutMode,
         state.rowWidth,
-      ).then(([layoutedNodes, layoutedEdges]) => {
+      ).then((layoutedNodes) => {
         set({
           nodes: layoutedNodes,
-          edges: layoutedEdges,
         });
       });
     } else {
@@ -234,10 +226,9 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
           state.edges,
           state.layoutMode,
           state.rowWidth,
-        ).then(([layoutedNodes, layoutedEdges]) => {
+        ).then((layoutedNodes) => {
           set({
             nodes: layoutedNodes,
-            edges: layoutedEdges,
           });
         });
       }, 100);

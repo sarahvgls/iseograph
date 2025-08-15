@@ -124,7 +124,6 @@ const Flow = () => {
   useEffect(() => {
     if (!isInitializing) return;
     applyLocalStorageValues(setSelectedFile);
-    applyLocalStorageValues(setSelectedFile);
 
     const nodes = useGraphStore.getState().nodes;
     const layoutMode = useGraphStore.getState().layoutMode;
