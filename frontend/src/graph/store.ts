@@ -32,6 +32,7 @@ import {
   createNodes,
   generateIsoformColorMatching,
 } from "./generation-utils/nodes-edges.tsx";
+import { assignPositionIndices } from "./layout/position-indices.tsx";
 
 export type RFState = {
   nodes: Node[];
@@ -125,15 +126,23 @@ const initialIsoformColorMapping = generateIsoformColorMatching(
   customEdges as ArrowEdgeProps[],
 );
 
+const positionedNodes = assignPositionIndices(customNodes, customEdges);
+const layoutedNodes = await applyLayout(
+  positionedNodes,
+  defaultValues.layoutMode,
+  defaultValues.rowWidth,
+);
+console.log(layoutedNodes);
+
 const deepCopiedNodes: SequenceNodeProps[] = JSON.parse(
-  JSON.stringify(customNodes),
+  JSON.stringify(layoutedNodes),
 );
 const deepCopiedEdges: ArrowEdgeProps[] = JSON.parse(
   JSON.stringify(customEdges),
 );
 
 const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
-  nodes: customNodes,
+  nodes: layoutedNodes,
   edges: customEdges,
   secondaryNodes: deepCopiedNodes,
   secondaryEdges: deepCopiedEdges,
@@ -154,9 +163,9 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
   setLayoutMode: async (layoutMode: layoutModes) => {
     set({ layoutMode });
 
-    const { nodes, edges, rowWidth } = get();
+    const { nodes, rowWidth } = get();
 
-    const layoutedNodes = await applyLayout(nodes, edges, layoutMode, rowWidth);
+    const layoutedNodes = await applyLayout(nodes, layoutMode, rowWidth);
 
     set({
       nodes: layoutedNodes,
@@ -168,7 +177,7 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
   setGlobalNodeWidthMode: async (nodeWidthMode: nodeWidthModes) => {
     set({ nodeWidthMode });
 
-    const { nodes, edges, layoutMode, rowWidth } = get();
+    const { nodes, layoutMode, rowWidth } = get();
 
     // create altered nodes to be available for the internal nodes
     const alteredNodes = nodes.map((node) => ({
@@ -180,12 +189,7 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
     }));
     set({ nodes: alteredNodes });
 
-    const layoutedNodes = await applyLayout(
-      alteredNodes,
-      edges,
-      layoutMode,
-      rowWidth,
-    );
+    const layoutedNodes = await applyLayout(alteredNodes, layoutMode, rowWidth);
 
     set({
       nodes: layoutedNodes,
@@ -209,28 +213,22 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
 
     // Reapply layout after changing the individual node width mode
     if (theme.node.delayedRerendering) {
-      applyLayout(
-        updatedNodes,
-        state.edges,
-        state.layoutMode,
-        state.rowWidth,
-      ).then((layoutedNodes) => {
-        set({
-          nodes: layoutedNodes,
-        });
-      });
-    } else {
-      setTimeout(() => {
-        applyLayout(
-          updatedNodes,
-          state.edges,
-          state.layoutMode,
-          state.rowWidth,
-        ).then((layoutedNodes) => {
+      applyLayout(updatedNodes, state.layoutMode, state.rowWidth).then(
+        (layoutedNodes) => {
           set({
             nodes: layoutedNodes,
           });
-        });
+        },
+      );
+    } else {
+      setTimeout(() => {
+        applyLayout(updatedNodes, state.layoutMode, state.rowWidth).then(
+          (layoutedNodes) => {
+            set({
+              nodes: layoutedNodes,
+            });
+          },
+        );
       }, 100);
     }
   },

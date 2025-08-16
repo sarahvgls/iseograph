@@ -7,6 +7,12 @@ import { applySnakeLayout } from "./snake-layout.tsx";
 import { applyLinearLayout } from "./linear-layout.tsx";
 
 function filterNodes(nodes: NodeTypes[]): SequenceNodeProps[] {
+  return nodes.filter(
+    (node) => node.type === nodeTypes.SequenceNode,
+  ) as SequenceNodeProps[];
+}
+
+function filterAndResetNodes(nodes: NodeTypes[]): SequenceNodeProps[] {
   // remove groups and reset layouting properties
   return nodes
     .filter((node) => node.type === nodeTypes.SequenceNode)
@@ -26,74 +32,6 @@ function filterNodes(nodes: NodeTypes[]): SequenceNodeProps[] {
         nodeWidthMode: node.data.nodeWidthMode || defaultValues.nodeWidthMode,
       },
     })) as SequenceNodeProps[];
-}
-
-function assignPositionIndices(
-  nodes: NodeTypes[],
-  edges: Edge[],
-): SequenceNodeProps[] {
-  // Create a map to track the parent nodes and their children with correct index
-  const sourceToTargets: Record<
-    string,
-    {
-      positionIndex: number;
-      all_targets: string[];
-    }
-  > = {};
-
-  // Initialization of data structure
-  edges.forEach(({ source, target }) => {
-    if (!sourceToTargets[source]) {
-      sourceToTargets[source] = {
-        positionIndex: -1,
-        all_targets: [],
-      };
-    }
-    if (!sourceToTargets[target]) {
-      sourceToTargets[target] = {
-        positionIndex: -1,
-        all_targets: [],
-      };
-    }
-    sourceToTargets[source].all_targets.push(target);
-  });
-
-  const firstSequenceNode = nodes.find(
-    (node) => node.type === nodeTypes.SequenceNode && node.id === "n0",
-  );
-  if (!firstSequenceNode) {
-    throw new Error("No sequence node found, layout not possible.");
-  }
-  let parentIdStack = [firstSequenceNode.id];
-  sourceToTargets[firstSequenceNode.id].positionIndex = 0;
-
-  // loop through all nodes and build correct positionIds
-  // all_targets is used as correct iterator
-  while (parentIdStack.length > 0) {
-    for (const parent of parentIdStack) {
-      //remove parent from stack
-      parentIdStack = parentIdStack.filter((id) => id !== parent);
-
-      const children = sourceToTargets[parent].all_targets;
-      if (children.length === 0) break;
-      for (const childId of children) {
-        sourceToTargets[childId].positionIndex =
-          sourceToTargets[parent].positionIndex + 1;
-        if (!parentIdStack.includes(childId)) {
-          parentIdStack.push(childId);
-        }
-      }
-    }
-  }
-
-  // assign positionIndices to nodes
-  nodes.forEach((node) => {
-    if (node.type === nodeTypes.SequenceNode) {
-      node.data.positionIndex = sourceToTargets[node.id]?.positionIndex ?? 0;
-    }
-  });
-
-  return nodes as SequenceNodeProps[];
 }
 
 function addSymmetricalOffsetForVariations(
@@ -147,27 +85,45 @@ function addSymmetricalOffsetForVariations(
 
 export const applyLayout = (
   nodes: NodeTypes[],
-  edges: Edge[],
   layoutMode: layoutModes,
   maxWidthPerRow: number,
 ): Promise<NodeTypes[]> => {
-  const filteredNodes: SequenceNodeProps[] = filterNodes(nodes);
+  console.log(`Applying initial layout: ${layoutMode}`);
+
+  const filteredNodes: SequenceNodeProps[] = filterAndResetNodes(nodes);
+  const layoutedNodes = addSymmetricalOffsetForVariations(filteredNodes);
 
   return new Promise((resolve) => {
-    // --- main layouting algorithm ---
-    const positionedNodes = assignPositionIndices(filteredNodes, edges);
-
-    const layoutedNodes = addSymmetricalOffsetForVariations(positionedNodes);
-
     if (layoutMode === layoutModes.Basic) {
-      let linearNodes = applyLinearLayout(layoutedNodes);
-
+      const linearNodes = applyLinearLayout(layoutedNodes);
       resolve(linearNodes);
       return;
     } else if (layoutMode === layoutModes.Snake) {
       const snakeNodes = applySnakeLayout(layoutedNodes, maxWidthPerRow);
-
       resolve(snakeNodes);
+      return;
+    } else {
+      throw new Error(`Unsupported layout mode: ${layoutMode}`);
     }
   });
 };
+
+// export const applyLayout = (
+//   nodes: NodeTypes[],
+//   layoutMode: layoutModes,
+//   maxWidthPerRow: number,
+// ): Promise<NodeTypes[]> => {
+//   console.log(`Applying layout: ${layoutMode}`);
+//   console.log("hier könnte ihr layout passieren");
+//
+//   // reset x and y positions
+//   const filteredNodes: SequenceNodeProps[] = filterNodes(nodes);
+//
+//   if (layoutMode === layoutModes.Basic) {
+//     return Promise.resolve(applyLinearLayout(filteredNodes));
+//   } else if (layoutMode === layoutModes.Snake) {
+//     return Promise.resolve(applySnakeLayout(filteredNodes, maxWidthPerRow));
+//   } else {
+//     return Promise.reject(new Error(`Unsupported layout mode: ${layoutMode}`));
+//   }
+// };
