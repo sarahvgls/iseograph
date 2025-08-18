@@ -31,7 +31,16 @@ function filterNodes(nodes: NodeTypes[]): SequenceNodeProps[] {
 function assignPositionIndices(
   nodes: NodeTypes[],
   edges: Edge[],
-): SequenceNodeProps[] {
+): [
+  SequenceNodeProps[],
+  Record<
+    string,
+    {
+      positionIndex: number;
+      all_targets: string[];
+    }
+  >,
+] {
   // Create a map to track the parent nodes and their children with correct index
   const sourceToTargets: Record<
     string,
@@ -93,7 +102,7 @@ function assignPositionIndices(
     }
   });
 
-  return nodes as SequenceNodeProps[];
+  return [nodes as SequenceNodeProps[], sourceToTargets];
 }
 
 function addSymmetricalOffsetForVariations(
@@ -155,17 +164,24 @@ export const applyLayout = (
 
   return new Promise((resolve) => {
     // --- main layouting algorithm ---
-    const positionedNodes = assignPositionIndices(filteredNodes, edges);
+    const [positionedNodes, sourceToTargets] = assignPositionIndices(
+      filteredNodes,
+      edges,
+    );
 
     const layoutedNodes = addSymmetricalOffsetForVariations(positionedNodes);
 
     if (layoutMode === layoutModes.Basic) {
-      let linearNodes = applyLinearLayout(layoutedNodes);
+      let linearNodes = applyLinearLayout(layoutedNodes, sourceToTargets);
 
       resolve(linearNodes);
       return;
     } else if (layoutMode === layoutModes.Snake) {
-      const snakeNodes = applySnakeLayout(layoutedNodes, maxWidthPerRow);
+      const snakeNodes = applySnakeLayout(
+        layoutedNodes,
+        maxWidthPerRow,
+        sourceToTargets,
+      );
 
       resolve(snakeNodes);
     }
