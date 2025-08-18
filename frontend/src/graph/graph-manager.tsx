@@ -263,6 +263,51 @@ const Flow = () => {
         </ReactFlow>
       </IntensitySourceProvider>
     </GraphSection>
+  // Memoize the renderGraph function with stable dependencies
+  const renderGraph = useCallback(
+    (intensitySource: string, isTop: boolean, label: string) => {
+      return (
+        <GraphSection isTop={isTop} isDualMode={isDualGraphMode}>
+          <GraphLabel isDualMode={true}>{label}</GraphLabel>
+          <IntensitySourceProvider
+            intensitySource={intensitySource}
+            isSecondaryGraph={!isTop}
+          >
+            <ReactFlow
+              nodes={nodes}
+              edges={edges}
+              nodeTypes={myNodeTypes}
+              edgeTypes={edgeTypes}
+              onNodesChange={onNodesChange}
+              onEdgesChange={onEdgesChange}
+              nodeOrigin={nodeOrigin}
+              minZoom={0.05}
+              maxZoom={5}
+              zoomOnDoubleClick={false}
+              width={100}
+              onNodeClick={handleNodeClick}
+              fitView
+              fitViewOptions={fitViewOptions}
+              nodesDraggable={allowInteraction}
+              nodesConnectable={false}
+              edgesReconnectable={false}
+            >
+              {theme.debugMode && <DevTools />}
+            </ReactFlow>
+          </IntensitySourceProvider>
+        </GraphSection>
+      );
+    },
+    [
+      nodes,
+      edges,
+      onNodesChange,
+      onEdgesChange,
+      handleNodeClick,
+      fitViewOptions,
+      allowInteraction,
+      isDualGraphMode,
+    ],
   );
 
   return (
@@ -290,6 +335,9 @@ const Flow = () => {
               : `Intensity highlighted by count of peptides`,
           )
         )}
+  useEffect(() => {
+    setTopGraphComponent(renderGraph(intensitySourceTop, true, topGraphLabel));
+  }, [intensitySourceTop, renderGraph, topGraphLabel]);
 
         {/* Overlay controls that apply to both graphs */}
         <OverlayContainer>
@@ -389,6 +437,140 @@ const Flow = () => {
             </MenuStackContainer>
           </StyledPanel>
         </OverlayContainer>
+  useEffect(() => {
+    setBottomGraphComponent(
+      renderGraph(intensitySourceBottom, false, bottomGraphLabel),
+    );
+  }, [intensitySourceBottom, renderGraph, topGraphLabel]);
+
+  // Memoize UI components that don't need to re-render with graph data
+  const overlayControls = useMemo(
+    () => (
+      <OverlayContainer>
+        <GraphControls
+          allowInteraction={allowInteraction}
+          onFocusNextNode={() => onFocusNextNode(focusedNode)}
+          onFocusPreviousNode={() => onFocusPreviousNode(focusedNode)}
+          onFocusCurrentNode={() => {
+            if (focusedNode) {
+              focusNode(focusedNode);
+            }
+          }}
+        />
+        <StyledPanel position="top-left" style={{ pointerEvents: "auto" }}>
+          Proteoform graph visualization with React Flow library
+          <PeptideMonitor
+            isOpen={isPeptideMonitorOpen}
+            setIsOpen={setIsPeptideMonitorOpen}
+          />
+        </StyledPanel>
+        <Panel position="top-right" style={{ pointerEvents: "auto" }}>
+          <ToggleMenuButton
+            onToggle={() => {
+              if (glowMethod === glowMethods.intensity) {
+                useGraphStore.setState({
+                  isPeptideMenuFullSize: !isOnScreenMenuOpen,
+                });
+              }
+            }}
+            setIsOpen={setIsOnScreenMenuOpen}
+            isOpen={isOnScreenMenuOpen}
+            icon={"pencil_brush"}
+            positionIndex={0}
+            isShifted={shouldShiftButtons}
+          />
+          <ToggleMenuButton
+            setIsOpen={setIsMapOpen}
+            isOpen={isMapOpen}
+            icon={"map"}
+            positionIndex={1}
+            isShifted={shouldShiftButtons}
+          />
+          <SettingsButton
+            setIsSettingsOpen={setIsSideMenuOpen}
+            isShifted={shouldShiftButtons}
+          />
+        </Panel>
+        <MiniMapContainer isOpen={isMapOpen} style={{ pointerEvents: "auto" }}>
+          <button
+            style={{
+              border: "none",
+              position: "relative",
+              height: "30px",
+              left: 60,
+              bottom: 180,
+              zIndex: 110,
+            }}
+            onClick={() => {
+              setIsMapOpen(false);
+            }}
+          >{`<<`}</button>
+          <MiniMap
+            style={{
+              width: 350,
+              height: 200,
+              borderRadius: 10,
+              border: "1px solid #ccc",
+              boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
+              transform: "translate(10%, 0%)",
+            }}
+            nodeComponent={DirectionMiniMapNode}
+            maskColor={"rgba(240, 240, 240, 0.6)"}
+            nodeStrokeWidth={8}
+            zoomable
+            pannable
+            inversePan={false}
+            position={"bottom-left"}
+          />
+        </MiniMapContainer>
+        <StyledPanel
+          position={"bottom-right"}
+          style={{ pointerEvents: "auto" }}
+        >
+          <MenuStackContainer>
+            <OnScreenPeptidesMenu
+              isOpen={isOnScreenMenuOpen}
+              setIsOpen={setIsOnScreenMenuOpen}
+            />
+            <OnScreenMenu
+              isOpen={isOnScreenMenuOpen}
+              setIsOpen={setIsOnScreenMenuOpen}
+              focusNodeWithDelay={focusNodeWithDelay}
+            />
+          </MenuStackContainer>
+        </StyledPanel>
+      </OverlayContainer>
+    ),
+    [
+      allowInteraction,
+      onFocusNextNode,
+      onFocusPreviousNode,
+      focusNode,
+      focusedNode,
+      isPeptideMonitorOpen,
+      setIsPeptideMonitorOpen,
+      isOnScreenMenuOpen,
+      isMapOpen,
+      shouldShiftButtons,
+      glowMethod,
+      focusNodeWithDelay,
+    ],
+  );
+
+  return (
+    <>
+      <GraphContainer>
+        {isDualGraphMode ? (
+          <>
+            {topGraphComponent}
+            {bottomGraphComponent}
+          </>
+        ) : (
+          topGraphComponent
+        )}
+
+        {/* Overlay controls that apply to both graphs */}
+        {overlayControls}
       </GraphContainer>
 
       {isSideMenuOpen && (

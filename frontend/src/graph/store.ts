@@ -185,8 +185,6 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
   // --- layouting ---
   layoutMode: defaultValues.layoutMode,
   setLayoutMode: async (layoutMode: layoutModes) => {
-    set({ layoutMode });
-
     const { nodes, edges, rowWidth, preparedNodes, sourceToTargets } = get();
 
     // Calculate position data if not already done
@@ -205,6 +203,7 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
 
     set({
       nodes: layoutedNodes,
+      layoutMode,
     });
   },
 
@@ -213,8 +212,6 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
   setGlobalNodeWidthModeAndApplyLayout: async (
     nodeWidthMode: nodeWidthModes,
   ) => {
-    set({ nodeWidthMode });
-
     const { nodes, edges, layoutMode, rowWidth } = get();
 
     // create altered nodes to be available for the internal nodes
@@ -243,10 +240,10 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
 
     set({
       nodes: layoutedNodes,
+      nodeWidthMode,
     });
   },
   setGlobalNodeWidthMode: (nodeWidthMode: nodeWidthModes) => {
-    set({ nodeWidthMode });
     const alteredNodes = get().nodes.map((node) => ({
       ...node,
       data: {
@@ -254,7 +251,7 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
         nodeWidthMode: nodeWidthMode,
       },
     }));
-    set({ nodes: alteredNodes });
+    set({ nodes: alteredNodes, nodeWidthMode });
   },
   setNodeWidthMode: (nodeId: string, mode: nodeWidthModes) => {
     const state = get();
@@ -270,7 +267,6 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
       }
       return node;
     });
-    set({ nodes: updatedNodes });
 
     // Calculate position data if not already done
     if (state.preparedNodes.length === 0) {
