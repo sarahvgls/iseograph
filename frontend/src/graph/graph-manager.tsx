@@ -93,6 +93,7 @@ const Flow = () => {
     isDualGraphMode,
   } = useGraphStore(selector, shallow);
 
+  const hasInitializedRef = useRef(false);
   const [focusedNode, setFocusedNode] = useState<SequenceNodeProps>();
   const { focusNode, onFocusNextNode, onFocusPreviousNode } = useFocusHandlers(
     nodes,
@@ -122,7 +123,9 @@ const Flow = () => {
 
   // --- Initialization logic ---
   useEffect(() => {
-    if (!isInitializing) return;
+    if (!isInitializing || hasInitializedRef.current) return;
+    hasInitializedRef.current = true;
+
     applyLocalStorageValues(setSelectedFile);
 
     const nodes = useGraphStore.getState().nodes;
@@ -140,8 +143,8 @@ const Flow = () => {
     }
 
     setTimeout(() => {
-      setLayoutMode(layoutMode);
       setNodeWidthMode(nodeWidthMode);
+      setLayoutMode(layoutMode);
 
       // Focus first node
       if (nodes.length > 0) {

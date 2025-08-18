@@ -1,12 +1,18 @@
 // ----- functions for layouting nodes and edges -----
 import { type Edge } from "@xyflow/react";
-import { layoutModes, nodeTypes, type NodeTypes } from "../../theme/types.tsx";
+import {
+  layoutModes,
+  nodeTypes,
+  type NodeTypes,
+  type nodeWidthModes,
+} from "../../theme/types.tsx";
 import type { SequenceNodeProps } from "../../components/sequence-node/sequence-node.props.tsx";
 import { defaultValues, theme } from "../../theme";
 import { applySnakeLayout } from "./snake-layout.tsx";
 import { applyLinearLayout } from "./linear-layout.tsx";
+import { type SourceToTargets } from "../store";
 
-function filterNodes(nodes: NodeTypes[]): SequenceNodeProps[] {
+export function filterNodes(nodes: NodeTypes[]): SequenceNodeProps[] {
   // remove groups and reset layouting properties
   return nodes
     .filter((node) => node.type === nodeTypes.SequenceNode)
@@ -28,27 +34,12 @@ function filterNodes(nodes: NodeTypes[]): SequenceNodeProps[] {
     })) as SequenceNodeProps[];
 }
 
-function assignPositionIndices(
+export function assignPositionIndices(
   nodes: NodeTypes[],
   edges: Edge[],
-): [
-  SequenceNodeProps[],
-  Record<
-    string,
-    {
-      positionIndex: number;
-      all_targets: string[];
-    }
-  >,
-] {
+): [SequenceNodeProps[], SourceToTargets] {
   // Create a map to track the parent nodes and their children with correct index
-  const sourceToTargets: Record<
-    string,
-    {
-      positionIndex: number;
-      all_targets: string[];
-    }
-  > = {};
+  const sourceToTargets: SourceToTargets = {};
 
   // Initialization of data structure
   edges.forEach(({ source, target }) => {
@@ -105,7 +96,7 @@ function assignPositionIndices(
   return [nodes as SequenceNodeProps[], sourceToTargets];
 }
 
-function addSymmetricalOffsetForVariations(
+export function addSymmetricalOffsetForVariations(
   nodes: SequenceNodeProps[],
 ): SequenceNodeProps[] {
   // Group nodes by positionIndex
@@ -159,30 +150,60 @@ export const applyLayout = (
   edges: Edge[],
   layoutMode: layoutModes,
   maxWidthPerRow: number,
+  cachedNodes?: SequenceNodeProps[],
+  cachedSourceToTargets?: SourceToTargets,
 ): Promise<NodeTypes[]> => {
-  const filteredNodes: SequenceNodeProps[] = filterNodes(nodes);
+  // Use cached data or calculate if not provided
+  let preparedNodes: SequenceNodeProps[];
+  let sourceToTargets: SourceToTargets;
 
-  return new Promise((resolve) => {
-    // --- main layouting algorithm ---
-    const [positionedNodes, sourceToTargets] = assignPositionIndices(
+  if (cachedNodes && cachedNodes.length > 0 && cachedSourceToTargets) {
+    // Use cached values but clone them to avoid mutation
+    preparedNodes = JSON.parse(JSON.stringify(cachedNodes));
+
+    // Update node width modes from current nodes
+    const nodeWidthModes: Record<string, string> = {};
+    nodes.forEach((node) => {
+      if (node.data?.nodeWidthMode) {
+        nodeWidthModes[node.id] = node.data.nodeWidthMode as nodeWidthModes;
+      }
+    });
+
+    // Apply current node width modes to filtered nodes
+    preparedNodes = preparedNodes.map(
+      (node) =>
+        ({
+          ...node,
+          data: {
+            ...node.data,
+            nodeWidthMode: nodeWidthModes[node.id] || node.data.nodeWidthMode,
+          },
+        }) as SequenceNodeProps,
+    );
+
+    sourceToTargets = cachedSourceToTargets;
+  } else {
+    // Fall back to calculating values if no cache is provided
+    const filteredNodes = filterNodes(nodes);
+    [preparedNodes, sourceToTargets] = assignPositionIndices(
       filteredNodes,
       edges,
     );
+    preparedNodes = addSymmetricalOffsetForVariations(preparedNodes);
+  }
 
-    const layoutedNodes = addSymmetricalOffsetForVariations(positionedNodes);
-
+  return new Promise((resolve) => {
+    // --- main layouting algorithm ---
     if (layoutMode === layoutModes.Basic) {
-      let linearNodes = applyLinearLayout(layoutedNodes, sourceToTargets);
-
+      let linearNodes = applyLinearLayout(preparedNodes, sourceToTargets);
       resolve(linearNodes);
       return;
     } else if (layoutMode === layoutModes.Snake) {
       const snakeNodes = applySnakeLayout(
-        layoutedNodes,
+        preparedNodes,
         maxWidthPerRow,
         sourceToTargets,
       );
-
       resolve(snakeNodes);
     }
   });
