@@ -59,23 +59,23 @@ export function assignPositionIndices(
   if (!firstSequenceNode) {
     throw new Error("No sequence node found, layout not possible.");
   }
-  let parentIdStack = [firstSequenceNode.id];
+  let parentIdQueue = [firstSequenceNode.id];
   sourceToTargets[firstSequenceNode.id].positionIndex = 0;
 
   // loop through all nodes and build correct positionIds
   // all_targets is used as correct iterator
-  while (parentIdStack.length > 0) {
-    for (const parent of parentIdStack) {
+  while (parentIdQueue.length > 0) {
+    for (const parent of parentIdQueue) {
       //remove parent from stack
-      parentIdStack = parentIdStack.filter((id) => id !== parent);
+      parentIdQueue = parentIdQueue.filter((id) => id !== parent);
 
       const children = sourceToTargets[parent].all_targets;
       if (children.length === 0) break;
       for (const childId of children) {
         sourceToTargets[childId].positionIndex =
           sourceToTargets[parent].positionIndex + 1;
-        if (!parentIdStack.includes(childId)) {
-          parentIdStack.push(childId);
+        if (!parentIdQueue.includes(childId)) {
+          parentIdQueue.push(childId);
         }
       }
     }
