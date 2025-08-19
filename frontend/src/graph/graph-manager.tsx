@@ -88,7 +88,6 @@ const edgeTypes = {
 };
 
 const Flow = memo(() => {
-
   const [isInitializing, setIsInitializing] = useState(true);
   const [hasNoData, setHasNoData] = useState(false);
   const { nodes, edges, onNodesChange, onEdgesChange } = useGraphStore(
@@ -127,7 +126,6 @@ const Flow = memo(() => {
     [],
   );
 
-  const hasInitializedRef = useRef(false);
   const [focusedNode, setFocusedNode] = useState<SequenceNodeProps>();
   const { focusNode, onFocusNextNode, onFocusPreviousNode } = useFocusHandlers(
     nodes,
@@ -173,8 +171,7 @@ const Flow = memo(() => {
 
   // --- Initialization logic ---
   useEffect(() => {
-    if (!isInitializing || hasInitializedRef.current) return;
-    hasInitializedRef.current = true;
+    if (!isInitializing) return;
 
     applyLocalStorageValues(setSelectedFile);
 
