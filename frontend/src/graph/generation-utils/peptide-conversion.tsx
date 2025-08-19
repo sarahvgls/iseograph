@@ -25,6 +25,9 @@ const convertIntensities = (
     .split(",")
     .map((item) => item.trim());
   return intensities.map((intensity, index) => {
+    if (intensity.toLowerCase() === "nan") {
+      intensity = "0"; // replace NaN with 0
+    }
     return {
       source: intensitySources[index] || "unknown",
       intensity:
