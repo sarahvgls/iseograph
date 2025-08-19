@@ -87,7 +87,6 @@ const edgeTypes = {
   arrow: ArrowEdge,
 };
 
-const Flow = () => {
 const Flow = memo(() => {
 
   const [isInitializing, setIsInitializing] = useState(true);
@@ -299,10 +298,6 @@ const Flow = memo(() => {
   // Memoize the renderGraph function with stable dependencies
   const renderGraph = useCallback(
     (intensitySource: string, isTop: boolean, label: string) => {
-      console.log(
-        `Rendering graph for intensity source: ${intensitySource}, isTop: ${isTop}, label: ${label}`,
-      );
-
       return (
         <GraphSection isTop={isTop} isDualMode={isDualGraphMode}>
           <GraphLabel isDualMode={true}>{label}</GraphLabel>
@@ -311,6 +306,7 @@ const Flow = memo(() => {
             isSecondaryGraph={!isTop}
           >
             <ReactFlow
+              debug={theme.debugMode}
               nodes={nodes}
               edges={edges}
               nodeTypes={myNodeTypes}
@@ -348,20 +344,18 @@ const Flow = memo(() => {
   );
 
   useEffect(() => {
-    console.log(
-      `Rendering top graph with intensity source: ${intensitySourceTop}`,
-    );
     setTopGraphComponent(renderGraph(intensitySourceTop, true, topGraphLabel));
   }, [intensitySourceTop, renderGraph, topGraphLabel]);
 
   useEffect(() => {
-    console.log(
-      `Rendering bottom graph with intensity source: ${intensitySourceBottom}`,
-    );
+    if (!isDualGraphMode) {
+      setBottomGraphComponent(null);
+      return;
+    }
     setBottomGraphComponent(
       renderGraph(intensitySourceBottom, false, bottomGraphLabel),
     );
-  }, [intensitySourceBottom, renderGraph, topGraphLabel]);
+  }, [intensitySourceBottom, renderGraph, topGraphLabel, isDualGraphMode]);
 
   // Memoize UI components that don't need to re-render with graph data
   const overlayControls = useMemo(

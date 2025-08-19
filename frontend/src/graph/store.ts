@@ -30,7 +30,7 @@ import {
   addSymmetricalOffsetForVariations,
   applyLayout,
   assignPositionIndices,
-  filterNodes,
+  filterAndResetNodes,
 } from "./layout";
 import type { ArrowEdgeProps } from "../components/arrow-edge/arrow-edge.props.tsx";
 import {
@@ -173,7 +173,7 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
 
   calculatePositionData: () => {
     const { nodes, edges } = get();
-    const filteredNodes = filterNodes(nodes as NodeTypes[]);
+    const filteredNodes = filterAndResetNodes(nodes as NodeTypes[]);
     const [assignedNodes, sourceToTargets] = assignPositionIndices(
       filteredNodes,
       edges,
@@ -212,9 +212,15 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
   setGlobalNodeWidthModeAndApplyLayout: async (
     nodeWidthMode: nodeWidthModes,
   ) => {
-    const { nodes, edges, layoutMode, rowWidth } = get();
+    const {
+      nodes,
+      edges,
+      layoutMode,
+      rowWidth,
+      sourceToTargets,
+      preparedNodes,
+    } = get();
 
-    // create altered nodes to be available for the internal nodes
     const alteredNodes = nodes.map((node) => ({
       ...node,
       data: {
@@ -222,10 +228,9 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
         nodeWidthMode: nodeWidthMode,
       },
     }));
-    set({ nodes: alteredNodes });
 
     // Calculate position data if not already done
-    if (get().preparedNodes.length === 0) {
+    if (preparedNodes.length === 0) {
       get().calculatePositionData();
     }
 
@@ -234,8 +239,8 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
       edges,
       layoutMode,
       rowWidth,
-      get().preparedNodes,
-      get().sourceToTargets,
+      preparedNodes,
+      sourceToTargets,
     );
 
     set({

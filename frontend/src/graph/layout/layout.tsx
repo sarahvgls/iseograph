@@ -1,18 +1,13 @@
 // ----- functions for layouting nodes and edges -----
 import { type Edge } from "@xyflow/react";
-import {
-  layoutModes,
-  nodeTypes,
-  type NodeTypes,
-  type nodeWidthModes,
-} from "../../theme/types.tsx";
+import { layoutModes, nodeTypes, type NodeTypes } from "../../theme/types.tsx";
 import type { SequenceNodeProps } from "../../components/sequence-node/sequence-node.props.tsx";
 import { defaultValues, theme } from "../../theme";
 import { applySnakeLayout } from "./snake-layout.tsx";
 import { applyLinearLayout } from "./linear-layout.tsx";
 import { type SourceToTargets } from "../store";
 
-export function filterNodes(nodes: NodeTypes[]): SequenceNodeProps[] {
+export function filterAndResetNodes(nodes: NodeTypes[]): SequenceNodeProps[] {
   // remove groups and reset layouting properties
   return nodes
     .filter((node) => node.type === nodeTypes.SequenceNode)
@@ -158,33 +153,33 @@ export const applyLayout = (
   let sourceToTargets: SourceToTargets;
 
   if (cachedNodes && cachedNodes.length > 0 && cachedSourceToTargets) {
-    // Use cached values but clone them to avoid mutation
-    preparedNodes = JSON.parse(JSON.stringify(cachedNodes));
-
-    // Update node width modes from current nodes
-    const nodeWidthModes: Record<string, string> = {};
-    nodes.forEach((node) => {
-      if (node.data?.nodeWidthMode) {
-        nodeWidthModes[node.id] = node.data.nodeWidthMode as nodeWidthModes;
-      }
-    });
-
-    // Apply current node width modes to filtered nodes
-    preparedNodes = preparedNodes.map(
-      (node) =>
-        ({
+    // apply relevant properties from cached nodes onto current nodes
+    nodes = nodes.map((node) => {
+      const cachedNode = cachedNodes.find((n) => n.id === node.id);
+      if (cachedNode) {
+        return {
           ...node,
           data: {
             ...node.data,
-            nodeWidthMode: nodeWidthModes[node.id] || node.data.nodeWidthMode,
+            positionIndex: cachedNode.data.positionIndex,
+            intensityRank: cachedNode.data.intensityRank,
           },
-        }) as SequenceNodeProps,
-    );
+          position: {
+            ...node.position,
+            y: cachedNode.position.y,
+          },
+        } as SequenceNodeProps;
+      }
+      return node as SequenceNodeProps;
+    });
 
+    preparedNodes = nodes.filter(
+      (node) => node.type === nodeTypes.SequenceNode,
+    ) as SequenceNodeProps[];
     sourceToTargets = cachedSourceToTargets;
   } else {
     // Fall back to calculating values if no cache is provided
-    const filteredNodes = filterNodes(nodes);
+    const filteredNodes = filterAndResetNodes(nodes);
     [preparedNodes, sourceToTargets] = assignPositionIndices(
       filteredNodes,
       edges,
