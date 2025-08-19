@@ -500,6 +500,6 @@ const Flow = memo(() => {
       <LoadingBackdrop isLoading={isInitializing} />
     </>
   );
-};
+});
 
 export default Flow;
