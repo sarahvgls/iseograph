@@ -19,4 +19,6 @@ export const tooltips = {
   FileName:
     "Optional, if not set, the file will be saved with the name of the protein." +
     "The file name with which it will be saved in /data. Example: enter 'P10636_cancer_research' will create a file named 'P10636_cancer_research.graphml' in /data. ",
+  substitue:
+    "Mass spectrometry cannot distinguish isoleucine (I) from leucine (L). Enable this option to substitute both with 'J' so they are treated as equivalent in peptide matching.",
 };

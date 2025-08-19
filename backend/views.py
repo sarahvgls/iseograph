@@ -195,6 +195,7 @@ def generate_base_graph(request):
     """
     API endpoint to generate a graph with this organizations fork of protgraph.
     """
+    # TODO implement new parameter "substitute" in data
     if request.method != "POST":
         return JsonResponse({"success": False, "message": "Invalid request method. Use POST."}, status=405)
     data = json.loads(request.body)

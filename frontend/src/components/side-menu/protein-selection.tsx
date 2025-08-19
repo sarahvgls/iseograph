@@ -79,6 +79,7 @@ export const ProteinSelection = ({
   const [compareColumn, setCompareColumn] = useState<string>("");
   const [hasIntensity, setHasIntensity] = useState<boolean>(true);
   const [shouldCountPeptides, setShouldCountPeptides] = useState<boolean>(true);
+  const [shouldSubstitue, setShouldSubstitue] = useState<boolean>(false);
   const [shouldMergePeptides, setShouldMergePeptides] =
     useState<boolean>(false);
 
@@ -122,6 +123,7 @@ export const ProteinSelection = ({
       }
       if (hasIntensity) bodyParameters.intensity = true;
       if (shouldCountPeptides) bodyParameters.count = true;
+      if (shouldSubstitue) bodyParameters.substitue = true;
       if (shouldMergePeptides) bodyParameters.merge_peptides = true;
       if (selectedOAggregation !== "None")
         bodyParameters.o_aggregation = selectedOAggregation;
@@ -266,6 +268,13 @@ export const ProteinSelection = ({
               label={"Include count of peptides in graph"}
               checked={shouldCountPeptides}
               onChange={setShouldCountPeptides}
+            />
+            <MultiCompatibleCheckbox
+              label={"Substitution of amino acids I and L with J."}
+              checked={shouldSubstitue}
+              onChange={setShouldSubstitue}
+              tooltip={tooltips.substitue}
+              tooltipTitle={"Substitute I and L"}
             />
             <MultiCompatibleCheckbox
               label={"Merge completely overlapping peptides"}
