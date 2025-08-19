@@ -5,8 +5,9 @@ import type { SequenceNodeProps } from "../../components/sequence-node/sequence-
 import { defaultValues, theme } from "../../theme";
 import { applySnakeLayout } from "./snake-layout.tsx";
 import { applyLinearLayout } from "./linear-layout.tsx";
+import { type SourceToTargets } from "../store";
 
-function filterNodes(nodes: NodeTypes[]): SequenceNodeProps[] {
+export function filterAndResetNodes(nodes: NodeTypes[]): SequenceNodeProps[] {
   // remove groups and reset layouting properties
   return nodes
     .filter((node) => node.type === nodeTypes.SequenceNode)
@@ -28,18 +29,12 @@ function filterNodes(nodes: NodeTypes[]): SequenceNodeProps[] {
     })) as SequenceNodeProps[];
 }
 
-function assignPositionIndices(
+export function assignPositionIndices(
   nodes: NodeTypes[],
   edges: Edge[],
-): SequenceNodeProps[] {
+): [SequenceNodeProps[], SourceToTargets] {
   // Create a map to track the parent nodes and their children with correct index
-  const sourceToTargets: Record<
-    string,
-    {
-      positionIndex: number;
-      all_targets: string[];
-    }
-  > = {};
+  const sourceToTargets: SourceToTargets = {};
 
   // Initialization of data structure
   edges.forEach(({ source, target }) => {
@@ -93,10 +88,10 @@ function assignPositionIndices(
     }
   });
 
-  return nodes as SequenceNodeProps[];
+  return [nodes as SequenceNodeProps[], sourceToTargets];
 }
 
-function addSymmetricalOffsetForVariations(
+export function addSymmetricalOffsetForVariations(
   nodes: SequenceNodeProps[],
 ): SequenceNodeProps[] {
   // Group nodes by positionIndex
@@ -150,23 +145,60 @@ export const applyLayout = (
   edges: Edge[],
   layoutMode: layoutModes,
   maxWidthPerRow: number,
+  cachedNodes?: SequenceNodeProps[],
+  cachedSourceToTargets?: SourceToTargets,
 ): Promise<NodeTypes[]> => {
-  const filteredNodes: SequenceNodeProps[] = filterNodes(nodes);
+  // Use cached data or calculate if not provided
+  let preparedNodes: SequenceNodeProps[];
+  let sourceToTargets: SourceToTargets;
+
+  if (cachedNodes && cachedNodes.length > 0 && cachedSourceToTargets) {
+    // apply relevant properties from cached nodes onto current nodes
+    nodes = nodes.map((node) => {
+      const cachedNode = cachedNodes.find((n) => n.id === node.id);
+      if (cachedNode) {
+        return {
+          ...node,
+          data: {
+            ...node.data,
+            positionIndex: cachedNode.data.positionIndex,
+            intensityRank: cachedNode.data.intensityRank,
+          },
+          position: {
+            ...node.position,
+            y: cachedNode.position.y,
+          },
+        } as SequenceNodeProps;
+      }
+      return node as SequenceNodeProps;
+    });
+
+    preparedNodes = nodes.filter(
+      (node) => node.type === nodeTypes.SequenceNode,
+    ) as SequenceNodeProps[];
+    sourceToTargets = cachedSourceToTargets;
+  } else {
+    // Fall back to calculating values if no cache is provided
+    const filteredNodes = filterAndResetNodes(nodes);
+    [preparedNodes, sourceToTargets] = assignPositionIndices(
+      filteredNodes,
+      edges,
+    );
+    preparedNodes = addSymmetricalOffsetForVariations(preparedNodes);
+  }
 
   return new Promise((resolve) => {
     // --- main layouting algorithm ---
-    const positionedNodes = assignPositionIndices(filteredNodes, edges);
-
-    const layoutedNodes = addSymmetricalOffsetForVariations(positionedNodes);
-
     if (layoutMode === layoutModes.Basic) {
-      let linearNodes = applyLinearLayout(layoutedNodes);
-
+      let linearNodes = applyLinearLayout(preparedNodes, sourceToTargets);
       resolve(linearNodes);
       return;
     } else if (layoutMode === layoutModes.Snake) {
-      const snakeNodes = applySnakeLayout(layoutedNodes, maxWidthPerRow);
-
+      const snakeNodes = applySnakeLayout(
+        preparedNodes,
+        maxWidthPerRow,
+        sourceToTargets,
+      );
       resolve(snakeNodes);
     }
   });

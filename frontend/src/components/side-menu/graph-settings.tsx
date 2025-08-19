@@ -18,7 +18,7 @@ import { useEffect, useState } from "react";
 
 const selector = (state: RFState) => ({
   nodeWidthMode: state.nodeWidthMode,
-  setNodeWidthMode: state.setGlobalNodeWidthMode,
+  setNodeWidthMode: state.setGlobalNodeWidthModeAndApplyLayout,
   layoutMode: state.layoutMode,
   setLayoutMode: state.setLayoutMode,
   isoformColorMapping: state.isoformColorMapping,

@@ -23,15 +23,29 @@ import {
   type layoutModes,
   localStorageKeys,
   nodeWidthModes,
+  type NodeTypes,
   type PeptideLog,
 } from "../theme/types.tsx";
-import { applyLayout } from "./layout";
+import {
+  addSymmetricalOffsetForVariations,
+  applyLayout,
+  assignPositionIndices,
+  filterAndResetNodes,
+} from "./layout";
 import type { ArrowEdgeProps } from "../components/arrow-edge/arrow-edge.props.tsx";
 import {
   createEdges,
   createNodes,
   generateIsoformColorMatching,
 } from "./generation-utils/nodes-edges.tsx";
+
+export type SourceToTargets = Record<
+  string,
+  {
+    positionIndex: number;
+    all_targets: string[];
+  }
+>;
 
 export type RFState = {
   nodes: Node[];
@@ -42,6 +56,7 @@ export type RFState = {
   secondaryEdges: Edge[];
   shouldRerender: boolean;
   nodeWidthMode: nodeWidthModes;
+  setGlobalNodeWidthModeAndApplyLayout: (nodeWidthMode: nodeWidthModes) => void;
   setGlobalNodeWidthMode: (nodeWidthMode: nodeWidthModes) => void;
   layoutMode: layoutModes;
   setLayoutMode: (layoutMode: layoutModes) => void;
@@ -52,6 +67,10 @@ export type RFState = {
   setClickedNode: (nodeId: string | null) => void;
   isIsoformMenuFullSize: boolean;
   isPeptideMenuFullSize: boolean;
+
+  preparedNodes: SequenceNodeProps[];
+  sourceToTargets: SourceToTargets;
+  calculatePositionData: () => void;
 
   isoformColorMapping: Record<string, string>;
   selectedIsoforms: string[];
@@ -149,28 +168,59 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
   },
   shouldRerender: true,
 
+  preparedNodes: [],
+  sourceToTargets: {},
+
+  calculatePositionData: () => {
+    const { nodes, edges } = get();
+    const filteredNodes = filterAndResetNodes(nodes as NodeTypes[]);
+    const [assignedNodes, sourceToTargets] = assignPositionIndices(
+      filteredNodes,
+      edges,
+    );
+    const yOffsetNodes = addSymmetricalOffsetForVariations(assignedNodes);
+    set({ preparedNodes: yOffsetNodes, sourceToTargets });
+  },
+
   // --- layouting ---
   layoutMode: defaultValues.layoutMode,
   setLayoutMode: async (layoutMode: layoutModes) => {
-    set({ layoutMode });
+    const { nodes, edges, rowWidth, preparedNodes, sourceToTargets } = get();
 
-    const { nodes, edges, rowWidth } = get();
+    // Calculate position data if not already done
+    if (preparedNodes.length === 0) {
+      get().calculatePositionData();
+    }
 
-    const layoutedNodes = await applyLayout(nodes, edges, layoutMode, rowWidth);
+    const layoutedNodes = await applyLayout(
+      nodes,
+      edges,
+      layoutMode,
+      rowWidth,
+      preparedNodes,
+      sourceToTargets,
+    );
 
     set({
       nodes: layoutedNodes,
+      layoutMode,
     });
   },
 
   // --- width of nodes ---
   nodeWidthMode: defaultValues.nodeWidthMode,
-  setGlobalNodeWidthMode: async (nodeWidthMode: nodeWidthModes) => {
-    set({ nodeWidthMode });
+  setGlobalNodeWidthModeAndApplyLayout: async (
+    nodeWidthMode: nodeWidthModes,
+  ) => {
+    const {
+      nodes,
+      edges,
+      layoutMode,
+      rowWidth,
+      sourceToTargets,
+      preparedNodes,
+    } = get();
 
-    const { nodes, edges, layoutMode, rowWidth } = get();
-
-    // create altered nodes to be available for the internal nodes
     const alteredNodes = nodes.map((node) => ({
       ...node,
       data: {
@@ -178,18 +228,35 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
         nodeWidthMode: nodeWidthMode,
       },
     }));
-    set({ nodes: alteredNodes });
+
+    // Calculate position data if not already done
+    if (preparedNodes.length === 0) {
+      get().calculatePositionData();
+    }
 
     const layoutedNodes = await applyLayout(
       alteredNodes,
       edges,
       layoutMode,
       rowWidth,
+      preparedNodes,
+      sourceToTargets,
     );
 
     set({
       nodes: layoutedNodes,
+      nodeWidthMode,
     });
+  },
+  setGlobalNodeWidthMode: (nodeWidthMode: nodeWidthModes) => {
+    const alteredNodes = get().nodes.map((node) => ({
+      ...node,
+      data: {
+        ...node.data,
+        nodeWidthMode: nodeWidthMode,
+      },
+    }));
+    set({ nodes: alteredNodes, nodeWidthMode });
   },
   setNodeWidthMode: (nodeId: string, mode: nodeWidthModes) => {
     const state = get();
@@ -205,7 +272,11 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
       }
       return node;
     });
-    set({ nodes: updatedNodes });
+
+    // Calculate position data if not already done
+    if (state.preparedNodes.length === 0) {
+      get().calculatePositionData();
+    }
 
     // Reapply layout after changing the individual node width mode
     if (theme.node.delayedRerendering) {
@@ -214,6 +285,8 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
         state.edges,
         state.layoutMode,
         state.rowWidth,
+        state.preparedNodes,
+        state.sourceToTargets,
       ).then((layoutedNodes) => {
         set({
           nodes: layoutedNodes,
@@ -226,6 +299,8 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
           state.edges,
           state.layoutMode,
           state.rowWidth,
+          state.preparedNodes,
+          state.sourceToTargets,
         ).then((layoutedNodes) => {
           set({
             nodes: layoutedNodes,

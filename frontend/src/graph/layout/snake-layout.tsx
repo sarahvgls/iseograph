@@ -7,6 +7,7 @@ import {
   getMaxWidthPerDirectSiblings,
   sortNodesByPositionIndex,
 } from "./helper.tsx";
+import { shiftNodesOfOverlappingEdges } from "./linear-layout.tsx";
 
 // Function that aligns nodes in a snake-like layout on the screen
 // - expects nodes to have correct node.data.positionIndex attributes
@@ -14,12 +15,39 @@ import {
 export const applySnakeLayout = (
   nodes: SequenceNodeProps[],
   maxWidthPerRow: number = defaultValues.rowWidth,
+  sourceToTargets: Record<
+    string,
+    { positionIndex: number; all_targets: string[] }
+  > = {},
 ): NodeTypes[] => {
   // --- helper functions ---
-  const createRowNode = (nodeWidth: number) => {
+  const createRowNode = (
+    nodeWidth: number = 0,
+    positionIndex: number = Infinity,
+  ) => {
+    // adjust offets of last row
+    const nodesInLastRow = nodes.filter(
+      (node) =>
+        node.data.positionIndex >= firstPositionIndexInRow &&
+        node.data.positionIndex < positionIndex,
+    );
+
+    const yOffsetByShifting = shiftNodesOfOverlappingEdges(
+      nodesInLastRow,
+      sourceToTargets,
+    );
+    // apply y values of nodesInLastRow to layoutedNodes
+    nodesInLastRow.forEach((node) => {
+      const layoutedNode = nodes.find((n) => n.id === node.id);
+      if (layoutedNode) {
+        layoutedNode.position.y = node.position.y;
+      }
+    });
+
     // create grouping node for a finished row
     const heigthOfCurrentRow =
-      maxNumberOfNeighbors * theme.rowNode.heightPerVariation;
+      maxNumberOfNeighbors * theme.rowNode.heightPerVariation +
+      yOffsetByShifting;
     groupNodes.push(
       GroupNode.create(
         rowId,
@@ -38,6 +66,7 @@ export const applySnakeLayout = (
     rowId = `group-${rowCount}`;
     heightOfAllRows += heigthOfCurrentRow;
     maxNumberOfNeighbors = 1;
+    firstPositionIndexInRow = positionIndex;
   };
 
   // --- constants and initializations ---
@@ -50,6 +79,7 @@ export const applySnakeLayout = (
   let isCurrentRowReversed = false; // var to reverse nodes in every second row
   let rowCount = 1;
   let rowId = "group-1"; // id of the current row, used for parentId of nodes
+  let firstPositionIndexInRow = 0;
 
   // Rows are represented by group nodes
   const groupNodes: Node[] = [];
@@ -57,24 +87,22 @@ export const applySnakeLayout = (
   // --- main layouting logic ---
   nodes = sortNodesByPositionIndex(nodes);
 
-  const layoutedNodes: SequenceNodeProps[] = nodes.map((node) => {
+  nodes.forEach((node) => {
     // No new calculation if node is a neighbor to previous
     if (node.data.positionIndex === previousPositionIndex) {
       countNeighbors++;
       maxNumberOfNeighbors = Math.max(maxNumberOfNeighbors, countNeighbors);
-      return {
-        ...node,
-        position: {
-          x: xPosition,
-          y: node.position.y,
-        },
-        data: {
-          ...node.data,
-          isReversed: isCurrentRowReversed,
-        },
-        parentId: rowId,
-        extent: "parent",
-      } as SequenceNodeProps;
+      node.position = {
+        x: xPosition,
+        y: node.position.y,
+      };
+      node.data = {
+        ...node.data,
+        isReversed: isCurrentRowReversed,
+      };
+      node.parentId = rowId;
+      node.extent = "parent";
+      return;
     }
 
     previousPositionIndex = node.data.positionIndex as number;
@@ -89,7 +117,7 @@ export const applySnakeLayout = (
 
     // --- new row ---
     if (widthInCurrentRow > maxWidthPerRow) {
-      createRowNode(nodeWidth);
+      createRowNode(nodeWidth, node.data.positionIndex as number);
     }
 
     // calculate x position
@@ -97,25 +125,22 @@ export const applySnakeLayout = (
       ? maxWidthPerRow - widthInCurrentRow + nodeWidth / 2
       : widthInCurrentRow - nodeWidth / 2;
 
-    return {
-      ...node,
-      position: {
-        x: xPosition,
-        y: node.position.y,
-      },
-      parentId: rowId,
-      extent: "parent",
-      data: {
-        ...node.data,
-        isReversed: isCurrentRowReversed,
-      },
-    } as SequenceNodeProps;
+    node.position = {
+      x: xPosition,
+      y: node.position.y,
+    };
+    node.parentId = rowId;
+    node.extent = "parent";
+    node.data = {
+      ...node.data,
+      isReversed: isCurrentRowReversed,
+    };
   });
 
-  createRowNode(0); // finalize last row, a mock-node of width 0 is used
+  createRowNode(); // finalize last row
 
   // iterate over all nodes and adjust y position by the height of their respective row
-  layoutedNodes.forEach((node) => {
+  nodes.forEach((node) => {
     const groupNode = groupNodes.find((g) => g.id === node.parentId);
     if (groupNode) {
       node.position.y += (groupNode.style!.height as number) / 2;
@@ -123,5 +148,5 @@ export const applySnakeLayout = (
   });
 
   // return both node types in a node collection
-  return [...groupNodes, ...layoutedNodes];
+  return [...groupNodes, ...nodes];
 };
