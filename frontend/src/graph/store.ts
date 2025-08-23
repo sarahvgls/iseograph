@@ -52,8 +52,6 @@ export type RFState = {
   edges: Edge[];
   onNodesChange: OnNodesChange;
   onEdgesChange: OnEdgesChange;
-  secondaryNodes: Node[];
-  secondaryEdges: Edge[];
   shouldRerender: boolean;
   nodeWidthMode: nodeWidthModes;
   setGlobalNodeWidthModeAndApplyLayout: (nodeWidthMode: nodeWidthModes) => void;
@@ -144,18 +142,9 @@ const initialIsoformColorMapping = generateIsoformColorMatching(
   customEdges as ArrowEdgeProps[],
 );
 
-const deepCopiedNodes: SequenceNodeProps[] = JSON.parse(
-  JSON.stringify(customNodes),
-);
-const deepCopiedEdges: ArrowEdgeProps[] = JSON.parse(
-  JSON.stringify(customEdges),
-);
-
 const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
   nodes: customNodes,
   edges: customEdges,
-  secondaryNodes: deepCopiedNodes,
-  secondaryEdges: deepCopiedEdges,
   onNodesChange: (changes: NodeChange[]) => {
     set({
       nodes: applyNodeChanges(changes, get().nodes),

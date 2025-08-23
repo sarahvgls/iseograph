@@ -47,6 +47,7 @@ def convert_graphml_to_json(input_file, output_dir):
             "id": f"e{source}-{target}",
             "source": str(source),
             "target": str(target),
+            "type": "arrow",
             "data": {
                 "isoformString": data.get("isoforms", ""),
                 "generic": data.get("generic", ""),
