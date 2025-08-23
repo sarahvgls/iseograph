@@ -47,9 +47,7 @@ export const applySnakeLayout = (
     // create grouping node for a finished row
     const heigthOfCurrentRow =
       maxNumberOfNeighbors * theme.rowNode.heightPerVariation +
-      yOffsetByShifting;
-    groupNodes.push(
-      GroupNode.create(
+      2 * yOffsetByShifting;
     rowNodes.push(
       RowNode.create(
         rowId,
@@ -124,7 +122,7 @@ export const applySnakeLayout = (
 
     // calculate x position
     xPosition = isCurrentRowReversed
-      ? maxWidthPerRow - widthInCurrentRow + nodeWidth / 2
+      ? maxWidthPerRow - (widthInCurrentRow - nodeWidth / 2)
       : widthInCurrentRow - nodeWidth / 2;
 
     node.position = {
