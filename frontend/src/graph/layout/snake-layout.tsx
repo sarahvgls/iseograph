@@ -2,9 +2,9 @@ import { type Node } from "@xyflow/react";
 import { defaultValues, theme } from "../../theme";
 import { type NodeTypes } from "../../theme/types.tsx";
 import type { SequenceNodeProps } from "../../components/sequence-node/sequence-node.props.tsx";
-import { GroupNode } from "./group-node.tsx";
+import { RowNode } from "./row-node.tsx";
 import {
-  getMaxWidthPerDirectSiblings,
+  getMaxWidthPerPositionIndex,
   sortNodesByPositionIndex,
 } from "./helper.tsx";
 import { shiftNodesOfOverlappingEdges } from "./linear-layout.tsx";
@@ -50,6 +50,8 @@ export const applySnakeLayout = (
       yOffsetByShifting;
     groupNodes.push(
       GroupNode.create(
+    rowNodes.push(
+      RowNode.create(
         rowId,
         rowCount,
         isCurrentRowReversed,
@@ -63,7 +65,7 @@ export const applySnakeLayout = (
     isCurrentRowReversed = !isCurrentRowReversed;
     widthInCurrentRow = nodeWidth + theme.layout.snake.xOffsetBetweenNodes; // reset to current node width
     rowCount++;
-    rowId = `group-${rowCount}`;
+    rowId = `row-${rowCount}`;
     heightOfAllRows += heigthOfCurrentRow;
     maxNumberOfNeighbors = 1;
     firstPositionIndexInRow = positionIndex;
@@ -78,11 +80,11 @@ export const applySnakeLayout = (
   let xPosition = 0; // var to calculate the x position of the current node and make it available to siblings as well
   let isCurrentRowReversed = false; // var to reverse nodes in every second row
   let rowCount = 1;
-  let rowId = "group-1"; // id of the current row, used for parentId of nodes
+  let rowId = "row-1"; // id of the current row, used for parentId of nodes
   let firstPositionIndexInRow = 0;
 
-  // Rows are represented by group nodes
-  const groupNodes: Node[] = [];
+  // Rows are represented by rowNodes
+  const rowNodes: Node[] = [];
 
   // --- main layouting logic ---
   nodes = sortNodesByPositionIndex(nodes);
@@ -109,7 +111,7 @@ export const applySnakeLayout = (
     countNeighbors = 1; // reset neighbor count for new positionIndex
 
     // width in row is used as metric to determine if a new row is needed
-    const nodeWidth = getMaxWidthPerDirectSiblings(
+    const nodeWidth = getMaxWidthPerPositionIndex(
       node.data.positionIndex,
       nodes,
     );
@@ -141,12 +143,12 @@ export const applySnakeLayout = (
 
   // iterate over all nodes and adjust y position by the height of their respective row
   nodes.forEach((node) => {
-    const groupNode = groupNodes.find((g) => g.id === node.parentId);
-    if (groupNode) {
-      node.position.y += (groupNode.style!.height as number) / 2;
+    const row = rowNodes.find((g) => g.id === node.parentId);
+    if (row) {
+      node.position.y += (row.style!.height as number) / 2;
     }
   });
 
   // return both node types in a node collection
-  return [...groupNodes, ...nodes];
+  return [...rowNodes, ...nodes];
 };

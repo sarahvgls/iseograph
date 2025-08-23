@@ -1,8 +1,8 @@
-// Class to encapsulate group node creation logic and constants
+// Class to encapsulate row node creation logic and constants
 import { theme } from "../../theme";
 import { type Node } from "@xyflow/react";
 
-export class GroupNode {
+export class RowNode {
   static style = {
     border: "none",
     backgroundColor: "transparent",
@@ -31,7 +31,7 @@ export class GroupNode {
       style: {
         width: rowWidth * 1.1, // 10% padding
         height: rowHeight,
-        ...GroupNode.style,
+        ...RowNode.style,
       },
       draggable: false,
     };

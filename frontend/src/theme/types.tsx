@@ -5,7 +5,7 @@ import type { Node } from "@xyflow/react";
 export type NodeTypes = SequenceNodeProps | Node;
 
 export const nodeTypes = {
-  SequenceNode: "custom",
+  SequenceNode: "sequence",
   RowNode: "row",
 } as const;
 

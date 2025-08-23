@@ -1,6 +1,6 @@
 import type { SequenceNodeProps } from "../../components/sequence-node/sequence-node.props.tsx";
 import {
-  getMaxWidthPerDirectSiblings,
+  getMaxWidthPerPositionIndex,
   sortNodesByPositionIndex,
 } from "./helper.tsx";
 import { theme } from "../../theme";
@@ -20,11 +20,6 @@ export const applyLinearLayout = (
   const sortedNodes = sortNodesByPositionIndex(nodes);
 
   const linearNodes = sortedNodes.map((node) => {
-    const nodeWidth = getMaxWidthPerDirectSiblings(
-      node.data.positionIndex,
-      nodes,
-    );
-
     if (node.data.positionIndex === previousPositionIndex) {
       return {
         ...node,
@@ -35,6 +30,12 @@ export const applyLinearLayout = (
         },
       };
     }
+
+    const nodeWidth = getMaxWidthPerPositionIndex(
+      node.data.positionIndex,
+      nodes,
+    );
+
     // reset position count if position index changed
     previousPositionIndex = node.data.positionIndex;
     graphWidth += nodeWidth + theme.layout.linear.xOffsetBetweenNodes;

@@ -35,7 +35,7 @@ export const sortNodesByPositionIndex = (nodes: SequenceNodeProps[]) => {
   });
 };
 
-export const getMaxWidthPerDirectSiblings = (
+export const getMaxWidthPerPositionIndex = (
   positionIndex: number,
   nodes: SequenceNodeProps[],
 ): number => {

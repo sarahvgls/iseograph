@@ -24,7 +24,7 @@ def convert_graphml_to_json(input_file, output_dir):
     nodes = [
         {
             "id": node[0],
-            "type": "custom",
+            "type": "sequence",
             "data": {"sequence": node[1]["aminoacid"],
                      "peptidesString": node[1].get("peptides", ""),
                      "intensitiesString": node[1].get("intensity", ""),

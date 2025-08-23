@@ -194,15 +194,15 @@ export default function ArrowEdge({
     isoforms.map((isoform, index) => {
       if (index === centerIndex) return; // Skip the center isoform for correct order of rendering
       const color = isoformColorMapping[isoform] || "#000";
-      const offset = index - (isoforms.length - 1) / 2;
+      const offsetRank = index - (isoforms.length - 1) / 2;
       const offsetDistance = (style.strokeWidth as number) || 2; // Distance between parallel lines in pixels
 
       // Calculate perpendicular offset
       const dx = targetX - sourceX;
       const dy = targetY - sourceY;
       const length = Math.sqrt(dx * dx + dy * dy);
-      const offsetX = (-dy / length) * offset * offsetDistance;
-      const offsetY = (dx / length) * offset * offsetDistance;
+      const offsetX = (-dy / length) * offsetRank * offsetDistance;
+      const offsetY = (dx / length) * offsetRank * offsetDistance;
 
       // Get path with offset
       const [offsetPath] = getBezierPath({
