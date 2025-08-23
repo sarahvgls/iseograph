@@ -23,9 +23,15 @@ import {
   type layoutModes,
   localStorageKeys,
   nodeWidthModes,
+  type NodeTypes,
   type PeptideLog,
 } from "../theme/types.tsx";
-import { applyLayout } from "./layout";
+import {
+  addSymmetricalOffsetForVariations,
+  applyLayout,
+  assignPositionIndices,
+  filterAndResetNodes,
+} from "./layout";
 import type { ArrowEdgeProps } from "../components/arrow-edge/arrow-edge.props.tsx";
 import {
   createEdges,
@@ -33,12 +39,22 @@ import {
   generateIsoformColorMatching,
 } from "./generation-utils/nodes-edges.tsx";
 
+export type SourceToTargets = Record<
+  string,
+  {
+    positionIndex: number;
+    all_targets: string[];
+  }
+>;
+
 export type RFState = {
   nodes: Node[];
   edges: Edge[];
   onNodesChange: OnNodesChange;
   onEdgesChange: OnEdgesChange;
+  shouldRerender: boolean;
   nodeWidthMode: nodeWidthModes;
+  setGlobalNodeWidthModeAndApplyLayout: (nodeWidthMode: nodeWidthModes) => void;
   setGlobalNodeWidthMode: (nodeWidthMode: nodeWidthModes) => void;
   layoutMode: layoutModes;
   setLayoutMode: (layoutMode: layoutModes) => void;
@@ -49,6 +65,10 @@ export type RFState = {
   setClickedNode: (nodeId: string | null) => void;
   isIsoformMenuFullSize: boolean;
   isPeptideMenuFullSize: boolean;
+
+  preparedNodes: SequenceNodeProps[];
+  sourceToTargets: SourceToTargets;
+  calculatePositionData: () => void;
 
   isoformColorMapping: Record<string, string>;
   selectedIsoforms: string[];
@@ -72,6 +92,12 @@ export type RFState = {
   setIntensityMethod: (intensityMethod: string) => void;
   intensitySource: string;
   setIntensitySource: (intensitySource: string) => void;
+  showDualScreen: boolean;
+  setShowDualScreen: (showDualScreen: boolean) => void;
+  intensitySourceTop: string;
+  setIntensitySourceTop: (intensitySource: string) => void;
+  intensitySourceBottom: string;
+  setIntensitySourceBottom: (intensitySource: string) => void;
 
   isAnimated: boolean;
   setIsAnimated: (isAnimated: boolean) => void;
@@ -129,35 +155,61 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
       edges: applyEdgeChanges(changes, get().edges),
     });
   },
+  shouldRerender: true,
+
+  preparedNodes: [],
+  sourceToTargets: {},
+
+  calculatePositionData: () => {
+    const { nodes, edges } = get();
+    const filteredNodes = filterAndResetNodes(nodes as NodeTypes[]);
+    const [assignedNodes, sourceToTargets] = assignPositionIndices(
+      filteredNodes,
+      edges,
+    );
+    const yOffsetNodes = addSymmetricalOffsetForVariations(assignedNodes);
+    set({ preparedNodes: yOffsetNodes, sourceToTargets });
+  },
 
   // --- layouting ---
   layoutMode: defaultValues.layoutMode,
   setLayoutMode: async (layoutMode: layoutModes) => {
-    set({ layoutMode });
+    const { nodes, edges, rowWidth, preparedNodes, sourceToTargets } = get();
 
-    const { nodes, edges, rowWidth } = get();
+    // Calculate position data if not already done
+    if (preparedNodes.length === 0) {
+      get().calculatePositionData();
+    }
 
-    const [layoutedNodes, layoutedEdges] = await applyLayout(
+    const layoutedNodes = await applyLayout(
       nodes,
       edges,
       layoutMode,
       rowWidth,
+      preparedNodes,
+      sourceToTargets,
     );
 
     set({
       nodes: layoutedNodes,
-      edges: layoutedEdges,
+      layoutMode,
     });
   },
 
   // --- width of nodes ---
   nodeWidthMode: defaultValues.nodeWidthMode,
-  setGlobalNodeWidthMode: async (nodeWidthMode: nodeWidthModes) => {
-    set({ nodeWidthMode });
+  setGlobalNodeWidthModeAndApplyLayout: async (
+    nodeWidthMode: nodeWidthModes,
+  ) => {
+    const {
+      nodes,
+      edges,
+      layoutMode,
+      rowWidth,
+      sourceToTargets,
+      preparedNodes,
+    } = get();
 
-    const { nodes, edges, layoutMode, rowWidth } = get();
-
-    // create altered nodes to be available for the internal nodes
     const alteredNodes = nodes.map((node) => ({
       ...node,
       data: {
@@ -165,19 +217,35 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
         nodeWidthMode: nodeWidthMode,
       },
     }));
-    set({ nodes: alteredNodes });
 
-    const [layoutedNodes, layoutedEdges] = await applyLayout(
+    // Calculate position data if not already done
+    if (preparedNodes.length === 0) {
+      get().calculatePositionData();
+    }
+
+    const layoutedNodes = await applyLayout(
       alteredNodes,
       edges,
       layoutMode,
       rowWidth,
+      preparedNodes,
+      sourceToTargets,
     );
 
     set({
       nodes: layoutedNodes,
-      edges: layoutedEdges,
+      nodeWidthMode,
     });
+  },
+  setGlobalNodeWidthMode: (nodeWidthMode: nodeWidthModes) => {
+    const alteredNodes = get().nodes.map((node) => ({
+      ...node,
+      data: {
+        ...node.data,
+        nodeWidthMode: nodeWidthMode,
+      },
+    }));
+    set({ nodes: alteredNodes, nodeWidthMode });
   },
   setNodeWidthMode: (nodeId: string, mode: nodeWidthModes) => {
     const state = get();
@@ -193,7 +261,11 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
       }
       return node;
     });
-    set({ nodes: updatedNodes });
+
+    // Calculate position data if not already done
+    if (state.preparedNodes.length === 0) {
+      get().calculatePositionData();
+    }
 
     // Reapply layout after changing the individual node width mode
     if (theme.node.delayedRerendering) {
@@ -202,10 +274,11 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
         state.edges,
         state.layoutMode,
         state.rowWidth,
-      ).then(([layoutedNodes, layoutedEdges]) => {
+        state.preparedNodes,
+        state.sourceToTargets,
+      ).then((layoutedNodes) => {
         set({
           nodes: layoutedNodes,
-          edges: layoutedEdges,
         });
       });
     } else {
@@ -215,10 +288,11 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
           state.edges,
           state.layoutMode,
           state.rowWidth,
-        ).then(([layoutedNodes, layoutedEdges]) => {
+          state.preparedNodes,
+          state.sourceToTargets,
+        ).then((layoutedNodes) => {
           set({
             nodes: layoutedNodes,
-            edges: layoutedEdges,
           });
         });
       }, 100);
@@ -298,7 +372,18 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
     set({ intensitySource });
     localStorage.setItem(localStorageKeys.intensitySource, intensitySource);
   },
-
+  showDualScreen: false,
+  setShowDualScreen: (showDualScreen: boolean) => {
+    set({ showDualScreen });
+  },
+  intensitySourceTop: intensitySources[0] || "",
+  setIntensitySourceTop: (intensitySource: string) => {
+    set({ intensitySourceTop: intensitySource });
+  },
+  intensitySourceBottom: intensitySources[1] || intensitySources[0] || "",
+  setIntensitySourceBottom: (intensitySource: string) => {
+    set({ intensitySourceBottom: intensitySource });
+  },
   // --- settings variables ---
   isAnimated: defaultValues.isAnimated,
   setIsAnimated: (isAnimated: boolean) => {

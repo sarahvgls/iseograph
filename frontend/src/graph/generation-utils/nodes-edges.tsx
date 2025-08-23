@@ -46,7 +46,7 @@ export const createNodes = (
   string[],
   Record<string, PeptideLog>,
 ] => {
-  const startNode = nodes.find((node) => node.data.sequence === "__start__");
+  const startNode = nodes.find((node) => node.id === "n0");
   const intensitySources = convertStringToList(
     startNode?.data.intensitiesString || "",
   );

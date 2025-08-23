@@ -103,11 +103,16 @@ export const theme = {
     delayedRerendering: false, // if true, on node click the size of the node changes but the rerendering of the snake graph is delayed,
     // meaning only applied when the next node is clicked for the last one
   },
+  delay: {
+    graphRerendering: 500,
+    shortest: 10,
+  },
   rowNode: {
-    height: 300,
+    defaultHeight: 400,
+    heightPerVariation: 100, // height of each variation in a row
   },
   offsets: {
-    defaultYSpacingBetweenNodes: 100, // vertical distance between variations
+    defaultYSpacingBetweenNodes: 85, // vertical distance between variations
     debugYSpacingBetweenNodes: 500,
   },
   layout: {
@@ -115,15 +120,15 @@ export const theme = {
       xOffsetBetweenNodes: 100,
     },
     snake: {
-      yOffsetBetweenRows: 300,
-      xOffsetBetweenNodes: 150,
+      yOffsetBetweenRows: 100,
+      xOffsetBetweenNodes: 100,
     },
   },
   edgeGlow: {
     defaultMethod: glowMethods.count,
     defaultColorScale: ColorScaleOptions.disabled,
     defaultMultiplePeptidesMethod: intensityMethods.median,
-    edgeOpacity: 0.07,
+    edgeOpacity: 0.1,
     nodeOpacity: 0.5,
   },
   colors: [

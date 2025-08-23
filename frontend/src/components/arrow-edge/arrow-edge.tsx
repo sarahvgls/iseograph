@@ -11,6 +11,7 @@ import { shallow } from "zustand/shallow";
 import { theme } from "../../theme";
 import { labelVisibilities } from "../../theme/types.tsx";
 import { edgePeptideColor } from "../../controls/peptides-color.tsx";
+import { useIntensitySource } from "../../controls/intensity-source-context.tsx";
 
 export default function ArrowEdge({
   id,
@@ -34,6 +35,9 @@ export default function ArrowEdge({
     targetY,
     targetPosition,
   });
+
+  const { currentIntensitySource } = useIntensitySource();
+
   const {
     isoformColorMapping,
     selectedIsoforms,
@@ -44,8 +48,8 @@ export default function ArrowEdge({
     colorScale,
     glowMethod,
     intensityMethod,
-    intensitySource,
     getPeptides,
+    showDualScreen,
   } = useGraphStore(
     (state) => ({
       isoformColorMapping: state.isoformColorMapping,
@@ -57,8 +61,8 @@ export default function ArrowEdge({
       colorScale: state.colorScale,
       glowMethod: state.glowMethod,
       intensityMethod: state.intensityMethod,
-      intensitySource: state.intensitySource,
       getPeptides: state.getPeptidesForEdge,
+      showDualScreen: state.showDualScreen,
     }),
     shallow,
   );
@@ -101,7 +105,7 @@ export default function ArrowEdge({
           maxPeptides,
           extremes,
           intensityMethod,
-          intensitySource,
+          currentIntensitySource,
           peptideLog,
         ),
       }}
@@ -124,8 +128,10 @@ export default function ArrowEdge({
       <BaseEdge
         path={hoverPath}
         style={{
-          strokeWidth: 20,
-          stroke: "rgba(218,218,218,0.48)",
+          strokeWidth: showDualScreen ? 40 : 20,
+          stroke: showDualScreen
+            ? "rgba(100,100,100,0.3)"
+            : "rgba(218,218,218,0.48)",
         }}
         key={`${id}-hover`}
         id={id}
@@ -188,15 +194,15 @@ export default function ArrowEdge({
     isoforms.map((isoform, index) => {
       if (index === centerIndex) return; // Skip the center isoform for correct order of rendering
       const color = isoformColorMapping[isoform] || "#000";
-      const offset = index - (isoforms.length - 1) / 2;
+      const offsetRank = index - (isoforms.length - 1) / 2;
       const offsetDistance = (style.strokeWidth as number) || 2; // Distance between parallel lines in pixels
 
       // Calculate perpendicular offset
       const dx = targetX - sourceX;
       const dy = targetY - sourceY;
       const length = Math.sqrt(dx * dx + dy * dy);
-      const offsetX = (-dy / length) * offset * offsetDistance;
-      const offsetY = (dx / length) * offset * offsetDistance;
+      const offsetX = (-dy / length) * offsetRank * offsetDistance;
+      const offsetY = (dx / length) * offsetRank * offsetDistance;
 
       // Get path with offset
       const [offsetPath] = getBezierPath({

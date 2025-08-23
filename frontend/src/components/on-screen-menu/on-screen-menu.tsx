@@ -85,7 +85,7 @@ export const OnScreenMenu = ({
       layoutMode: state.layoutMode,
       setLayoutMode: state.setLayoutMode,
       nodeWidthMode: state.nodeWidthMode,
-      setNodeWidthMode: state.setGlobalNodeWidthMode,
+      setNodeWidthMode: state.setGlobalNodeWidthModeAndApplyLayout,
     }),
     shallow,
   );

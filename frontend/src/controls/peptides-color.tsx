@@ -74,7 +74,7 @@ const colorByIntensity = (
     maxValue = extremes.normalizedMean;
   }
 
-  return getColor(value, maxValue, colorScale, opacity);
+  return getColor(value, maxValue > 0 ? maxValue : 1, colorScale, opacity);
 };
 
 export const calculatedPeptideColor = (
