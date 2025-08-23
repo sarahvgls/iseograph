@@ -88,7 +88,7 @@ export const shiftNodesOfOverlappingEdges = (
     if (
       sourceNode &&
       targetNode &&
-      sourceNode.data.intensityRank === targetNode.data.intensityRank
+      sourceNode.position.y === targetNode.position.y
     ) {
       const inBetweenNodes = sortedNodes.filter(
         (node) =>
