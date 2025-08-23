@@ -76,22 +76,20 @@ def load_protein_file(id, peptide_file):
     Downloads a protein file from UniProt and saves it to the data directory.
     If an alternative identifier is provided, first searches for the correct UniProt ID.
     """
-    # First try to find the correct UniProt ID if necessary
-    uniprot_id = id
-    if not id.startswith('P') and not id.startswith('Q') and not id.startswith('O'):
-        search_url = f"https://rest.uniprot.org/uniprotkb/search?query={id}&fields=accession&format=json"
-        search_response = requests.get(search_url)
-        if search_response.status_code == 200:
-            search_data = search_response.json()
-            if search_data.get('results') and len(search_data['results']) > 0:
-                uniprot_id = search_data['results'][0]['primaryAccession']
-            else:
-                return ""  # No matching UniProt ID found
+    # First try to find the correct UniProt ID
+    search_url = f"https://rest.uniprot.org/uniprotkb/search?query={id}&fields=accession&format=json"
+    search_response = requests.get(search_url)
+    if search_response.status_code == 200:
+        search_data = search_response.json()
+        if search_data.get('results') and len(search_data['results']) > 0:
+            uniprot_id = search_data['results'][0]['primaryAccession']
         else:
-            return ""  # Search request failed
+            return ""  # No matching UniProt ID found
+    else:
+        return ""  # Search request failed
 
-        if peptide_file:
-            force_uniprot_ids(peptide_file, uniprot_id, id)
+    if peptide_file:
+        force_uniprot_ids(peptide_file, uniprot_id, id)
 
     # Now download the protein file with the correct UniProt ID
     url = f"https://rest.uniprot.org/uniprotkb/{uniprot_id}.txt"
