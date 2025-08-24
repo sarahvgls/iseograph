@@ -399,6 +399,10 @@ const Flow = memo(() => {
   );
 
   useEffect(() => {
+    if (isInitializing) {
+      return;
+    }
+
     setTopGraphComponent(
       renderGraph(
         intensitySourceTop,
@@ -416,7 +420,6 @@ const Flow = memo(() => {
     );
   }, [
     intensitySourceTop,
-    renderGraph,
     topGraphLabel,
     isDualGraphMode,
     nodes,
