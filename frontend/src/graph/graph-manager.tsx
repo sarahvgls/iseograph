@@ -320,18 +320,7 @@ const Flow = memo(() => {
       }
 
       // Mark initialization as complete and reset states
-      endTracking();
-      // exportPerformanceCSV();
-      setIsInitializing(false);
-      initializationTriggeredRef.current = false;
-      initializationCompletedRef.current = true;
-      store.setState({ shouldRerender: false });
-
       console.log("Initialization completed");
-      setIsInitializing(false);
-      initializationTriggeredRef.current = false;
-      initializationCompletedRef.current = true;
-      store.setState({ shouldRerender: false });
       setIsInitializing(false);
       initializationTriggeredRef.current = false;
       initializationCompletedRef.current = true;
@@ -424,7 +413,6 @@ const Flow = memo(() => {
     if (isInitializing) {
       return;
     }
-
     setTopGraphComponent(
       renderGraph(
         intensitySourceTop,
