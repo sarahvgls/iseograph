@@ -169,7 +169,6 @@ const Flow = memo(() => {
 
   // --- Initialization trigger effect ---
   useEffect(() => {
-    setIsInitializing(shouldRerender);
     if (
       shouldRerender &&
       !initializationTriggeredRef.current &&
