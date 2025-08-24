@@ -218,6 +218,7 @@ const Flow = memo(() => {
     (nodeToBeFocused: SequenceNodeProps) => {
       const timer = setTimeout(() => {
         focusNode(nodeToBeFocused);
+        endTracking();
       }, theme.delay.graphRerendering);
 
       return () => clearTimeout(timer);
@@ -235,6 +236,7 @@ const Flow = memo(() => {
       const layoutMode = useGraphStore.getState().layoutMode;
       const nodeWidthMode = useGraphStore.getState().nodeWidthMode;
       startTracking({
+        type: "full_rerender",
         layoutMode,
         nodeWidthMode,
         timestamp: new Date().toISOString(),

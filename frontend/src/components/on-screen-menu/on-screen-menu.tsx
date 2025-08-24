@@ -13,6 +13,7 @@ import { theme } from "../../theme";
 import { layoutModes, nodeTypes, nodeWidthModes } from "../../theme/types.tsx";
 import { Switch } from "../base-components/switch.tsx";
 import type { SequenceNodeProps } from "../sequence-node/sequence-node.props.tsx";
+import { startTracking } from "../../evaluation/performance-tracker.ts";
 
 const MenuContainer = styled.div<{ isOpen: boolean }>`
   display: flex;
@@ -103,6 +104,10 @@ export const OnScreenMenu = ({
   );
 
   const changeLayoutMode = (mode: layoutModes) => {
+    startTracking({
+      type: "layout change",
+      timestamp: new Date().toISOString(),
+    });
     setLayoutMode(mode);
     const firstSequenceNode = nodes.find(
       (node) => node.type === nodeTypes.SequenceNode,
@@ -146,7 +151,12 @@ export const OnScreenMenu = ({
           options={allNodeWidthModes}
           selected={nodeWidthMode}
           selectOption={(option) => {
+            startTracking({
+              type: "node width mode change",
+              timestamp: new Date().toISOString(),
+            });
             setNodeWidthMode(option as nodeWidthModes);
+            focusNodeWithDelay(nodes[0] as SequenceNodeProps);
           }}
           isShy={false}
         />
