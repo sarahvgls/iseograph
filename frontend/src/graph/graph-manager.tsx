@@ -278,19 +278,21 @@ const Flow = memo(() => {
         ),
       );
       setBottomGraphComponent(
-        renderGraph(
-          intensitySourceBottom,
-          false,
-          `Intensity source: ${intensitySourceBottom}`,
-          isDualGraphMode,
-          nodes,
-          edges,
-          onNodesChange,
-          onEdgesChange,
-          allowInteraction,
-          handleNodeClick,
-          fitViewOptions,
-        ),
+        isDualGraphMode
+          ? null
+          : renderGraph(
+              intensitySourceBottom,
+              false,
+              `Intensity source: ${intensitySourceBottom}`,
+              isDualGraphMode,
+              nodes,
+              edges,
+              onNodesChange,
+              onEdgesChange,
+              allowInteraction,
+              handleNodeClick,
+              fitViewOptions,
+            ),
       );
 
       // Focus first node
@@ -416,15 +418,19 @@ const Flow = memo(() => {
     intensitySourceTop,
     renderGraph,
     topGraphLabel,
-    nodes,
-    allowInteraction,
-    intensitySourceTop,
-    topGraphLabel,
     isDualGraphMode,
+    nodes,
+    edges,
+    onNodesChange,
+    onEdgesChange,
+    allowInteraction,
+    handleNodeClick,
+    fitViewOptions,
+    isInitializing,
   ]);
 
   useEffect(() => {
-    if (!isDualGraphMode) {
+    if (!isDualGraphMode || isInitializing) {
       setBottomGraphComponent(null);
       return;
     }
@@ -445,13 +451,16 @@ const Flow = memo(() => {
     );
   }, [
     intensitySourceBottom,
-    renderGraph,
     bottomGraphLabel,
     isDualGraphMode,
     nodes,
     allowInteraction,
     intensitySourceTop,
-    bottomGraphLabel,
+    edges,
+    onNodesChange,
+    onEdgesChange,
+    handleNodeClick,
+    fitViewOptions,
   ]);
 
   // Memoize UI components that don't need to re-render with graph data
