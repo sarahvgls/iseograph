@@ -174,11 +174,13 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
   // --- layouting ---
   layoutMode: defaultValues.layoutMode,
   setLayoutMode: async (layoutMode: layoutModes) => {
-    const { nodes, edges, rowWidth, preparedNodes, sourceToTargets } = get();
+    let { nodes, edges, rowWidth, preparedNodes, sourceToTargets } = get();
 
     // Calculate position data if not already done
     if (preparedNodes.length === 0) {
       get().calculatePositionData();
+      preparedNodes = get().preparedNodes;
+      sourceToTargets = get().sourceToTargets;
     }
 
     const layoutedNodes = await applyLayout(
