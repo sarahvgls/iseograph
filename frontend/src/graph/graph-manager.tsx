@@ -52,6 +52,11 @@ import {
   MenuStackContainer,
   OverlayContainer,
 } from "../components/base-components/graph-wrapper.tsx";
+import {
+  endTracking,
+  exportPerformanceCSV,
+  startTracking,
+} from "../evaluation/performance-tracker.ts";
 
 // Split the selectors to minimize re-renders
 const graphDataSelector = (state: RFState) => ({
@@ -176,6 +181,14 @@ const Flow = memo(() => {
     ) {
       setIsInitializing(true);
       initializationTriggeredRef.current = true;
+
+      const layoutMode = useGraphStore.getState().layoutMode;
+      const nodeWidthMode = useGraphStore.getState().nodeWidthMode;
+      startTracking({
+        layoutMode,
+        nodeWidthMode,
+        timestamp: new Date().toISOString(),
+      });
     } else if (!shouldRerender) {
       initializationTriggeredRef.current = false;
     }
@@ -237,10 +250,9 @@ const Flow = memo(() => {
         }
       }
 
-      setTimeout(() => {
-        setIsInitializing(false);
-        store.setState({ shouldRerender: false });
-      }, 1000);
+      // Mark initialization as complete and reset states
+      endTracking();
+      // exportPerformanceCSV();
       setIsInitializing(false);
       initializationTriggeredRef.current = false;
       initializationCompletedRef.current = true;

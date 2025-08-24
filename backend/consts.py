@@ -8,3 +8,5 @@ MAX_GRAPHML_FILES = 15
 
 TEST_MODE = False  # If set to True, the data-test-files are provided instead of the real data files.
 EVAL_MODE = True
+# EVAL_DIR = "many_siblings"
+EVAL_DIR = "length_of_graph"

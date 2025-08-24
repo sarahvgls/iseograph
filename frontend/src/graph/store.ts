@@ -38,6 +38,7 @@ import {
   createNodes,
   generateIsoformColorMatching,
 } from "./generation-utils/nodes-edges.tsx";
+import { performanceTracker } from "../evaluation/performance-tracker.ts";
 
 export type SourceToTargets = Record<
   string,
@@ -162,12 +163,28 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
 
   calculatePositionData: () => {
     const { nodes, edges } = get();
-    const filteredNodes = filterAndResetNodes(nodes as NodeTypes[]);
-    const [assignedNodes, sourceToTargets] = assignPositionIndices(
+    const trackedFilterAndResetNodes = performanceTracker.time(
+      "filterAndResetNodes_in_store.tsx",
+      filterAndResetNodes,
+    );
+    const filteredNodes = trackedFilterAndResetNodes(nodes as NodeTypes[]);
+
+    const trackedAssignPositionIndices = performanceTracker.time(
+      "assignPositionIndices_in_store.tsx",
+      assignPositionIndices,
+    );
+    const [assignedNodes, sourceToTargets] = trackedAssignPositionIndices(
       filteredNodes,
       edges,
     );
-    const yOffsetNodes = addSymmetricalOffsetForVariations(assignedNodes);
+
+    const trackedAddSymmetricalOffsetForVariations = performanceTracker.time(
+      "addSymmetricalOffsetForVariations_in_store.tsx",
+      addSymmetricalOffsetForVariations,
+    );
+    const yOffsetNodes =
+      trackedAddSymmetricalOffsetForVariations(assignedNodes);
+
     set({ preparedNodes: yOffsetNodes, sourceToTargets });
   },
 
