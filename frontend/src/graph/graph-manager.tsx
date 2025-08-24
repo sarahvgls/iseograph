@@ -231,32 +231,23 @@ const Flow = memo(() => {
       console.log("Initialization triggered");
       setIsInitializing(true);
       initializationTriggeredRef.current = true;
-    } else if (!shouldRerender) {
-      initializationTriggeredRef.current = false;
-    }
 
-    const layoutMode = useGraphStore.getState().layoutMode;
+      const layoutMode = useGraphStore.getState().layoutMode;
       const nodeWidthMode = useGraphStore.getState().nodeWidthMode;
       startTracking({
         layoutMode,
         nodeWidthMode,
         timestamp: new Date().toISOString(),
       });
+    } else if (!shouldRerender) {
+      initializationTriggeredRef.current = false;
+    }
   }, [shouldRerender]);
 
   // --- Initialization logic ---
   useEffect(() => {
-    console.log("Effect dependencies:", {
-      isInitializing,
-      focusNodeWithDelay: !!focusNodeWithDelay,
-      setNodeWidthMode: !!setNodeWidthMode,
-      setLayoutMode: !!setLayoutMode,
-    });
-
     // Skip if not initializing or already completed
     if (!isInitializing || initializationCompletedRef.current) return;
-
-    console.log("Running initialization once");
 
     applyLocalStorageValues(setSelectedFile);
 
@@ -278,7 +269,6 @@ const Flow = memo(() => {
     // Use a single timeout for the entire initialization process
     const initTimeout = setTimeout(() => {
       setNodeWidthMode(nodeWidthMode);
-      console.log("does this happen twice?");
       setLayoutMode(layoutMode);
 
       nodes = useGraphStore.getState().nodes; // Refresh nodes after layout application
