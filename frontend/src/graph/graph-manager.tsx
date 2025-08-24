@@ -174,25 +174,21 @@ const Flow = memo(() => {
 
   // --- Initialization trigger effect ---
   useEffect(() => {
-    if (
-      shouldRerender &&
-      !initializationTriggeredRef.current &&
-      !initializationCompletedRef.current
-    ) {
+    if (shouldRerender && !initializationTriggeredRef.current) {
       console.log("Initialization triggered");
       setIsInitializing(true);
       initializationTriggeredRef.current = true;
+    } else if (!shouldRerender) {
+      initializationTriggeredRef.current = false;
+    }
 
-      const layoutMode = useGraphStore.getState().layoutMode;
+    const layoutMode = useGraphStore.getState().layoutMode;
       const nodeWidthMode = useGraphStore.getState().nodeWidthMode;
       startTracking({
         layoutMode,
         nodeWidthMode,
         timestamp: new Date().toISOString(),
       });
-    } else if (!shouldRerender) {
-      initializationTriggeredRef.current = false;
-    }
   }, [shouldRerender]);
 
   // --- Initialization logic ---
@@ -269,6 +265,10 @@ const Flow = memo(() => {
       store.setState({ shouldRerender: false });
 
       console.log("Initialization completed");
+      setIsInitializing(false);
+      initializationTriggeredRef.current = false;
+      initializationCompletedRef.current = true;
+      store.setState({ shouldRerender: false });
       setIsInitializing(false);
       initializationTriggeredRef.current = false;
       initializationCompletedRef.current = true;

@@ -176,6 +176,7 @@ export const ProteinSelection = ({
       console.error("Error adding protein:", error);
     } finally {
       setIsAddLoading(false); // Stop loading
+      useGraphStore.setState({ shouldRerender: true }); // Ensure graph is re-rendered
     }
   };
 
