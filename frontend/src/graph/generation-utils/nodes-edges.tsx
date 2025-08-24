@@ -168,7 +168,7 @@ export const createEdges = (
       peptideLog,
       overallIntensityExtremesBySource,
     );
-    
+
     return {
       ...edge,
       type: "arrow",
