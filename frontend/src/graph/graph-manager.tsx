@@ -4,6 +4,7 @@ import {
   Panel,
   type NodeMouseHandler,
   MiniMap,
+  type Edge,
 } from "@xyflow/react";
 import DevTools from "./devtools/devtools.tsx";
 
@@ -24,7 +25,12 @@ import {
 import type { SequenceNodeProps } from "../components/sequence-node/sequence-node.props.tsx";
 import GraphControls from "../controls/graph-controls.tsx";
 import { useFocusHandlers } from "../controls/focus-node/focus-utils.ts";
-import { glowMethods, nodeTypes, nodeWidthModes } from "../theme/types.tsx";
+import {
+  glowMethods,
+  type NodeTypes,
+  nodeTypes,
+  nodeWidthModes,
+} from "../theme/types.tsx";
 import { theme } from "../theme";
 import RowNode from "../components/row-node/row-node.tsx";
 import store from "./store.ts";
@@ -86,6 +92,53 @@ const myNodeTypes = {
 const edgeTypes = {
   arrow: ArrowEdge,
 };
+
+function renderGraph(
+  intensitySource: string,
+  isTop: boolean,
+  label: string,
+  isDualGraphMode: boolean,
+  nodes: NodeTypes[],
+  edges: Edge[],
+  onNodesChange: (changes: any) => void,
+  onEdgesChange: (changes: any) => void,
+  allowInteraction: boolean,
+  handleNodeClick: NodeMouseHandler,
+  fitViewOptions: { minZoom: number; maxZoom: number; nodes: NodeTypes[] },
+): JSX.Element {
+  return (
+    <GraphSection isTop={isTop} isDualMode={isDualGraphMode}>
+      <GraphLabel isDualMode={true}>{label}</GraphLabel>
+      <IntensitySourceProvider
+        intensitySource={intensitySource}
+        isSecondaryGraph={!isTop}
+      >
+        <ReactFlow
+          debug={theme.debugMode}
+          nodes={nodes}
+          edges={edges}
+          nodeTypes={myNodeTypes}
+          edgeTypes={edgeTypes}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          nodeOrigin={nodeOrigin}
+          minZoom={0.05}
+          maxZoom={5}
+          zoomOnDoubleClick={false}
+          width={100}
+          onNodeClick={handleNodeClick}
+          fitView
+          fitViewOptions={fitViewOptions}
+          nodesDraggable={allowInteraction}
+          nodesConnectable={false}
+          edgesReconnectable={false}
+        >
+          {theme.debugMode && <DevTools />}
+        </ReactFlow>
+      </IntensitySourceProvider>
+    </GraphSection>
+  );
+}
 
 const Flow = memo(() => {
   const [isInitializing, setIsInitializing] = useState(false);
@@ -185,7 +238,7 @@ const Flow = memo(() => {
 
     applyLocalStorageValues(setSelectedFile);
 
-    const nodes = useGraphStore.getState().nodes;
+    let nodes = useGraphStore.getState().nodes;
     const layoutMode = useGraphStore.getState().layoutMode;
     const nodeWidthMode = useGraphStore.getState().nodeWidthMode;
 
@@ -205,6 +258,8 @@ const Flow = memo(() => {
       setNodeWidthMode(nodeWidthMode);
       setLayoutMode(layoutMode);
 
+      nodes = useGraphStore.getState().nodes; // Refresh nodes after layout application
+
       setTopGraphComponent(
         renderGraph(
           intensitySourceTop,
@@ -212,6 +267,14 @@ const Flow = memo(() => {
           glowMethod === glowMethods.intensity
             ? `Intensity source: ${intensitySourceTop}`
             : "Intensity highlighted by count of peptides",
+          isDualGraphMode,
+          nodes,
+          edges,
+          onNodesChange,
+          onEdgesChange,
+          allowInteraction,
+          handleNodeClick,
+          fitViewOptions,
         ),
       );
       setBottomGraphComponent(
@@ -219,6 +282,14 @@ const Flow = memo(() => {
           intensitySourceBottom,
           false,
           `Intensity source: ${intensitySourceBottom}`,
+          isDualGraphMode,
+          nodes,
+          edges,
+          onNodesChange,
+          onEdgesChange,
+          allowInteraction,
+          handleNodeClick,
+          fitViewOptions,
         ),
       );
 
@@ -325,57 +396,32 @@ const Flow = memo(() => {
     [nodes.length], // Only depend on length, not the entire array
   );
 
-  // Memoize the renderGraph function with stable dependencies
-  const renderGraph = useCallback(
-    (intensitySource: string, isTop: boolean, label: string) => {
-      return (
-        <GraphSection isTop={isTop} isDualMode={isDualGraphMode}>
-          <GraphLabel isDualMode={true}>{label}</GraphLabel>
-          <IntensitySourceProvider
-            intensitySource={intensitySource}
-            isSecondaryGraph={!isTop}
-          >
-            <ReactFlow
-              debug={theme.debugMode}
-              nodes={nodes}
-              edges={edges}
-              nodeTypes={myNodeTypes}
-              edgeTypes={edgeTypes}
-              onNodesChange={onNodesChange}
-              onEdgesChange={onEdgesChange}
-              nodeOrigin={nodeOrigin}
-              minZoom={0.05}
-              maxZoom={5}
-              zoomOnDoubleClick={false}
-              width={100}
-              onNodeClick={handleNodeClick}
-              fitView
-              fitViewOptions={fitViewOptions}
-              nodesDraggable={allowInteraction}
-              nodesConnectable={false}
-              edgesReconnectable={false}
-            >
-              {theme.debugMode && <DevTools />}
-            </ReactFlow>
-          </IntensitySourceProvider>
-        </GraphSection>
-      );
-    },
-    [
-      nodes,
-      edges,
-      onNodesChange,
-      onEdgesChange,
-      handleNodeClick,
-      fitViewOptions,
-      allowInteraction,
-      isDualGraphMode,
-    ],
-  );
-
   useEffect(() => {
-    setTopGraphComponent(renderGraph(intensitySourceTop, true, topGraphLabel));
-  }, [intensitySourceTop, renderGraph, topGraphLabel]);
+    setTopGraphComponent(
+      renderGraph(
+        intensitySourceTop,
+        true,
+        topGraphLabel,
+        isDualGraphMode,
+        nodes,
+        edges,
+        onNodesChange,
+        onEdgesChange,
+        allowInteraction,
+        handleNodeClick,
+        fitViewOptions,
+      ),
+    );
+  }, [
+    intensitySourceTop,
+    renderGraph,
+    topGraphLabel,
+    nodes,
+    allowInteraction,
+    intensitySourceTop,
+    topGraphLabel,
+    isDualGraphMode,
+  ]);
 
   useEffect(() => {
     if (!isDualGraphMode) {
@@ -383,9 +429,30 @@ const Flow = memo(() => {
       return;
     }
     setBottomGraphComponent(
-      renderGraph(intensitySourceBottom, false, bottomGraphLabel),
+      renderGraph(
+        intensitySourceBottom,
+        false,
+        bottomGraphLabel,
+        isDualGraphMode,
+        nodes,
+        edges,
+        onNodesChange,
+        onEdgesChange,
+        allowInteraction,
+        handleNodeClick,
+        fitViewOptions,
+      ),
     );
-  }, [intensitySourceBottom, renderGraph, topGraphLabel, isDualGraphMode]);
+  }, [
+    intensitySourceBottom,
+    renderGraph,
+    bottomGraphLabel,
+    isDualGraphMode,
+    nodes,
+    allowInteraction,
+    intensitySourceTop,
+    bottomGraphLabel,
+  ]);
 
   // Memoize UI components that don't need to re-render with graph data
   const overlayControls = useMemo(
