@@ -194,10 +194,13 @@ export const ProteinSelection = ({
             value={selectedFile}
             setValue={setSelectedFile}
             options={fileNames}
+            testId={"file-dropdown"}
           />
           <SecondaryButton
             onClick={handleRecentFileSubmit}
             disabled={isLoadLoading}
+            id="load-button"
+            data-status={isLoadLoading ? "loading" : "idle"}
           >
             {isLoadLoading ? <CircularProgress size={20} /> : "Load"}{" "}
           </SecondaryButton>

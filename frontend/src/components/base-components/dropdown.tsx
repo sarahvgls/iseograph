@@ -15,6 +15,7 @@ export const DropdownComponent = ({
   label,
   tooltip,
   tooltipTitle,
+  testId,
 }: {
   placeholder: string;
   value: string;
@@ -23,6 +24,7 @@ export const DropdownComponent = ({
   label?: string;
   tooltip?: string;
   tooltipTitle?: string;
+  testId?: string;
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   return (
@@ -40,6 +42,7 @@ export const DropdownComponent = ({
         onChange={(e) => {
           setValue(e.target.value);
         }}
+        data-testid={testId}
       >
         <option value="" disabled>
           {placeholder}

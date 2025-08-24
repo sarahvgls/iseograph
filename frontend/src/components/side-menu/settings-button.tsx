@@ -15,13 +15,16 @@ const Container = styled.div<{ isShifted?: boolean }>`
 export const SettingsButton = ({
   setIsSettingsOpen,
   isShifted,
+  testId,
 }: {
   setIsSettingsOpen: (isOpen: boolean) => void;
   isShifted: boolean;
+  testId?: string;
 }) => {
   return (
     <Container isShifted={isShifted}>
       <button
+        data-testid={testId || "open-menu-button"}
         onClick={() => setIsSettingsOpen(true)}
         style={{
           padding: "8px 12px",

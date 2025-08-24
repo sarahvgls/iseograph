@@ -524,6 +524,7 @@ const Flow = memo(() => {
           <SettingsButton
             setIsSettingsOpen={setIsSideMenuOpen}
             isShifted={shouldShiftButtons}
+            testId="open-menu-button"
           />
         </Panel>
         <MiniMapContainer isOpen={isMapOpen} style={{ pointerEvents: "auto" }}>

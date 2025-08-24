@@ -91,6 +91,7 @@ export const LoadingBackdrop = ({ isLoading }: { isLoading: boolean }) => {
     <div>
       {isLoading && (
         <div
+          data-testId="loading-backdrop"
           style={{
             position: "fixed",
             top: 0,
