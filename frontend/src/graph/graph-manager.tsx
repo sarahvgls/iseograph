@@ -269,6 +269,10 @@ const Flow = memo(() => {
       store.setState({ shouldRerender: false });
 
       console.log("Initialization completed");
+      setIsInitializing(false);
+      initializationTriggeredRef.current = false;
+      initializationCompletedRef.current = true;
+      store.setState({ shouldRerender: false });
     }, 500);
 
     return () => clearTimeout(initTimeout);
