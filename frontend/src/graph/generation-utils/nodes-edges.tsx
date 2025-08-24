@@ -14,17 +14,6 @@ import {
 } from "./peptide-conversion.tsx";
 
 // --- Helper Functions ---
-// TODO should be semicolon separated when jannes is finished
-const convertIsoformStringToList = (input: string): string[] => {
-  // split string at semicolons and trim whitespace
-  if (!input) return [];
-  const stringList = input
-    .replace(/[()]/g, "")
-    .split(";")
-    .map((input) => input.trim());
-  return stringList.filter((item) => item.toLowerCase() !== "none");
-};
-
 const convertStringToList = (input: string): string[] => {
   // split string at commas and trim whitespace
   if (!input) return [];
@@ -32,7 +21,10 @@ const convertStringToList = (input: string): string[] => {
     .replace(/[()]/g, "")
     .split(",")
     .map((input) => input.trim());
-  return stringList.filter((item) => item.toLowerCase() !== "none");
+  const cleanedStringList = stringList.filter(
+    (item) => item.toLowerCase() !== "none",
+  );
+  return cleanedStringList;
 };
 
 // --- Nodes ---
@@ -176,12 +168,7 @@ export const createEdges = (
       peptideLog,
       overallIntensityExtremesBySource,
     );
-
-    const isoformList = convertIsoformStringToList(
-      edge.data.isoformString || "",
-    );
-    console.log(isoformList);
-
+    
     return {
       ...edge,
       type: "arrow",
