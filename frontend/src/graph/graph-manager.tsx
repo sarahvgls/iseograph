@@ -88,8 +88,10 @@ const edgeTypes = {
 };
 
 const Flow = memo(() => {
-  const [isInitializing, setIsInitializing] = useState(true);
+  const [isInitializing, setIsInitializing] = useState(false);
   const [hasNoData, setHasNoData] = useState(false);
+  const initializationTriggeredRef = useRef(false);
+  const initializationCompletedRef = useRef(false);
   const { nodes, edges, onNodesChange, onEdgesChange } = useGraphStore(
     graphDataSelector,
     shallow,
@@ -165,13 +167,25 @@ const Flow = memo(() => {
     [focusNode],
   );
 
+  // --- Initialization trigger effect ---
   useEffect(() => {
-    setIsInitializing(shouldRerender);
+    if (
+      shouldRerender &&
+      !initializationTriggeredRef.current &&
+      !initializationCompletedRef.current
+    ) {
+      setIsInitializing(true);
+      initializationTriggeredRef.current = true;
+    } else if (!shouldRerender) {
+      initializationTriggeredRef.current = false;
+    }
   }, [shouldRerender]);
 
   // --- Initialization logic ---
   useEffect(() => {
     if (!isInitializing) return;
+    // Skip if not initializing or already completed
+    if (!isInitializing || initializationCompletedRef.current) return;
 
     applyLocalStorageValues(setSelectedFile);
 
@@ -184,12 +198,14 @@ const Flow = memo(() => {
         "No nodes available in the graph. Please check the data source.",
       );
       setIsInitializing(false);
+      initializationTriggeredRef.current = false;
       setIsSideMenuOpen(true);
       setHasNoData(true);
       return;
     }
 
-    setTimeout(() => {
+    // Use a single timeout for the entire initialization process
+    const initTimeout = setTimeout(() => {
       setNodeWidthMode(nodeWidthMode);
       setLayoutMode(layoutMode);
 
@@ -225,8 +241,29 @@ const Flow = memo(() => {
         setIsInitializing(false);
         store.setState({ shouldRerender: false });
       }, 1000);
+      setIsInitializing(false);
+      initializationTriggeredRef.current = false;
+      initializationCompletedRef.current = true;
+      store.setState({ shouldRerender: false });
     }, 500);
-  }, [isInitializing, focusNodeWithDelay, setNodeWidthMode, setLayoutMode]);
+
+    return () => clearTimeout(initTimeout);
+  }, [
+    isInitializing,
+    focusNodeWithDelay,
+    setNodeWidthMode,
+    setLayoutMode,
+    intensitySourceTop,
+    intensitySourceBottom,
+    glowMethod,
+  ]);
+
+  // Reset initialization completed flag when shouldRerender becomes true again
+  useEffect(() => {
+    if (shouldRerender) {
+      initializationCompletedRef.current = false;
+    }
+  }, [shouldRerender]);
 
   const lastClickTimeRef = useRef<number>(0);
   const clickTimerRef = useRef<number | null>(null);
