@@ -105,7 +105,10 @@ export const OnScreenMenu = ({
 
   const changeLayoutMode = (mode: layoutModes) => {
     startTracking({
-      type: "layout change",
+      type: "layout changed to " + mode,
+      nodeWidthMode: nodeWidthMode,
+      newlayoutMode: mode,
+      previousLayoutMode: layoutMode,
       timestamp: new Date().toISOString(),
     });
     setLayoutMode(mode);
@@ -153,7 +156,10 @@ export const OnScreenMenu = ({
           selected={nodeWidthMode}
           selectOption={(option) => {
             startTracking({
-              type: "node width mode change",
+              type: "node width mode changed to " + option,
+              nodeWidthMode: option as nodeWidthModes,
+              layoutMode: layoutMode,
+              previousNodeWidthMode: nodeWidthMode,
               timestamp: new Date().toISOString(),
             });
             setNodeWidthMode(option as nodeWidthModes);

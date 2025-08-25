@@ -59,6 +59,7 @@ import {
   OverlayContainer,
 } from "../components/base-components/graph-wrapper.tsx";
 import {
+  clearPerformanceData,
   endTracking,
   exportPerformanceCSV,
   startTracking,
@@ -576,6 +577,12 @@ const Flow = memo(() => {
           </MenuStackContainer>
         </StyledPanel>
         <Panel position={"center-left"}>
+          <button
+            data-testId={"reset-button"}
+            onClick={() => clearPerformanceData()}
+          >
+            Reset Performance Data
+          </button>
           <button
             data-testId={"export-button"}
             onClick={() => exportPerformanceCSV()}
