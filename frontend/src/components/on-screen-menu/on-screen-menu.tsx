@@ -145,6 +145,7 @@ export const OnScreenMenu = ({
           selected={layoutMode}
           selectOption={changeLayoutMode}
           isShy={false}
+          testId="layout-mode-switch"
         />
         <Switch
           label={"Node Width Mode"}
@@ -159,6 +160,7 @@ export const OnScreenMenu = ({
             focusNodeWithDelay(nodes[0] as SequenceNodeProps);
           }}
           isShy={false}
+          testId="node-width-mode-switch"
         />
 
         {/*--- Isoform color selection ---*/}

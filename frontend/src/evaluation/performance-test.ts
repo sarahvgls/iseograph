@@ -37,9 +37,15 @@ const __dirname = path.dirname(__filename);
 
   console.log("Found test files:", fileOptions);
 
+  await page.click('[data-testId="close-menu-button"]');
+  console.log("Closed side menu.");
+
   fileOptions = fileOptions.slice(0, 1);
   for (const file of fileOptions) {
     console.log(`\n--- Starting test for file: ${file} ---`);
+
+    await page.click('[data-testId="open-menu-button"]');
+    console.log("Opened side menu.");
 
     // Step 1: Select the file from the dropdown
     await page.selectOption('[data-testId="file-dropdown"]', file);
@@ -56,33 +62,92 @@ const __dirname = path.dirname(__filename);
       state: "hidden",
     });
 
-    console.log("Graph visualization complete. Next starting now...");
+    console.log("Graph visualization complete. Switch modes now...");
 
-    // Step 3: Collect the performance data
-    // const visualizationTime = await page.$eval(
-    //   "#your-timestamp-element",
-    //   (el) => el.textContent,
-    // );
-    // console.log(`Time to visualize ${file}: ${visualizationTime}`);
+    // Close the side menu
+    await page.click('[data-testId="close-menu-button"]');
+    console.log("Closed side menu.");
 
-    // Step 4: Click the button to change the layout
-    // await page.click('[data-testId="layout-change-button"]');
+    // Step 5: Interact with layout mode switch
+    const layoutModeOptions = await page.$$eval(
+      '[data-testid="layout-mode-switch"] button[data-option]',
+      (buttons) =>
+        buttons.map((btn) => btn.getAttribute("data-option")).filter(Boolean),
+    );
 
-    // Step 5: Wait for the layout to change
-    // You can use the same state-based waiting pattern.
-    // e.g., wait for a different class to be added, or a different attribute value.
-    // await page.waitForSelector(
-    //   '#graph-container[data-layout-status="complete"]',
-    // );
-    //
-    // console.log("Layout change complete.");
+    console.log("Found layout mode options:", layoutModeOptions);
+
+    for (const layoutOption of layoutModeOptions) {
+      console.log(`Testing layout mode: ${layoutOption}`);
+
+      // Click the option
+      await page.click(
+        `[data-testid="layout-mode-switch-option-${layoutOption}"]`,
+      );
+
+      // Wait for the switch to finish loading and have the option selected
+      await page.waitForFunction(
+        (option) => {
+          const switchElement = document.querySelector(
+            '[data-testid="layout-mode-switch"]',
+          );
+          return (
+            switchElement &&
+            switchElement.getAttribute("data-selected") === option &&
+            switchElement.getAttribute("data-loading") === "false"
+          );
+        },
+        layoutOption,
+        { timeout: 10000 },
+      );
+
+      console.log(`Layout mode switched to: ${layoutOption}`);
+
+      // Small delay between switches
+      await page.waitForTimeout(500);
+    }
+
+    // Step 6: Interact with node width mode switch
+    const nodeWidthModeOptions = await page.$$eval(
+      '[data-testid="node-width-mode-switch"] button[data-option]',
+      (buttons) =>
+        buttons.map((btn) => btn.getAttribute("data-option")).filter(Boolean),
+    );
+
+    console.log("Found node width mode options:", nodeWidthModeOptions);
+
+    for (const widthOption of nodeWidthModeOptions) {
+      console.log(`Testing node width mode: ${widthOption}`);
+
+      // Click the option
+      await page.click(
+        `[data-testid="node-width-mode-switch-option-${widthOption}"]`,
+      );
+
+      // Wait for the switch to finish loading and have the option selected
+      await page.waitForFunction(
+        (option) => {
+          const switchElement = document.querySelector(
+            '[data-testid="node-width-mode-switch"]',
+          );
+          return (
+            switchElement &&
+            switchElement.getAttribute("data-selected") === option &&
+            switchElement.getAttribute("data-loading") === "false"
+          );
+        },
+        widthOption,
+        { timeout: 10000 },
+      );
+
+      console.log(`Node width mode switched to: ${widthOption}`);
+
+      // Small delay between switches
+      await page.waitForTimeout(500);
+    }
   }
 
   console.log("\nAll tests completed.");
-
-  // Close the side menu
-  await page.click('[data-testId="close-menu-button"]');
-  console.log("Closed side menu.");
 
   // Export
   await page.waitForSelector('[data-testId="export-button"]:enabled', {

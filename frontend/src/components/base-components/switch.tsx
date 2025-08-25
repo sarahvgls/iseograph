@@ -59,6 +59,7 @@ export const Switch = ({
   selected,
   selectOption,
   isShy = false,
+  testId,
   ...rest
 }: {
   label?: string;
@@ -66,6 +67,7 @@ export const Switch = ({
   selected: string;
   selectOption: (newOption: string) => void | Promise<void>;
   isShy?: boolean;
+  testId?: string;
 }) => {
   const activeIndex = options.findIndex((option) => option === selected);
   const [loadingOption, setLoadingOption] = useState<string | null>(null);
@@ -88,7 +90,11 @@ export const Switch = ({
   };
 
   return (
-    <div>
+    <div
+      data-testid={testId}
+      data-selected={selected}
+      data-loading={loadingOption !== null}
+    >
       {isShy ? (
         <SettingsBorder>
           <SwitchContainer {...rest} isShy={isShy}>
@@ -100,6 +106,8 @@ export const Switch = ({
                   key={mode}
                   isActive={selected === mode}
                   onClick={() => handleOptionSelect(mode)}
+                  data-testid={`${testId}-option-${mode}`}
+                  data-option={mode}
                 >
                   {loadingOption === mode ? (
                     <CircularProgress size={15} />
@@ -121,6 +129,8 @@ export const Switch = ({
                 key={mode}
                 isActive={selected === mode}
                 onClick={() => handleOptionSelect(mode)}
+                data-testid={`${testId}-option-${mode}`}
+                data-option={mode}
               >
                 {loadingOption === mode ? <CircularProgress size={15} /> : mode}
               </SwitchOption>
