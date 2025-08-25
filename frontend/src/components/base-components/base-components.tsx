@@ -31,9 +31,11 @@ export const StyledSectionTitle = styled.h3`
 export const StyledSectionTitleWithButton = ({
   onClose,
   title,
+  testId,
 }: {
   onClose: () => void;
   title: string;
+  testId?: string;
 }) => {
   return (
     <StyledSectionTitle>
@@ -51,6 +53,7 @@ export const StyledSectionTitleWithButton = ({
           onClick={() => {
             onClose();
           }}
+          data-testId={testId}
         >{`>>`}</button>
       </div>
     </StyledSectionTitle>

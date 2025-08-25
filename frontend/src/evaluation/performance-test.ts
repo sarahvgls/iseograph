@@ -40,6 +40,8 @@ const __dirname = path.dirname(__filename);
     await page.click('[data-testId="reset-button"]');
     console.log(`Reset performance data. (${Date.now() - stepStartTime}ms)`);
 
+    await page.click('[data-testId="peptides-menu-close-button"]'); // close overlapping menu
+
     // Preparation: Open the side menu
     stepStartTime = Date.now();
     await page.click('[data-testId="open-menu-button"]');
@@ -73,6 +75,8 @@ const __dirname = path.dirname(__filename);
       console.log(`\n--- Starting test for file: ${file} ---`);
 
       try {
+        await page.click('[data-testId="peptides-menu-close-button"]'); // close overlapping menu
+
         stepStartTime = Date.now();
         await page.click('[data-testId="open-menu-button"]');
         console.log(`Opened side menu. (${Date.now() - stepStartTime}ms)`);
