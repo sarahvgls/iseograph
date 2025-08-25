@@ -575,6 +575,14 @@ const Flow = memo(() => {
             />
           </MenuStackContainer>
         </StyledPanel>
+        <Panel position={"center-left"}>
+          <button
+            data-testId={"export-button"}
+            onClick={() => exportPerformanceCSV()}
+          >
+            Export CSV
+          </button>
+        </Panel>
       </OverlayContainer>
     ),
     [

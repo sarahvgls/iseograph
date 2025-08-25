@@ -1,23 +1,35 @@
 import { chromium } from "playwright";
+import path from "path";
+import { fileURLToPath } from "url";
+
+// This is the ES Module way to get the directory name.
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 (async () => {
   console.log("Starting performance test...");
+  // Define a custom download path.
+  const customDownloadPath = path.join(__dirname, "downloads");
+
   // Launch a new browser instance
   const browser = await chromium.launch();
-  const page = await browser.newPage();
+  const context = await browser.newContext({
+    acceptDownloads: true, // This is required for downloads to work
+    downloadsPath: customDownloadPath,
+  });
+
+  const page = await context.newPage();
 
   // Navigate to your web app
   await page.goto("http://localhost:5173/static/");
   console.log("Navigated to the web app.");
 
-  // --- Start of the automated test ---
-
-  // Preparation: Open the side menu if it's not already open
+  // Preparation: Open the side menu
   await page.click('[data-testId="open-menu-button"]');
   console.log("Opened side menu.");
 
   // Get all options from the dropdown, excluding the placeholder
-  const fileOptions = await page.$$eval(
+  let fileOptions = await page.$$eval(
     '[data-testId="file-dropdown"] option',
     (options) =>
       options.filter((opt) => opt.value !== "").map((opt) => opt.value),
@@ -25,55 +37,26 @@ import { chromium } from "playwright";
 
   console.log("Found test files:", fileOptions);
 
+  fileOptions = fileOptions.slice(0, 1);
   for (const file of fileOptions) {
     console.log(`\n--- Starting test for file: ${file} ---`);
-
-    await page.evaluate((fileName) => {
-      // Assuming your functions are globally accessible (e.g., exposed on the window object)
-      // or that the module is loaded and callable.
-      // We pass the filename as context for better logging.
-      window.startTracking({
-        type: "file-load-script",
-        filename: fileName,
-      });
-    }, file); // Pass the 'file' variable into the browser context
 
     // Step 1: Select the file from the dropdown
     await page.selectOption('[data-testId="file-dropdown"]', file);
 
+    // Step 2: Click the button to load the file
     await page.click("#load-button");
     console.log(`Clicked load button`);
 
-    await page.waitForTimeout(500); // Small delay to ensure the button state updates
-
+    // Step 3: Wait for the button to become idle again
     await page.waitForSelector('#load-button[data-status="idle"]');
 
-    await page.waitForTimeout(500); // Small delay to ensure the UI updates
-
-    // Step 2: WAIT for the graph visualization to be complete.
+    // Step 4: Wait for the graph visualization to be complete.
     await page.waitForSelector('[data-testId="loading-screen"]', {
       state: "hidden",
     });
 
-    console.log("Graph visualization complete. Collecting performance data...");
-
-    const sessionData = await page.evaluate(() => {
-      // Call your endTracking function and return the data object
-      return window.endTracking();
-    });
-
-    console.log("Graph visualization complete. Performance data:");
-    console.log(`Total duration: ${sessionData?.totalDuration.toFixed(2)}ms`);
-
-    // Log the function timings from the returned data
-    if (sessionData && sessionData.functionTimings) {
-      console.table(
-        sessionData.functionTimings.map((timing) => ({
-          Function: timing.name,
-          "Duration (ms)": timing.duration.toFixed(2),
-        })),
-      );
-    }
+    console.log("Graph visualization complete. Next starting now...");
 
     // Step 3: Collect the performance data
     // const visualizationTime = await page.$eval(
@@ -95,10 +78,26 @@ import { chromium } from "playwright";
     // console.log("Layout change complete.");
   }
 
-  await page.evaluate(() => {
-    window.showPerformanceSummary();
-    window.exportPerformanceCSV();
+  console.log("\nAll tests completed.");
+
+  // Close the side menu
+  await page.click('[data-testId="close-menu-button"]');
+  console.log("Closed side menu.");
+
+  // Export
+  await page.waitForSelector('[data-testId="export-button"]:enabled', {
+    timeout: 15000,
   });
+
+  const [download] = await Promise.all([
+    page.waitForEvent("download"),
+    page.click('[data-testId="export-button"]'),
+  ]);
+  console.log("Clicked export button.");
+
+  await download.saveAs(path.join(customDownloadPath, "performance_data.csv"));
+
+  console.log(`Download saved to: ${customDownloadPath}`);
 
   // --- End of the automated test ---
   await browser.close();
