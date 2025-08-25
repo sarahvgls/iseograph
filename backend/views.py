@@ -133,7 +133,7 @@ def clean_up(file_name: str) -> None:
             if os.path.isfile(file_path):
                 os.remove(file_path)
 
-    if TEST_MODE:
+    if TEST_MODE or EVAL_MODE:
         return
     # check last_recently_added.json
     last_recently_added_file = PROJECT_ROOT_DIR / "data" / "last_recently_added.json"
