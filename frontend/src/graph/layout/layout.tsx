@@ -181,12 +181,12 @@ export const applyLayout = (
   } else {
     // Fall back to calculating values if no cache is provided
     const trackedFilterAndResetNodes = performanceTracker.time(
-      "filterAndResetNodes_in_layout.tsx",
+      "filterAndResetNodes",
       filterAndResetNodes,
     );
     const filteredNodes = trackedFilterAndResetNodes(nodes);
     const trackedAssignPositionIndices = performanceTracker.time(
-      "assignPositionIndices_in_layout.tsx",
+      "assignPositionIndices",
       assignPositionIndices,
     );
     [preparedNodes, sourceToTargets] = trackedAssignPositionIndices(
@@ -194,7 +194,7 @@ export const applyLayout = (
       edges,
     );
     const trackedAddSymmetricalOffsetForVariations = performanceTracker.time(
-      "addSymmetricalOffsetForVariations_in_layout.tsx",
+      "addSymmetricalOffsetForVariations",
       addSymmetricalOffsetForVariations,
     );
     preparedNodes = trackedAddSymmetricalOffsetForVariations(preparedNodes);

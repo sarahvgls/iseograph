@@ -164,13 +164,13 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
   calculatePositionData: () => {
     const { nodes, edges } = get();
     const trackedFilterAndResetNodes = performanceTracker.time(
-      "filterAndResetNodes_in_store.tsx",
+      "filterAndResetNodes",
       filterAndResetNodes,
     );
     const filteredNodes = trackedFilterAndResetNodes(nodes as NodeTypes[]);
 
     const trackedAssignPositionIndices = performanceTracker.time(
-      "assignPositionIndices_in_store.tsx",
+      "assignPositionIndices",
       assignPositionIndices,
     );
     const [assignedNodes, sourceToTargets] = trackedAssignPositionIndices(
@@ -179,7 +179,7 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
     );
 
     const trackedAddSymmetricalOffsetForVariations = performanceTracker.time(
-      "addSymmetricalOffsetForVariations_in_store.tsx",
+      "addSymmetricalOffsetForVariations",
       addSymmetricalOffsetForVariations,
     );
     const yOffsetNodes =
