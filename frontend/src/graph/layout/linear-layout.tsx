@@ -24,6 +24,10 @@ export const applyLinearLayout = (
       return {
         ...node,
         parentId: undefined, // reset parentId for linear layout
+        data: {
+          ...node.data,
+          isReversed: false, // reset isReversed for linear layout
+        },
         position: {
           x: xPosition,
           y: node.position.y, // already assigned y-offset
@@ -44,6 +48,10 @@ export const applyLinearLayout = (
     return {
       ...node,
       parentId: undefined, // reset parentId for linear layout
+      data: {
+        ...node.data,
+        isReversed: false, // reset isReversed for linear layout
+      },
       position: {
         x: xPosition,
         y: node.position.y,
