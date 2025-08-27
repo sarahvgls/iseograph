@@ -58,6 +58,7 @@ import {
   MenuStackContainer,
   OverlayContainer,
 } from "../components/base-components/graph-wrapper.tsx";
+import DownloadButton from "../components/download-button/download-button.tsx";
 
 // Split the selectors to minimize re-renders
 const graphDataSelector = (state: RFState) => ({
@@ -509,6 +510,7 @@ const Flow = memo(() => {
             positionIndex={1}
             isShifted={shouldShiftButtons}
           />
+          <DownloadButton />
           <SettingsButton
             setIsSettingsOpen={setIsSideMenuOpen}
             isShifted={shouldShiftButtons}

@@ -23,6 +23,7 @@
     "@mui/material": "^7.2.0",
     "@xyflow/react": "^12.6.0",
     "drage": "^1.0.1",
+    "html-to-image": "1.11.11",
     "mobx": "^6.13.7",
     "mobx-react-lite": "^4.1.0",
     "react": "^19.1.0",
