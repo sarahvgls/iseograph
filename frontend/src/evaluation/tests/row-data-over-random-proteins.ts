@@ -13,7 +13,7 @@ const customDownloadPath = path.join(__dirname, "./../downloads");
 
 (async () => {
   // scrape uniprot for random proteins
-  const NUM_PROTEINS = 3;
+  const NUM_PROTEINS = 1000;
   const file_names = [
     "./../uniprotkb_ft_positional_VAR_SEQ_2025_08_26.list",
     "./../uniprotkb_AND_reviewed_true_2025_08_27.list",
