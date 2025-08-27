@@ -64,6 +64,12 @@ import {
   exportPerformanceCSV,
   startTracking,
 } from "../evaluation/performance-tracker.ts";
+import {
+  clearMeasuringData,
+  endMeasuring,
+  exportMeasuringCSV,
+  startMeasuring,
+} from "../evaluation/measuring-tracker.ts";
 
 // Split the selectors to minimize re-renders
 const graphDataSelector = (state: RFState) => ({
@@ -220,6 +226,7 @@ const Flow = memo(() => {
       const timer = setTimeout(() => {
         focusNode(nodeToBeFocused);
         endTracking();
+        endMeasuring();
       }, theme.delay.graphRerendering);
 
       return () => clearTimeout(timer);
@@ -237,6 +244,13 @@ const Flow = memo(() => {
       const layoutMode = useGraphStore.getState().layoutMode;
       const nodeWidthMode = useGraphStore.getState().nodeWidthMode;
       startTracking({
+        type: "full_rerender",
+        layoutMode,
+        nodeWidthMode,
+        timestamp: new Date().toISOString(),
+      });
+
+      startMeasuring({
         type: "full_rerender",
         layoutMode,
         nodeWidthMode,
@@ -578,16 +592,28 @@ const Flow = memo(() => {
         </StyledPanel>
         <Panel position={"center-left"}>
           <button
-            data-testId={"reset-button"}
+            data-testId={"reset-performance-button"}
             onClick={() => clearPerformanceData()}
           >
             Reset Performance Data
           </button>
           <button
-            data-testId={"export-button"}
+            data-testId={"export-performance-button"}
             onClick={() => exportPerformanceCSV()}
           >
-            Export CSV
+            Export Performance CSV
+          </button>
+          <button
+            data-testId={"reset-measuring-button"}
+            onClick={() => clearMeasuringData()}
+          >
+            Reset Measuring Data
+          </button>
+          <button
+            data-testId={"export-measuring-button"}
+            onClick={() => exportMeasuringCSV()}
+          >
+            Export Measuring CSV
           </button>
         </Panel>
       </OverlayContainer>

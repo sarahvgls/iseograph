@@ -2,6 +2,7 @@ import { StyledSection } from "../base-components";
 import styled from "styled-components";
 import { useEffect, useRef } from "react";
 import { endTracking } from "../../evaluation/performance-tracker.ts";
+import { endMeasuring } from "../../evaluation/measuring-tracker.ts";
 
 const InfoBox = styled(StyledSection)`
   position: absolute;
@@ -73,6 +74,7 @@ export const LoadingBackdrop = ({ isLoading }: { isLoading: boolean }) => {
       // Delay the endTracking call to ensure UI has updated
       endTrackingTimeoutRef.current = window.setTimeout(() => {
         endTracking();
+        endMeasuring();
         // exportPerformanceCSV();
         endTrackingTimeoutRef.current = null;
       }, 1);

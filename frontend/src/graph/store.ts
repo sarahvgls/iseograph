@@ -39,6 +39,10 @@ import {
   generateIsoformColorMatching,
 } from "./generation-utils/nodes-edges.tsx";
 import { performanceTracker } from "../evaluation/performance-tracker.ts";
+import {
+  measuringTracker,
+  recordEdgeMeasurements,
+} from "../evaluation/measuring-tracker.ts";
 
 export type SourceToTargets = Record<
   string,
@@ -208,6 +212,41 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
       preparedNodes,
       sourceToTargets,
     );
+
+    // Record edge measurements after layout is applied
+    if (measuringTracker.isCurrentlyTracking()) {
+      const edgeMeasurements = edges.map((edge) => {
+        const sourceNode = layoutedNodes.find((n) => n.id === edge.source);
+        const targetNode = layoutedNodes.find((n) => n.id === edge.target);
+
+        console.log(
+          "positions: ",
+          sourceNode?.position.x,
+          sourceNode?.position.y,
+          targetNode?.position.x,
+          targetNode?.position.y,
+        );
+        const length =
+          sourceNode && targetNode
+            ? Math.sqrt(
+                Math.pow(targetNode.position.x - sourceNode.position.x, 2) +
+                  Math.pow(targetNode.position.y - sourceNode.position.y, 2),
+              )
+            : 0; // No length
+        console.log(`Edge ${edge.id} length: ${length}`);
+
+        return {
+          edgeId: edge.id,
+          sourceId: edge.source,
+          targetId: edge.target,
+          length,
+          peptideCount: edge.data?.peptideCount,
+          isoforms: edge.data?.isoforms,
+        };
+      });
+
+      recordEdgeMeasurements(edgeMeasurements);
+    }
 
     set({
       nodes: layoutedNodes,

@@ -315,6 +315,6 @@ export const exportPerformanceCSV = (filename?: string) => performanceTracker.ex
 export const showPerformanceSummary = () => performanceTracker.getSummary();
 export const clearPerformanceData = () => performanceTracker.clearData();
 
-// If you want to track specific functions without modifying them, you can do:
+// To track specific functions without modifying them:
 // const trackedFunction = performanceTracker.time('functionName', originalFunction);
 // const trackedAsyncFunction = performanceTracker.timeAsync('asyncFunctionName', originalAsyncFunction);
