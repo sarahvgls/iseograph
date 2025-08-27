@@ -103,7 +103,7 @@ export const shiftNodesOfOverlappingEdges = (
           node.data.positionIndex > sourceNode.data.positionIndex &&
           node.data.positionIndex < targetNode.data.positionIndex,
       );
-      if (
+      while (
         inBetweenNodes.some((node) => node.position.y === sourceNode.position.y)
       ) {
         // shift all nodes in between in y direction to avoid overlap
