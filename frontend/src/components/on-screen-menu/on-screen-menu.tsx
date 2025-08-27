@@ -13,8 +13,9 @@ import { theme } from "../../theme";
 import { layoutModes, nodeTypes, nodeWidthModes } from "../../theme/types.tsx";
 import { Switch } from "../base-components/switch.tsx";
 import type { SequenceNodeProps } from "../sequence-node/sequence-node.props.tsx";
-import { startTracking } from "../../evaluation/performance-tracker.ts";
-import { startMeasuring } from "../../evaluation/measuring-tracker.ts";
+import { startTracking } from "../../evaluation/trackers/performance-tracker.ts";
+import { startMeasuring } from "../../evaluation/trackers/edge-measuring-tracker.ts";
+import { startRowTracking } from "../../evaluation/trackers/row-tracker.ts";
 
 const MenuContainer = styled.div<{ isOpen: boolean }>`
   display: flex;
@@ -113,6 +114,10 @@ export const OnScreenMenu = ({
       timestamp: new Date().toISOString(),
     });
     startMeasuring({
+      action: "layout changed to " + mode,
+      timestamp: new Date().toISOString(),
+    });
+    startRowTracking({
       action: "layout changed to " + mode,
       timestamp: new Date().toISOString(),
     });

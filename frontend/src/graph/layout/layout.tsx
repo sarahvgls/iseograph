@@ -6,7 +6,7 @@ import { defaultValues, theme } from "../../theme";
 import { applySnakeLayout } from "./snake-layout.tsx";
 import { applyLinearLayout } from "./linear-layout.tsx";
 import { type SourceToTargets } from "../store";
-import { performanceTracker } from "../../evaluation/performance-tracker.ts";
+import { performanceTracker } from "../../evaluation/trackers/performance-tracker.ts";
 
 export function filterAndResetNodes(nodes: NodeTypes[]): SequenceNodeProps[] {
   // remove groups and reset layouting properties

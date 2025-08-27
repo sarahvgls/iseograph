@@ -1,5 +1,3 @@
-import "./index.ts";
-
 import ReactDOM from "react-dom/client";
 import { ReactFlowProvider } from "@xyflow/react";
 

@@ -63,13 +63,19 @@ import {
   endTracking,
   exportPerformanceCSV,
   startTracking,
-} from "../evaluation/performance-tracker.ts";
+} from "../evaluation/trackers/performance-tracker.ts";
 import {
   clearMeasuringData,
   endMeasuring,
   exportMeasuringCSV,
   startMeasuring,
-} from "../evaluation/measuring-tracker.ts";
+} from "../evaluation/trackers/edge-measuring-tracker.ts";
+import {
+  clearRowData,
+  endRowTracking,
+  exportRowCSV,
+  startRowTracking,
+} from "../evaluation/trackers/row-tracker.ts";
 
 // Split the selectors to minimize re-renders
 const graphDataSelector = (state: RFState) => ({
@@ -227,6 +233,7 @@ const Flow = memo(() => {
         focusNode(nodeToBeFocused);
         endTracking();
         endMeasuring();
+        endRowTracking();
       }, theme.delay.graphRerendering);
 
       return () => clearTimeout(timer);
@@ -243,19 +250,16 @@ const Flow = memo(() => {
 
       const layoutMode = useGraphStore.getState().layoutMode;
       const nodeWidthMode = useGraphStore.getState().nodeWidthMode;
-      startTracking({
+      const context = {
         type: "full_rerender",
         layoutMode,
         nodeWidthMode,
         timestamp: new Date().toISOString(),
-      });
+      };
 
-      startMeasuring({
-        type: "full_rerender",
-        layoutMode,
-        nodeWidthMode,
-        timestamp: new Date().toISOString(),
-      });
+      startTracking(context);
+      startMeasuring(context);
+      startRowTracking(context);
     } else if (!shouldRerender) {
       initializationTriggeredRef.current = false;
     }
@@ -614,6 +618,18 @@ const Flow = memo(() => {
             onClick={() => exportMeasuringCSV()}
           >
             Export Measuring CSV
+          </button>
+          <button
+            data-testId={"reset-row-button"}
+            onClick={() => clearRowData()}
+          >
+            Reset Row Data
+          </button>
+          <button
+            data-testId={"export-row-button"}
+            onClick={() => exportRowCSV()}
+          >
+            Export Row CSV
           </button>
         </Panel>
       </OverlayContainer>

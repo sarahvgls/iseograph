@@ -18,8 +18,8 @@ interface MeasuringSessionData {
   context: Record<string, any>;
 }
 
-class MeasuringTracker {
-  private static instance: MeasuringTracker;
+class EdgeMeasuringTracker {
+  private static instance: EdgeMeasuringTracker;
   private isTracking = false;
   private sessionStartTime = 0;
   private sessionId = "";
@@ -27,11 +27,11 @@ class MeasuringTracker {
   private sessionContext: Record<string, any> = {};
   private allSessions: MeasuringSessionData[] = [];
 
-  static getInstance(): MeasuringTracker {
-    if (!MeasuringTracker.instance) {
-      MeasuringTracker.instance = new MeasuringTracker();
+  static getInstance(): EdgeMeasuringTracker {
+    if (!EdgeMeasuringTracker.instance) {
+      EdgeMeasuringTracker.instance = new EdgeMeasuringTracker();
     }
-    return MeasuringTracker.instance;
+    return EdgeMeasuringTracker.instance;
   }
 
   startTracking(context: Record<string, any> = {}): void {
@@ -112,6 +112,8 @@ class MeasuringTracker {
     sourceId: string,
     targetId: string,
     length: number,
+    peptideCount?: number,
+    isoforms?: string[],
   ): void {
     if (!this.isTracking) {
       return;
@@ -122,6 +124,8 @@ class MeasuringTracker {
       sourceId,
       targetId,
       length,
+      peptideCount,
+      isoforms,
     });
   }
 
@@ -285,7 +289,7 @@ class MeasuringTracker {
   }
 }
 
-export const measuringTracker = MeasuringTracker.getInstance();
+export const measuringTracker = EdgeMeasuringTracker.getInstance();
 
 // Convenience methods for global use
 export const startMeasuring = (context?: Record<string, any>) =>
@@ -296,7 +300,17 @@ export const recordEdgeMeasurement = (
   sourceId: string,
   targetId: string,
   length: number,
-) => measuringTracker.recordEdge(edgeId, sourceId, targetId, length);
+  peptideCount?: number,
+  isoforms?: string[],
+) =>
+  measuringTracker.recordEdge(
+    edgeId,
+    sourceId,
+    targetId,
+    length,
+    peptideCount,
+    isoforms,
+  );
 export const recordEdgeMeasurements = (edges: EdgeMeasurement[]) =>
   measuringTracker.recordEdges(edges);
 export const exportMeasuringCSV = (filename?: string) =>

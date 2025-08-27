@@ -38,11 +38,11 @@ import {
   createNodes,
   generateIsoformColorMatching,
 } from "./generation-utils/nodes-edges.tsx";
-import { performanceTracker } from "../evaluation/performance-tracker.ts";
+import { performanceTracker } from "../evaluation/trackers/performance-tracker.ts";
 import {
   measuringTracker,
   recordEdgeMeasurements,
-} from "../evaluation/measuring-tracker.ts";
+} from "../evaluation/trackers/edge-measuring-tracker.ts";
 
 export type SourceToTargets = Record<
   string,
