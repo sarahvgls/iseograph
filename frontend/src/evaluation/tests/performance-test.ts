@@ -11,7 +11,7 @@ const __dirname = path.dirname(__filename);
   const testStartTime = Date.now();
 
   // Define a custom download path.
-  const customDownloadPath = path.join(__dirname, "downloads");
+  const customDownloadPath = path.join(__dirname, "./../downloads");
 
   // Launch a new browser instance
   const browser = await chromium.launch();

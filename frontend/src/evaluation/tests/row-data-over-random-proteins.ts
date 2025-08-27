@@ -75,8 +75,8 @@ const customDownloadPath = path.join(__dirname, "./../downloads");
     await page.goto("http://localhost:5173/static/", { timeout: 60000 });
 
     // Reset measuring data
-    await page.click('[data-testId="reset-measuring-button"]');
-    console.log("Reset measuring data.");
+    await page.click('[data-testId="reset-row-button"]');
+    console.log("Reset row data.");
 
     let stepStartTime = Date.now();
 
@@ -106,6 +106,30 @@ const customDownloadPath = path.join(__dirname, "./../downloads");
       await page.click('[data-testId="close-menu-button"]');
       console.log("Closed side menu.");
 
+      // select expanded nodes
+      stepStartTime = Date.now();
+      // Click the option
+      await page.click(
+        `[data-testid="node-width-mode-switch-option-expanded"]`,
+        { timeout: 600000 }, // 10 minutes
+      );
+
+      // Wait for the switch to finish loading and have the option selected
+      await page.waitForFunction(
+        (option) => {
+          const switchElement = document.querySelector(
+            '[data-testid="node-width-mode-switch"]',
+          );
+          return (
+            switchElement &&
+            switchElement.getAttribute("data-selected") === option &&
+            switchElement.getAttribute("data-loading") === "false"
+          );
+        },
+        "expanded",
+        { timeout: 600000 }, // 10 minutes
+      );
+
       // change to linear layout
       stepStartTime = Date.now();
       console.log("Switching layout mode to linear");
@@ -132,6 +156,29 @@ const customDownloadPath = path.join(__dirname, "./../downloads");
 
       await page.waitForTimeout(500);
 
+      // switch back to snake layout
+      await page.click(
+        `[data-testid="layout-mode-switch-option-snake"]`,
+        { timeout: 600000 }, // 10 minutes
+      );
+
+      await page.waitForFunction(
+        () => {
+          const switchElement = document.querySelector(
+            '[data-testid="layout-mode-switch"]',
+          );
+          return (
+            switchElement &&
+            switchElement.getAttribute("data-selected") === "snake" &&
+            switchElement.getAttribute("data-loading") === "false"
+          );
+        },
+        {},
+        { timeout: 600000 }, // 10 minutes
+      );
+
+      await page.waitForTimeout(500);
+
       console.log(`Protein ${protein} successfully. Trying next one...`);
     }
 
@@ -139,25 +186,22 @@ const customDownloadPath = path.join(__dirname, "./../downloads");
     try {
       console.log("Attempting to export measuring data...");
       stepStartTime = Date.now();
-      await page.waitForSelector(
-        '[data-testId="export-measuring-button"]:enabled',
-        {
-          timeout: 600000, // 10 minute
-        },
-      );
+      await page.waitForSelector('[data-testId="export-row-button"]:enabled', {
+        timeout: 600000, // 10 minute
+      });
       console.log(`Export button ready. (${Date.now() - stepStartTime}ms)`);
 
       stepStartTime = Date.now();
       const [download] = await Promise.all([
         page.waitForEvent("download"),
-        page.click('[data-testId="export-measuring-button"]'),
+        page.click('[data-testId="export-row-button"]'),
       ]);
       console.log(
         `Clicked export button and download started. (${Date.now() - stepStartTime}ms)`,
       );
 
       stepStartTime = Date.now();
-      const measuringDataFilename = `measuring_data_${new Date().toISOString().slice(0, 10)}_${new Date().toTimeString().slice(0, 8).replace(/:/g, "-")}.csv`;
+      const measuringDataFilename = `row_data_${new Date().toISOString().slice(0, 10)}_${new Date().toTimeString().slice(0, 8).replace(/:/g, "-")}.csv`;
       await download.saveAs(
         path.join(customDownloadPath, measuringDataFilename),
       );
@@ -165,7 +209,7 @@ const customDownloadPath = path.join(__dirname, "./../downloads");
         `Download saved to: ${path.join(customDownloadPath, measuringDataFilename)} (${Date.now() - stepStartTime}ms)`,
       );
     } catch (exportError) {
-      console.error("Failed to export measuring data:", exportError.message);
+      console.error("Failed to export row data:", exportError.message);
     }
 
     await browser.close();

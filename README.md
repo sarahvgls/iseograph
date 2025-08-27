@@ -20,3 +20,11 @@ All reviewed proteins have been downloaded from UniProt on 27th of August 2025. 
 
 All reviewed proteins with annotated variants and isoforms have been downloaded from UniProt on 26th of August 2025. The
 file can be found at `uniprotkb_ft_positional_VAR_SEQ_2025_08_26.list`
+
+#### Row data
+
+Per protein:
+
+1. session: snake but collapsed (should be omitted)
+2. session: linear expanded
+3. session: snake expanded
