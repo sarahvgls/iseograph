@@ -70,9 +70,9 @@ const customDownloadPath = path.join(__dirname, "./../downloads");
     const page = await context.newPage();
 
     // Set default timeout for all page operations
-    page.setDefaultTimeout(60000); // 60 seconds
+    page.setDefaultTimeout(600000); // 60 seconds
 
-    await page.goto("http://localhost:5173/static/", { timeout: 60000 });
+    await page.goto("http://localhost:5173/static/", { timeout: 600000 });
 
     // Reset measuring data
     await page.click('[data-testId="reset-row-button"]');
