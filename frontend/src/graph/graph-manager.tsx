@@ -594,7 +594,15 @@ const Flow = memo(() => {
             />
           </MenuStackContainer>
         </StyledPanel>
-        <Panel position={"center-left"}>
+        <Panel
+          position={"center-left"}
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "10px",
+            pointerEvents: "auto",
+          }}
+        >
           <button
             data-testId={"reset-performance-button"}
             onClick={() => clearPerformanceData()}
