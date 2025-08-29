@@ -254,6 +254,9 @@ def generate_base_graph(request):
     elif protein_id != uniprot_id:
         # case: given protein name was converted to uniprot id: name file with original id
         output_file = "-of " + custom_file_name
+    substitute = ""
+    if "substitute" in data:
+        substitute = "-raa 'L->J' -raa 'I->J' "
 
     cmd_string = f"protgraph -egraphml {path_to_protein_file} \
                     --export_output_folder={output_folder_path} \
@@ -267,6 +270,7 @@ def generate_base_graph(request):
                     {m_aggregation} \
                     {o_aggregation} \
                     {output_file} \
+                    {substitute} \
                     -d skip -o {output_folder_path}/statistics.csv"
 
     subprocess.run(cmd_string, shell=True)
