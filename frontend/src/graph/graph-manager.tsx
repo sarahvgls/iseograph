@@ -639,6 +639,12 @@ const Flow = memo(() => {
           >
             Export Row CSV
           </button>
+          <button
+            data-testId={"select-all-isoforms"}
+            onClick={() => store.getState().selectAllIsoforms()}
+          >
+            Select All Isoforms
+          </button>
         </Panel>
       </OverlayContainer>
     ),

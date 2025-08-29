@@ -79,6 +79,7 @@ export type RFState = {
   selectedIsoforms: string[];
   toggleIsoformSelection: (isoform: string) => void;
   deselectAllIsoforms: () => void;
+  selectAllIsoforms: () => void;
   updateIsoformColor: (isoform: string, color: string) => void;
   nodeExtremes: ExtremesBySource;
   edgeExtremes: ExtremesBySource;
@@ -384,15 +385,14 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
   deselectAllIsoforms: () => {
     set({ selectedIsoforms: [] });
   },
-  // comment out when shortcut needed
-  // deselectAllIsoforms: () => {
-  //   const allIsoforms = Object.keys(get().isoformColorMapping).filter(
-  //     (isoform) => isoform !== "Default",
-  //   );
-  //   set({ selectedIsoforms: allIsoforms });
-  //
-  //   localStorage.setItem("selectedIsoforms", JSON.stringify(allIsoforms));
-  // },
+  selectAllIsoforms: () => {
+    const allIsoforms = Object.keys(get().isoformColorMapping).filter(
+      (isoform) => isoform !== "Default",
+    );
+    set({ selectedIsoforms: allIsoforms });
+
+    localStorage.setItem("selectedIsoforms", JSON.stringify(allIsoforms));
+  },
   updateIsoformColor: (isoform: string, color: string) => {
     const { isoformColorMapping } = get();
     const updatedMapping = {
