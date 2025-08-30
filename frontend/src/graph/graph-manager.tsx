@@ -278,12 +278,7 @@ const Flow = memo(() => {
   // --- Initialization logic ---
   useEffect(() => {
     // Skip if not initializing or already completed
-    if (
-      !isInitializing ||
-      initializationCompletedRef.current ||
-      isUpdatingRef.current === false
-    )
-      return;
+    if (!isInitializing || initializationCompletedRef.current) return;
     console.log("... initializing ..");
 
     applyLocalStorageValues(setSelectedFile);
@@ -304,77 +299,67 @@ const Flow = memo(() => {
       return;
     }
 
-    // Use a single timeout for the entire initialization process
-    const initTimeout = setTimeout(() => {
-      console.log("Applying layout and width modes");
+    console.log("Applying layout and width modes");
 
-      setNodeWidthMode(nodeWidthMode);
-      setLayoutMode(layoutMode);
+    setNodeWidthMode(nodeWidthMode);
+    setLayoutMode(layoutMode);
 
-      // Wait for layout to complete before rendering graphs
-      setTimeout(() => {
-        nodes = useGraphStore.getState().nodes; // Refresh nodes after layout application
+    nodes = useGraphStore.getState().nodes; // Refresh nodes after layout application
 
-        setTopGraphComponent(
-          renderGraph(
-            intensitySourceTop,
-            true,
-            glowMethod === glowMethods.intensity
-              ? `Intensity source: ${intensitySourceTop}`
-              : "Intensity highlighted by count of peptides",
-            isDualGraphMode,
-            nodes,
-            edges,
-            onNodesChange,
-            onEdgesChange,
-            allowInteraction,
-            handleNodeClick,
-            fitViewOptions,
-          ),
-        );
+    setTopGraphComponent(
+      renderGraph(
+        intensitySourceTop,
+        true,
+        glowMethod === glowMethods.intensity
+          ? `Intensity source: ${intensitySourceTop}`
+          : "Intensity highlighted by count of peptides",
+        isDualGraphMode,
+        nodes,
+        edges,
+        onNodesChange,
+        onEdgesChange,
+        allowInteraction,
+        handleNodeClick,
+        fitViewOptions,
+      ),
+    );
 
-        if (!isDualGraphMode) {
-          setBottomGraphComponent(
-            renderGraph(
-              intensitySourceBottom,
-              false,
-              `Intensity source: ${intensitySourceBottom}`,
-              isDualGraphMode,
-              nodes,
-              edges,
-              onNodesChange,
-              onEdgesChange,
-              allowInteraction,
-              handleNodeClick,
-              fitViewOptions,
-            ),
-          );
-        }
+    if (!isDualGraphMode) {
+      setBottomGraphComponent(
+        renderGraph(
+          intensitySourceBottom,
+          false,
+          `Intensity source: ${intensitySourceBottom}`,
+          isDualGraphMode,
+          nodes,
+          edges,
+          onNodesChange,
+          onEdgesChange,
+          allowInteraction,
+          handleNodeClick,
+          fitViewOptions,
+        ),
+      );
+    }
 
-        // Focus first node after a short delay
-        if (nodes.length > 0) {
-          const firstSequenceNode = nodes.find(
-            (node) => node.type === nodeTypes.SequenceNode,
-          ) as SequenceNodeProps | undefined;
+    // Focus first node after a short delay
+    if (nodes.length > 0) {
+      const firstSequenceNode = nodes.find(
+        (node) => node.type === nodeTypes.SequenceNode,
+      ) as SequenceNodeProps | undefined;
 
-          if (firstSequenceNode) {
-            setTimeout(() => {
-              focusNodeWithDelay(firstSequenceNode);
-            }, 200);
-          }
-        }
+      if (firstSequenceNode) {
+        focusNodeWithDelay(firstSequenceNode);
+      }
+    }
 
-        // Mark initialization as complete and reset states
-        console.log("Initialization completed");
-        setIsInitializing(false);
-        initializationTriggeredRef.current = false;
-        initializationCompletedRef.current = true;
-        isUpdatingRef.current = false;
-        store.setState({ shouldRerender: false });
-      }, 150); // Wait for layout to complete
-    }, 100);
-
-    return () => clearTimeout(initTimeout);
+    // Mark initialization as complete and reset states
+    console.log("Initialization completed");
+    setIsInitializing(false);
+    initializationTriggeredRef.current = false;
+    initializationCompletedRef.current = true;
+    isUpdatingRef.current = false;
+    store.setState({ shouldRerender: false });
   }, [
     isInitializing,
     focusNodeWithDelay,
