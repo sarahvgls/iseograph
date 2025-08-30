@@ -177,10 +177,10 @@ export const createEdges = (
       overallIntensityExtremesBySource,
     );
 
-    const isoformList = convertIsoformStringToList(
-      edge.data.isoformString || "",
-    );
-    console.log(isoformList);
+    // const isoformList = convertIsoformStringToList(
+    //   edge.data.isoformString || "",
+    // );
+    // console.log(isoformList);
 
     return {
       ...edge,

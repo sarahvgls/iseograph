@@ -159,6 +159,7 @@ function renderGraph(
 }
 
 const Flow = memo(() => {
+  console.log("Rendering Flow component");
   const [isInitializing, setIsInitializing] = useState(false);
   const [hasNoData, setHasNoData] = useState(false);
   const initializationTriggeredRef = useRef(false);
@@ -250,16 +251,16 @@ const Flow = memo(() => {
 
       const layoutMode = useGraphStore.getState().layoutMode;
       const nodeWidthMode = useGraphStore.getState().nodeWidthMode;
-      const context = {
-        type: "full_rerender",
-        layoutMode,
-        nodeWidthMode,
-        timestamp: new Date().toISOString(),
-      };
-
-      startTracking(context);
-      startMeasuring(context);
-      startRowTracking(context);
+      // const context = {
+      //   type: "full_rerender",
+      //   layoutMode,
+      //   nodeWidthMode,
+      //   timestamp: new Date().toISOString(),
+      // };
+      //
+      // startTracking(context);
+      // startMeasuring(context);
+      // startRowTracking(context);
     } else if (!shouldRerender) {
       initializationTriggeredRef.current = false;
     }
