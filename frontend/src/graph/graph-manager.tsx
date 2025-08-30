@@ -164,6 +164,8 @@ const Flow = memo(() => {
   const [hasNoData, setHasNoData] = useState(false);
   const initializationTriggeredRef = useRef(false);
   const initializationCompletedRef = useRef(false);
+  const isUpdatingRef = useRef(false); // Add flag to prevent concurrent updates
+
   const { nodes, edges, onNodesChange, onEdgesChange } = useGraphStore(
     graphDataSelector,
     shallow,
@@ -232,6 +234,7 @@ const Flow = memo(() => {
     (nodeToBeFocused: SequenceNodeProps) => {
       const timer = setTimeout(() => {
         focusNode(nodeToBeFocused);
+        console.log("Ending tracking in focusNodeWithDelay");
         endTracking();
         endMeasuring();
         endRowTracking();
@@ -244,10 +247,15 @@ const Flow = memo(() => {
 
   // --- Initialization trigger effect ---
   useEffect(() => {
-    if (shouldRerender && !initializationTriggeredRef.current) {
+    if (
+      shouldRerender &&
+      !initializationTriggeredRef.current &&
+      !isUpdatingRef.current
+    ) {
       console.log("Initialization triggered");
       setIsInitializing(true);
       initializationTriggeredRef.current = true;
+      isUpdatingRef.current = true;
 
       const layoutMode = useGraphStore.getState().layoutMode;
       const nodeWidthMode = useGraphStore.getState().nodeWidthMode;
@@ -263,13 +271,20 @@ const Flow = memo(() => {
       // startRowTracking(context);
     } else if (!shouldRerender) {
       initializationTriggeredRef.current = false;
+      isUpdatingRef.current = false;
     }
   }, [shouldRerender]);
 
   // --- Initialization logic ---
   useEffect(() => {
     // Skip if not initializing or already completed
-    if (!isInitializing || initializationCompletedRef.current) return;
+    if (
+      !isInitializing ||
+      initializationCompletedRef.current ||
+      isUpdatingRef.current === false
+    )
+      return;
+    console.log("... initializing ..");
 
     applyLocalStorageValues(setSelectedFile);
 
@@ -283,6 +298,7 @@ const Flow = memo(() => {
       );
       setIsInitializing(false);
       initializationTriggeredRef.current = false;
+      isUpdatingRef.current = false;
       setIsSideMenuOpen(true);
       setHasNoData(true);
       return;
@@ -290,32 +306,36 @@ const Flow = memo(() => {
 
     // Use a single timeout for the entire initialization process
     const initTimeout = setTimeout(() => {
+      console.log("Applying layout and width modes");
+
       setNodeWidthMode(nodeWidthMode);
       setLayoutMode(layoutMode);
 
-      nodes = useGraphStore.getState().nodes; // Refresh nodes after layout application
+      // Wait for layout to complete before rendering graphs
+      setTimeout(() => {
+        nodes = useGraphStore.getState().nodes; // Refresh nodes after layout application
 
-      setTopGraphComponent(
-        renderGraph(
-          intensitySourceTop,
-          true,
-          glowMethod === glowMethods.intensity
-            ? `Intensity source: ${intensitySourceTop}`
-            : "Intensity highlighted by count of peptides",
-          isDualGraphMode,
-          nodes,
-          edges,
-          onNodesChange,
-          onEdgesChange,
-          allowInteraction,
-          handleNodeClick,
-          fitViewOptions,
-        ),
-      );
-      setBottomGraphComponent(
-        isDualGraphMode
-          ? null
-          : renderGraph(
+        setTopGraphComponent(
+          renderGraph(
+            intensitySourceTop,
+            true,
+            glowMethod === glowMethods.intensity
+              ? `Intensity source: ${intensitySourceTop}`
+              : "Intensity highlighted by count of peptides",
+            isDualGraphMode,
+            nodes,
+            edges,
+            onNodesChange,
+            onEdgesChange,
+            allowInteraction,
+            handleNodeClick,
+            fitViewOptions,
+          ),
+        );
+
+        if (!isDualGraphMode) {
+          setBottomGraphComponent(
+            renderGraph(
               intensitySourceBottom,
               false,
               `Intensity source: ${intensitySourceBottom}`,
@@ -328,26 +348,31 @@ const Flow = memo(() => {
               handleNodeClick,
               fitViewOptions,
             ),
-      );
-
-      // Focus first node
-      if (nodes.length > 0) {
-        const firstSequenceNode = nodes.find(
-          (node) => node.type === nodeTypes.SequenceNode,
-        ) as SequenceNodeProps | undefined;
-
-        if (firstSequenceNode) {
-          focusNodeWithDelay(firstSequenceNode);
+          );
         }
-      }
 
-      // Mark initialization as complete and reset states
-      console.log("Initialization completed");
-      setIsInitializing(false);
-      initializationTriggeredRef.current = false;
-      initializationCompletedRef.current = true;
-      store.setState({ shouldRerender: false });
-    }, 500);
+        // Focus first node after a short delay
+        if (nodes.length > 0) {
+          const firstSequenceNode = nodes.find(
+            (node) => node.type === nodeTypes.SequenceNode,
+          ) as SequenceNodeProps | undefined;
+
+          if (firstSequenceNode) {
+            setTimeout(() => {
+              focusNodeWithDelay(firstSequenceNode);
+            }, 200);
+          }
+        }
+
+        // Mark initialization as complete and reset states
+        console.log("Initialization completed");
+        setIsInitializing(false);
+        initializationTriggeredRef.current = false;
+        initializationCompletedRef.current = true;
+        isUpdatingRef.current = false;
+        store.setState({ shouldRerender: false });
+      }, 150); // Wait for layout to complete
+    }, 100);
 
     return () => clearTimeout(initTimeout);
   }, [
@@ -432,7 +457,7 @@ const Flow = memo(() => {
   );
 
   useEffect(() => {
-    if (isInitializing) {
+    if (isInitializing || isUpdatingRef.current) {
       return;
     }
     setTopGraphComponent(
@@ -465,7 +490,7 @@ const Flow = memo(() => {
   ]);
 
   useEffect(() => {
-    if (!isDualGraphMode || isInitializing) {
+    if (!isDualGraphMode || isInitializing || isUpdatingRef.current) {
       setBottomGraphComponent(null);
       return;
     }
@@ -496,6 +521,7 @@ const Flow = memo(() => {
     onEdgesChange,
     handleNodeClick,
     fitViewOptions,
+    isInitializing,
   ]);
 
   // Memoize UI components that don't need to re-render with graph data

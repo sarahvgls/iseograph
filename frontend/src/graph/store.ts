@@ -336,27 +336,17 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
       return node;
     });
 
+    // Update nodes immediately
+    set({ nodes: updatedNodes });
+
     // Calculate position data if not already done
     if (state.preparedNodes.length === 0) {
       get().calculatePositionData();
     }
 
-    // Reapply layout after changing the individual node width mode
-    if (theme.node.delayedRerendering) {
-      applyLayout(
-        updatedNodes,
-        state.edges,
-        state.layoutMode,
-        state.rowWidth,
-        state.preparedNodes,
-        state.sourceToTargets,
-      ).then((layoutedNodes) => {
-        set({
-          nodes: layoutedNodes,
-        });
-      });
-    } else {
-      setTimeout(() => {
+    // Debounce the layout reapplication to prevent excessive updates
+    const debounceTimeout = setTimeout(
+      () => {
         applyLayout(
           updatedNodes,
           state.edges,
@@ -369,8 +359,12 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
             nodes: layoutedNodes,
           });
         });
-      }, 100);
-    }
+      },
+      theme.node.delayedRerendering ? 0 : 150,
+    );
+
+    // Store timeout reference for potential cleanup
+    return () => clearTimeout(debounceTimeout);
   },
   hoveredNode: null,
   setHoveredNode: (nodeId: string | null) => {
