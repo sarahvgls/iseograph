@@ -20,6 +20,7 @@ interface MeasuringSessionData {
 
 class EdgeMeasuringTracker {
   private static instance: EdgeMeasuringTracker;
+  private isActive = false;
   private isTracking = false;
   private sessionStartTime = 0;
   private sessionId = "";
@@ -35,6 +36,11 @@ class EdgeMeasuringTracker {
   }
 
   startTracking(context: Record<string, any> = {}): void {
+    if (!this.isActive) {
+      console.log("📏 Edge measuring tracker is disabled");
+      return;
+    }
+
     if (this.isTracking) {
       console.warn("⚠️ Measuring tracking already active");
       return;
@@ -115,7 +121,7 @@ class EdgeMeasuringTracker {
     peptideCount?: number,
     isoforms?: string[],
   ): void {
-    if (!this.isTracking) {
+    if (!this.isActive || !this.isTracking) {
       return;
     }
 
@@ -131,7 +137,7 @@ class EdgeMeasuringTracker {
 
   // Method to record multiple edges at once
   recordEdges(edges: EdgeMeasurement[]): void {
-    if (!this.isTracking) {
+    if (!this.isActive || !this.isTracking) {
       return;
     }
 
@@ -287,6 +293,31 @@ class EdgeMeasuringTracker {
   getCurrentMeasurements(): EdgeMeasurement[] {
     return [...this.currentMeasurements];
   }
+
+  // Stop tracking without saving session data
+  stopTracking(): void {
+    if (this.isTracking) {
+      this.isTracking = false;
+      this.currentMeasurements = [];
+      console.log(`🛑 Edge measuring tracking stopped: ${this.sessionId}`);
+    }
+  }
+
+  // Activate or deactivate the tracker
+  activate(active: boolean): void {
+    this.isActive = active;
+    if (!active && this.isTracking) {
+      this.stopTracking();
+    }
+    console.log(
+      `📏 Edge measuring tracker ${active ? "activated" : "deactivated"}`,
+    );
+  }
+
+  // Get activation status
+  getActivationStatus(): boolean {
+    return this.isActive;
+  }
 }
 
 export const measuringTracker = EdgeMeasuringTracker.getInstance();
@@ -317,3 +348,39 @@ export const exportMeasuringCSV = (filename?: string) =>
   measuringTracker.exportToCSV(filename);
 export const showMeasuringSummary = () => measuringTracker.getSummary();
 export const clearMeasuringData = () => measuringTracker.clearData();
+// Stop all tracking across all trackers
+export const stopAllTracking = () => {
+  measuringTracker.stopTracking();
+
+  // Import and stop other trackers
+  try {
+    const { performanceTracker } = require("./performance-tracker");
+    performanceTracker.getInstance().stopTracking();
+  } catch (e) {}
+
+  try {
+    const { rowTracker } = require("./row-tracker");
+    rowTracker.getInstance().stopTracking();
+  } catch (e) {}
+
+  console.log("🛑 All tracking stopped");
+};
+
+export const stopMeasuring = () => measuringTracker.stopTracking();
+export const activateEdgeMeasuring = (active: boolean) =>
+  measuringTracker.activate(active);
+export const activateAllTrackers = (active: boolean) => {
+  measuringTracker.activate(active);
+
+  try {
+    const { performanceTracker } = require("./performance-tracker");
+    performanceTracker.getInstance().activate(active);
+  } catch (e) {}
+
+  try {
+    const { rowTracker } = require("./row-tracker");
+    rowTracker.getInstance().activate(active);
+  } catch (e) {}
+
+  console.log(`🎛️ All trackers ${active ? "activated" : "deactivated"}`);
+};

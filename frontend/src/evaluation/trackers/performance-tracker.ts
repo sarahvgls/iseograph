@@ -18,6 +18,7 @@ interface SessionData {
 
 class PerformanceTracker {
   private static instance: PerformanceTracker;
+  private isActive = true;
   private isTracking = false;
   private sessionStartTime = 0;
   private sessionId = "";
@@ -34,6 +35,10 @@ class PerformanceTracker {
   }
 
   startTracking(context: Record<string, any> = {}): void {
+    if (!this.isActive) {
+      console.log("🚀 Performance tracker is disabled");
+      return;
+    }
     if (this.isTracking) {
       console.warn("⚠️ Performance tracking already active");
       return;
@@ -106,7 +111,7 @@ class PerformanceTracker {
   // Method to wrap function calls for automatic timing
   time<T extends any[], R>(name: string, fn: (...args: T) => R): (...args: T) => R {
     return (...args: T): R => {
-      if (!this.isTracking) {
+      if (!this.isActive || !this.isTracking) {
         return fn(...args);
       }
 
@@ -150,7 +155,7 @@ class PerformanceTracker {
   // Method for async functions
   timeAsync<T extends any[], R>(name: string, fn: (...args: T) => Promise<R>): (...args: T) => Promise<R> {
     return async (...args: T): Promise<R> => {
-      if (!this.isTracking) {
+      if (!this.isActive || !this.isTracking) {
         return fn(...args);
       }
 
@@ -304,6 +309,30 @@ class PerformanceTracker {
     this.allSessions = [];
     console.log("🗑️ All performance data cleared");
   }
+
+  // Stop tracking without saving session data
+  stopTracking(): void {
+    if (this.isTracking) {
+      this.isTracking = false;
+      this.functionStack = [];
+      this.completedTimings = [];
+      console.log(`🛑 Performance tracking stopped: ${this.sessionId}`);
+    }
+  }
+
+  // Activate or deactivate the tracker
+  activate(active: boolean): void {
+    this.isActive = active;
+    if (!active && this.isTracking) {
+      this.stopTracking();
+    }
+    console.log(`🚀 Performance tracker ${active ? "activated" : "deactivated"}`);
+  }
+
+  // Get activation status
+  getActivationStatus(): boolean {
+    return this.isActive;
+  }
 }
 
 export const performanceTracker = PerformanceTracker.getInstance();
@@ -314,6 +343,8 @@ export const endTracking = () => performanceTracker.endTracking();
 export const exportPerformanceCSV = (filename?: string) => performanceTracker.exportToCSV(filename);
 export const showPerformanceSummary = () => performanceTracker.getSummary();
 export const clearPerformanceData = () => performanceTracker.clearData();
+export const stopTracking = () => performanceTracker.stopTracking();
+export const activatePerformanceTracking = (active: boolean) => performanceTracker.activate(active);
 
 // To track specific functions without modifying them:
 // const trackedFunction = performanceTracker.time('functionName', originalFunction);

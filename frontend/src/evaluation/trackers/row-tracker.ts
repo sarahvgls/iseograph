@@ -18,6 +18,7 @@ interface RowSessionData {
 
 class RowTracker {
   private static instance: RowTracker;
+  private isActive = false;
   private isTracking = false;
   private sessionStartTime = 0;
   private sessionId = "";
@@ -33,6 +34,10 @@ class RowTracker {
   }
 
   startTracking(context: Record<string, any> = {}): void {
+    if (!this.isActive) {
+      console.log("📊 Row tracker is disabled");
+      return;
+    }
     if (this.isTracking) {
       console.warn("⚠️ Row tracking already active");
       return;
@@ -118,7 +123,7 @@ class RowTracker {
 
   // Method to record row measurements
   recordRow(rowIndex: number, rowHeight: number, nodesInRow: number): void {
-    if (!this.isTracking) {
+    if (!this.isActive || !this.isTracking) {
       return;
     }
 
@@ -131,7 +136,7 @@ class RowTracker {
 
   // Method to record multiple rows at once
   recordRows(rows: RowMeasurement[]): void {
-    if (!this.isTracking) {
+    if (!this.isActive || !this.isTracking) {
       return;
     }
 
@@ -285,6 +290,29 @@ class RowTracker {
   getCurrentMeasurements(): RowMeasurement[] {
     return [...this.currentMeasurements];
   }
+
+  // Stop tracking without saving session data
+  stopTracking(): void {
+    if (this.isTracking) {
+      this.isTracking = false;
+      this.currentMeasurements = [];
+      console.log(`🛑 Row tracking stopped: ${this.sessionId}`);
+    }
+  }
+
+  // Activate or deactivate the tracker
+  activate(active: boolean): void {
+    this.isActive = active;
+    if (!active && this.isTracking) {
+      this.stopTracking();
+    }
+    console.log(`📊 Row tracker ${active ? "activated" : "deactivated"}`);
+  }
+
+  // Get activation status
+  getActivationStatus(): boolean {
+    return this.isActive;
+  }
 }
 
 export const rowTracker = RowTracker.getInstance();
@@ -304,3 +332,6 @@ export const exportRowCSV = (filename?: string) =>
   rowTracker.exportToCSV(filename);
 export const showRowSummary = () => rowTracker.getSummary();
 export const clearRowData = () => rowTracker.clearData();
+export const stopRowTracking = () => rowTracker.stopTracking();
+export const activateRowTracking = (active: boolean) =>
+  rowTracker.activate(active);
