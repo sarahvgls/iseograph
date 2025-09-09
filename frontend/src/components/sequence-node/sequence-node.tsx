@@ -9,7 +9,7 @@ import styled from "styled-components";
 import type { SequenceNodeProps } from "./sequence-node.props.tsx";
 import { theme } from "../../theme";
 import { SequenceContainer } from "./sequence-container/sequence-container.tsx";
-import { memo, useEffect, useRef, useState } from "react";
+import { memo, useEffect, useRef, useState, useCallback } from "react";
 import useGraphStore, { type RFState } from "../../graph/store.ts";
 import { nodePeptideColor } from "../../controls/peptides-color.tsx";
 import { shallow } from "zustand/vanilla/shallow";
@@ -73,6 +73,7 @@ const SequenceNode = memo(function SequenceNode({
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
   const { currentIntensitySource } = useIntensitySource();
+  const previousIsReversedRef = useRef(data.isReversed);
 
   const {
     maxPeptides,
@@ -95,10 +96,22 @@ const SequenceNode = memo(function SequenceNode({
     shallow,
   );
 
-  // Update node internals when isReversed changes
-  useEffect(() => {
-    updateNodeInternals(id);
+  // Only update node internals when isReversed actually changes, not on every render
+  const updateNodeInternalsCallback = useCallback(() => {
+    if (previousIsReversedRef.current !== data.isReversed) {
+      previousIsReversedRef.current = data.isReversed;
+      // Use setTimeout to prevent immediate re-renders
+      const timeoutId = setTimeout(() => {
+        updateNodeInternals(id);
+      }, 0);
+      return () => clearTimeout(timeoutId);
+    }
   }, [id, data.isReversed, updateNodeInternals]);
+
+  // Call the update function only when needed
+  useEffect(() => {
+    updateNodeInternalsCallback();
+  }, [updateNodeInternalsCallback]);
 
   useEffect(() => {
     if (!containerRef.current) return;

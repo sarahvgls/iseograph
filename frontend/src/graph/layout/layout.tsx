@@ -190,7 +190,7 @@ export const applyLayout = (
   return new Promise((resolve) => {
     // --- main layouting algorithm ---
     if (layoutMode === layoutModes.Basic) {
-      let linearNodes = applyLinearLayout(preparedNodes, sourceToTargets);
+      const linearNodes = applyLinearLayout(preparedNodes, sourceToTargets);
       resolve(linearNodes);
       return;
     } else if (layoutMode === layoutModes.Snake) {

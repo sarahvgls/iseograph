@@ -145,6 +145,8 @@ const Flow = memo(() => {
   const [hasNoData, setHasNoData] = useState(false);
   const initializationTriggeredRef = useRef(false);
   const initializationCompletedRef = useRef(false);
+  const isUpdatingRef = useRef(false); // Add flag to prevent concurrent updates
+
   const { nodes, edges, onNodesChange, onEdgesChange } = useGraphStore(
     graphDataSelector,
     shallow,
@@ -222,17 +224,22 @@ const Flow = memo(() => {
 
   // --- Initialization trigger effect ---
   useEffect(() => {
-    if (shouldRerender && !initializationTriggeredRef.current) {
+    if (
+      shouldRerender &&
+      !initializationTriggeredRef.current &&
+      !isUpdatingRef.current
+    ) {
       setIsInitializing(true);
       initializationTriggeredRef.current = true;
+      isUpdatingRef.current = true;
     } else if (!shouldRerender) {
       initializationTriggeredRef.current = false;
+      isUpdatingRef.current = false;
     }
   }, [shouldRerender]);
 
   // --- Initialization logic ---
   useEffect(() => {
-    if (!isInitializing) return;
     // Skip if not initializing or already completed
     if (!isInitializing || initializationCompletedRef.current) return;
 
@@ -248,25 +255,41 @@ const Flow = memo(() => {
       );
       setIsInitializing(false);
       initializationTriggeredRef.current = false;
+      isUpdatingRef.current = false;
       setIsSideMenuOpen(true);
       setHasNoData(true);
       return;
     }
 
-    // Use a single timeout for the entire initialization process
-    const initTimeout = setTimeout(() => {
-      setNodeWidthMode(nodeWidthMode);
-      setLayoutMode(layoutMode);
+    setNodeWidthMode(nodeWidthMode);
+    setLayoutMode(layoutMode);
 
-      nodes = useGraphStore.getState().nodes; // Refresh nodes after layout application
+    nodes = useGraphStore.getState().nodes; // Refresh nodes after layout application
 
-      setTopGraphComponent(
+    setTopGraphComponent(
+      renderGraph(
+        intensitySourceTop,
+        true,
+        glowMethod === glowMethods.intensity
+          ? `Intensity source: ${intensitySourceTop}`
+          : "Intensity highlighted by count of peptides",
+        isDualGraphMode,
+        nodes,
+        edges,
+        onNodesChange,
+        onEdgesChange,
+        allowInteraction,
+        handleNodeClick,
+        fitViewOptions,
+      ),
+    );
+
+    if (!isDualGraphMode) {
+      setBottomGraphComponent(
         renderGraph(
-          intensitySourceTop,
-          true,
-          glowMethod === glowMethods.intensity
-            ? `Intensity source: ${intensitySourceTop}`
-            : "Intensity highlighted by count of peptides",
+          intensitySourceBottom,
+          false,
+          `Intensity source: ${intensitySourceBottom}`,
           isDualGraphMode,
           nodes,
           edges,
@@ -277,46 +300,25 @@ const Flow = memo(() => {
           fitViewOptions,
         ),
       );
-      setBottomGraphComponent(
-        isDualGraphMode
-          ? null
-          : renderGraph(
-              intensitySourceBottom,
-              false,
-              `Intensity source: ${intensitySourceBottom}`,
-              isDualGraphMode,
-              nodes,
-              edges,
-              onNodesChange,
-              onEdgesChange,
-              allowInteraction,
-              handleNodeClick,
-              fitViewOptions,
-            ),
-      );
+    }
 
-      // Focus first node
-      if (nodes.length > 0) {
-        const firstSequenceNode = nodes.find(
-          (node) => node.type === nodeTypes.SequenceNode,
-        ) as SequenceNodeProps | undefined;
+    // Focus first node after a short delay
+    if (nodes.length > 0) {
+      const firstSequenceNode = nodes.find(
+        (node) => node.type === nodeTypes.SequenceNode,
+      ) as SequenceNodeProps | undefined;
 
-        if (firstSequenceNode) {
-          focusNodeWithDelay(firstSequenceNode);
-        }
+      if (firstSequenceNode) {
+        focusNodeWithDelay(firstSequenceNode);
       }
+    }
 
-      setTimeout(() => {
-        setIsInitializing(false);
-        store.setState({ shouldRerender: false });
-      }, 1000);
-      setIsInitializing(false);
-      initializationTriggeredRef.current = false;
-      initializationCompletedRef.current = true;
-      store.setState({ shouldRerender: false });
-    }, 500);
-
-    return () => clearTimeout(initTimeout);
+    // Mark initialization as complete and reset states
+    setIsInitializing(false);
+    initializationTriggeredRef.current = false;
+    initializationCompletedRef.current = true;
+    isUpdatingRef.current = false;
+    store.setState({ shouldRerender: false });
   }, [
     isInitializing,
     focusNodeWithDelay,
@@ -399,10 +401,9 @@ const Flow = memo(() => {
   );
 
   useEffect(() => {
-    if (isInitializing) {
+    if (isInitializing || isUpdatingRef.current) {
       return;
     }
-
     setTopGraphComponent(
       renderGraph(
         intensitySourceTop,
@@ -433,7 +434,7 @@ const Flow = memo(() => {
   ]);
 
   useEffect(() => {
-    if (!isDualGraphMode || isInitializing) {
+    if (!isDualGraphMode || isInitializing || isUpdatingRef.current) {
       setBottomGraphComponent(null);
       return;
     }
@@ -464,6 +465,7 @@ const Flow = memo(() => {
     onEdgesChange,
     handleNodeClick,
     fitViewOptions,
+    isInitializing,
   ]);
 
   // Memoize UI components that don't need to re-render with graph data
@@ -512,6 +514,7 @@ const Flow = memo(() => {
           <SettingsButton
             setIsSettingsOpen={setIsSideMenuOpen}
             isShifted={shouldShiftButtons}
+            testId="open-menu-button"
           />
         </Panel>
         <MiniMapContainer isOpen={isMapOpen} style={{ pointerEvents: "auto" }}>
