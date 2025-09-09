@@ -58,24 +58,6 @@ import {
   MenuStackContainer,
   OverlayContainer,
 } from "../components/base-components/graph-wrapper.tsx";
-import {
-  clearPerformanceData,
-  endTracking,
-  exportPerformanceCSV,
-  startTracking,
-} from "../evaluation/trackers/performance-tracker.ts";
-import {
-  clearMeasuringData,
-  endMeasuring,
-  exportMeasuringCSV,
-  startMeasuring,
-} from "../evaluation/trackers/edge-measuring-tracker.ts";
-import {
-  clearRowData,
-  endRowTracking,
-  exportRowCSV,
-  startRowTracking,
-} from "../evaluation/trackers/row-tracker.ts";
 
 // Split the selectors to minimize re-renders
 const graphDataSelector = (state: RFState) => ({
@@ -159,7 +141,6 @@ function renderGraph(
 }
 
 const Flow = memo(() => {
-  console.log("Rendering Flow component");
   const [isInitializing, setIsInitializing] = useState(false);
   const [hasNoData, setHasNoData] = useState(false);
   const initializationTriggeredRef = useRef(false);
@@ -234,10 +215,6 @@ const Flow = memo(() => {
     (nodeToBeFocused: SequenceNodeProps) => {
       const timer = setTimeout(() => {
         focusNode(nodeToBeFocused);
-        console.log("Ending tracking in focusNodeWithDelay");
-        endTracking();
-        endMeasuring();
-        endRowTracking();
       }, theme.delay.graphRerendering);
 
       return () => clearTimeout(timer);
@@ -252,23 +229,9 @@ const Flow = memo(() => {
       !initializationTriggeredRef.current &&
       !isUpdatingRef.current
     ) {
-      console.log("Initialization triggered");
       setIsInitializing(true);
       initializationTriggeredRef.current = true;
       isUpdatingRef.current = true;
-
-      const layoutMode = useGraphStore.getState().layoutMode;
-      const nodeWidthMode = useGraphStore.getState().nodeWidthMode;
-      // const context = {
-      //   type: "full_rerender",
-      //   layoutMode,
-      //   nodeWidthMode,
-      //   timestamp: new Date().toISOString(),
-      // };
-      //
-      // startTracking(context);
-      // startMeasuring(context);
-      // startRowTracking(context);
     } else if (!shouldRerender) {
       initializationTriggeredRef.current = false;
       isUpdatingRef.current = false;
@@ -279,7 +242,6 @@ const Flow = memo(() => {
   useEffect(() => {
     // Skip if not initializing or already completed
     if (!isInitializing || initializationCompletedRef.current) return;
-    console.log("... initializing ..");
 
     applyLocalStorageValues(setSelectedFile);
 
@@ -298,8 +260,6 @@ const Flow = memo(() => {
       setHasNoData(true);
       return;
     }
-
-    console.log("Applying layout and width modes");
 
     setNodeWidthMode(nodeWidthMode);
     setLayoutMode(layoutMode);
@@ -354,7 +314,6 @@ const Flow = memo(() => {
     }
 
     // Mark initialization as complete and reset states
-    console.log("Initialization completed");
     setIsInitializing(false);
     initializationTriggeredRef.current = false;
     initializationCompletedRef.current = true;
@@ -606,58 +565,6 @@ const Flow = memo(() => {
             />
           </MenuStackContainer>
         </StyledPanel>
-        <Panel
-          position={"center-left"}
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "10px",
-            pointerEvents: "auto",
-          }}
-        >
-          <button
-            data-testId={"reset-performance-button"}
-            onClick={() => clearPerformanceData()}
-          >
-            Reset Performance Data
-          </button>
-          <button
-            data-testId={"export-performance-button"}
-            onClick={() => exportPerformanceCSV()}
-          >
-            Export Performance CSV
-          </button>
-          <button
-            data-testId={"reset-measuring-button"}
-            onClick={() => clearMeasuringData()}
-          >
-            Reset Measuring Data
-          </button>
-          <button
-            data-testId={"export-measuring-button"}
-            onClick={() => exportMeasuringCSV()}
-          >
-            Export Measuring CSV
-          </button>
-          <button
-            data-testId={"reset-row-button"}
-            onClick={() => clearRowData()}
-          >
-            Reset Row Data
-          </button>
-          <button
-            data-testId={"export-row-button"}
-            onClick={() => exportRowCSV()}
-          >
-            Export Row CSV
-          </button>
-          <button
-            data-testId={"select-all-isoforms"}
-            onClick={() => store.getState().selectAllIsoforms()}
-          >
-            Select All Isoforms
-          </button>
-        </Panel>
       </OverlayContainer>
     ),
     [
