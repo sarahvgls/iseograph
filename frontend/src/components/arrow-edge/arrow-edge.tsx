@@ -57,7 +57,7 @@ export default function ArrowEdge({
       hoveredNode: state.hoveredNode,
       labelVisibility: state.labelVisibility,
       maxPeptides: state.maxPeptidesEdges,
-      extremes: state.edgeExtremes,
+      extremes: state.nodeExtremes,
       colorScale: state.colorScale,
       glowMethod: state.glowMethod,
       intensityMethod: state.intensityMethod,
