@@ -194,10 +194,13 @@ export const ProteinSelection = ({
             value={selectedFile}
             setValue={setSelectedFile}
             options={fileNames}
+            testId={"file-dropdown"}
           />
           <SecondaryButton
             onClick={handleRecentFileSubmit}
             disabled={isLoadLoading}
+            id="load-button"
+            data-status={isLoadLoading ? "loading" : "idle"}
           >
             {isLoadLoading ? <CircularProgress size={20} /> : "Load"}{" "}
           </SecondaryButton>
@@ -211,6 +214,7 @@ export const ProteinSelection = ({
           placeholder={"Enter a protein name"}
           value={newProteinName}
           setValue={setNewProteinName}
+          testId={"new-protein-name-input"}
         />
         <StyledLabel>Generate graph with:</StyledLabel>
         <MultiCompatibleCheckbox
@@ -323,6 +327,9 @@ export const ProteinSelection = ({
           }}
           onClick={handleAddProtein}
           disabled={isAddLoading}
+          id="add-button"
+          data-testid="add-protein-button"
+          data-status={isAddLoading ? "loading" : "idle"}
         >
           {isAddLoading ? <CircularProgress size={20} /> : "Add"}{" "}
         </SecondaryButton>

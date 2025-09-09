@@ -142,6 +142,7 @@ export const OnScreenPeptidesMenu = ({
               setIsOpen(false);
               useGraphStore.setState({ isPeptideMenuFullSize: false });
             }}
+            testId={"peptides-menu-close-button"}
           />
           <PeptidesMenuContainer>
             <div style={{ display: "flex", flexDirection: "row" }}>
