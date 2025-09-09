@@ -1,9 +1,6 @@
 import { StyledSection } from "../base-components";
 import styled from "styled-components";
 import { useEffect, useRef } from "react";
-import { endTracking } from "../../evaluation/trackers/performance-tracker.ts";
-import { endMeasuring } from "../../evaluation/trackers/edge-measuring-tracker.ts";
-import { endRowTracking } from "../../evaluation/trackers/row-tracker.ts";
 
 const InfoBox = styled(StyledSection)`
   position: absolute;
@@ -74,9 +71,6 @@ export const LoadingBackdrop = ({ isLoading }: { isLoading: boolean }) => {
 
       // Delay the endTracking call to ensure UI has updated
       endTrackingTimeoutRef.current = window.setTimeout(() => {
-        // endTracking();
-        // endMeasuring();
-        // endRowTracking();
         endTrackingTimeoutRef.current = null;
       }, 1);
     }
@@ -94,7 +88,6 @@ export const LoadingBackdrop = ({ isLoading }: { isLoading: boolean }) => {
     <div>
       {isLoading && (
         <div
-          data-testId="loading-backdrop"
           style={{
             position: "fixed",
             top: 0,
