@@ -102,14 +102,14 @@ export interface Extremes {
 export type ExtremesBySource = Record<string, Extremes>;
 
 export const ColorScaleOptions = {
-  blueOrange: "blue-orange",
-  greenRed: "green-red",
-  yellowPurple: "yellow-purple",
-  tealCoral: "teal-coral",
-  grayBlack: "gray-black",
-  lightRedDarkRed: "light-red-dark-red",
-  saturatedDesaturatedBlue: "saturated-desaturated-blue",
-  lightGreenDarkTeal: "light-green-dark-teal",
+  blueOrange: "blue to orange",
+  greenRed: "red to green",
+  yellowPurple: "yellow to purple",
+  tealCoral: "coral to teal",
+  grayBlack: "light gray to black",
+  lightRedDarkRed: "light red to dark red",
+  saturatedDesaturatedBlue: "desaturated to saturated blue",
+  lightGreenDarkTeal: "light green to dark teal",
   disabled: "Disabled",
 };
 
