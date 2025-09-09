@@ -131,7 +131,17 @@ export const theme = {
     edgeOpacity: 0.1,
     nodeOpacity: 0.5,
   },
+  // generated using https://venngage.com/tools/accessible-color-palette-generator#colorGenerator
   colors: [
+    "#538c6b",
+    "#e6aca2",
+    "#e3e157",
+    "#9394e1",
+    "#b98279",
+    "#b9aa30",
+    "#2e768c",
+  ],
+  oldColors: [
     defaultPalette.green,
     defaultPalette.yellow,
     defaultPalette.blue,
