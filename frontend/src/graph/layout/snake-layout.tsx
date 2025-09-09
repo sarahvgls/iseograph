@@ -48,7 +48,6 @@ export const applySnakeLayout = (
     const heigthOfCurrentRow =
       maxNumberOfNeighbors * theme.rowNode.heightPerVariation +
       2 * yOffsetByShifting;
-    const numberOfNodesInRow = nodesInLastRow.length;
     rowNodes.push(
       RowNode.create(
         rowId,
@@ -57,7 +56,6 @@ export const applySnakeLayout = (
         maxWidthPerRow,
         heigthOfCurrentRow,
         heightOfAllRows,
-        numberOfNodesInRow,
       ),
     );
 

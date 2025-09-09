@@ -1,7 +1,6 @@
 // Class to encapsulate row node creation logic and constants
 import { theme } from "../../theme";
 import { type Node } from "@xyflow/react";
-import { recordRowMeasurement } from "../../evaluation/trackers/row-tracker.ts";
 
 export class RowNode {
   static style = {
@@ -17,10 +16,7 @@ export class RowNode {
     rowWidth: number,
     rowHeight: number = theme.rowNode.defaultHeight,
     graphHeight: number,
-    numberOfNodesInRow: number = 0,
   ): Node {
-    recordRowMeasurement(rowCount, rowHeight, numberOfNodesInRow);
-
     return {
       id,
       type: "row",

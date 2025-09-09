@@ -4,7 +4,6 @@ import {
   sortNodesByPositionIndex,
 } from "./helper.tsx";
 import { theme } from "../../theme";
-import { recordRowMeasurement } from "../../evaluation/trackers/row-tracker.ts";
 
 // Function that aligns nodes in a linear layout, left to right, on the screen with as little overlapping edges as possible
 export const applyLinearLayout = (
@@ -60,30 +59,7 @@ export const applyLinearLayout = (
     };
   });
 
-  const yOffset = shiftNodesOfOverlappingEdges(linearNodes, sourceToTargets);
-
-  // calculations for measuring the height
-  let maxNumberOfNeighbors = 0;
-  const nodesGroupedByPositionIndex: Record<number, SequenceNodeProps[]> = {};
-  linearNodes.forEach((node) => {
-    const positionIndex = node.data.positionIndex as number;
-    if (!nodesGroupedByPositionIndex[positionIndex]) {
-      nodesGroupedByPositionIndex[positionIndex] = [];
-    }
-    nodesGroupedByPositionIndex[positionIndex].push(node);
-  });
-  // get max number of neighbors
-  Object.values(nodesGroupedByPositionIndex).forEach((nodesAtPosition) => {
-    if (nodesAtPosition.length > maxNumberOfNeighbors) {
-      maxNumberOfNeighbors = nodesAtPosition.length;
-    }
-  });
-
-  const height =
-    maxNumberOfNeighbors * theme.rowNode.heightPerVariation + yOffset;
-
-  recordRowMeasurement(0, height, linearNodes.length);
-
+  shiftNodesOfOverlappingEdges(linearNodes, sourceToTargets);
   return linearNodes;
 };
 
