@@ -74,9 +74,9 @@ export const LoadingBackdrop = ({ isLoading }: { isLoading: boolean }) => {
 
       // Delay the endTracking call to ensure UI has updated
       endTrackingTimeoutRef.current = window.setTimeout(() => {
-        endTracking();
-        endMeasuring();
-        endRowTracking();
+        // endTracking();
+        // endMeasuring();
+        // endRowTracking();
         endTrackingTimeoutRef.current = null;
       }, 1);
     }
