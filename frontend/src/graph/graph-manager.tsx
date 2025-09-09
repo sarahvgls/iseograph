@@ -483,7 +483,30 @@ const Flow = memo(() => {
           }}
         />
         <StyledPanel position="top-left" style={{ pointerEvents: "auto" }}>
-          Proteoform graph visualization with React Flow library
+          <div
+            style={{
+              display: "flex",
+              alignItems: "end",
+              justifyContent: "end",
+              marginBottom: "8px",
+            }}
+          >
+            <h2
+              style={{
+                fontSize: "1.8rem",
+                margin: "0",
+                fontWeight: 600,
+                color: "#333",
+                textShadow: "0px 1px 2px rgba(0,0,0,0.1)",
+              }}
+            >
+              IseoGraph
+            </h2>
+            <p style={{ margin: "0 0 0 12px", fontSize: "0.9rem" }}>
+              {" "}
+              open-source software by Sarah Vogels
+            </p>
+          </div>
           <PeptideMonitor
             isOpen={isPeptideMonitorOpen}
             setIsOpen={setIsPeptideMonitorOpen}
