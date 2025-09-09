@@ -7,7 +7,7 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from django.http import JsonResponse
 import requests
 
-from backend.consts import PROJECT_ROOT_DIR, TEST_MODE, MAX_GRAPHML_FILES
+from backend.consts import PROJECT_ROOT_DIR, TEST_MODE
 from scripts.convert_graphml_to_json import convert_graphml_to_json
 from django.middleware.csrf import get_token
 from django.views.decorators.csrf import csrf_exempt
@@ -108,51 +108,18 @@ def load_protein_file(id, peptide_file):
 
 def clean_up(file_name: str) -> None:
     # clear downloads and uploads folder
-    downloads_dir = PROJECT_ROOT_DIR / "downloads"
+    downloads_dir = PROJECT_ROOT_DIR / "downloads"  # used internally for downloads of txt files from uniprot
     if os.path.exists(downloads_dir):
         for file in os.listdir(downloads_dir):
             file_path = os.path.join(downloads_dir, file)
             if os.path.isfile(file_path):
                 os.remove(file_path)
-    uplaods_dir = PROJECT_ROOT_DIR / "uploads"
+    uplaods_dir = PROJECT_ROOT_DIR / "uploads"  # used for uploads from user, not needed after ProtGraph run
     if os.path.exists(uplaods_dir):
         for file in os.listdir(uplaods_dir):
             file_path = os.path.join(uplaods_dir, file)
             if os.path.isfile(file_path):
                 os.remove(file_path)
-
-    if TEST_MODE:
-        return
-    # check last_recently_added.json
-    last_recently_added_file = PROJECT_ROOT_DIR / "data" / "last_recently_added.json"
-    if os.path.exists(last_recently_added_file):
-        with open(last_recently_added_file, "r") as f:
-            last_recently_added = json.load(f)
-
-        last_n_proteins = last_recently_added.get("last_n_protein_ids", [])
-        if file_name in last_n_proteins:
-            # if file is already in the list, remove it
-            last_n_proteins.remove(file_name)
-        # remove first, if there are already too many entries
-        if len(last_n_proteins) >= MAX_GRAPHML_FILES:
-            oldest_id = last_n_proteins[0]
-            last_n_proteins.pop(0)
-            # remove old protein file
-            old_protein_file = PROJECT_ROOT_DIR / "data" / f"{oldest_id}.graphml"
-            if os.path.exists(old_protein_file):
-                os.remove(old_protein_file)
-
-        # add new protein id
-        last_n_proteins.append(file_name)
-        last_recently_added["last_n_protein_ids"] = last_n_proteins
-        with open(last_recently_added_file, "w") as f:
-            json.dump(last_recently_added, f, indent=4)
-    else:
-        last_recently_added = {
-            "last_n_protein_ids": [file_name],
-        }
-        with open(last_recently_added_file, "w") as f:
-            json.dump(last_recently_added, f, indent=4)
 
 
 # --- api calls ---
