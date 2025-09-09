@@ -13,9 +13,6 @@ import { theme } from "../../theme";
 import { layoutModes, nodeTypes, nodeWidthModes } from "../../theme/types.tsx";
 import { Switch } from "../base-components/switch.tsx";
 import type { SequenceNodeProps } from "../sequence-node/sequence-node.props.tsx";
-import { startTracking } from "../../evaluation/trackers/performance-tracker.ts";
-import { startMeasuring } from "../../evaluation/trackers/edge-measuring-tracker.ts";
-import { startRowTracking } from "../../evaluation/trackers/row-tracker.ts";
 
 const MenuContainer = styled.div<{ isOpen: boolean }>`
   display: flex;
@@ -106,21 +103,6 @@ export const OnScreenMenu = ({
   );
 
   const changeLayoutMode = (mode: layoutModes) => {
-    startTracking({
-      type: "layout changed to " + mode,
-      nodeWidthMode: nodeWidthMode,
-      newlayoutMode: mode,
-      previousLayoutMode: layoutMode,
-      timestamp: new Date().toISOString(),
-    });
-    startMeasuring({
-      action: "layout changed to " + mode,
-      timestamp: new Date().toISOString(),
-    });
-    startRowTracking({
-      action: "layout changed to " + mode,
-      timestamp: new Date().toISOString(),
-    });
     setLayoutMode(mode);
     const firstSequenceNode = nodes.find(
       (node) => node.type === nodeTypes.SequenceNode,
@@ -165,13 +147,6 @@ export const OnScreenMenu = ({
           options={allNodeWidthModes}
           selected={nodeWidthMode}
           selectOption={(option) => {
-            startTracking({
-              type: "node width mode changed to " + option,
-              nodeWidthMode: option as nodeWidthModes,
-              layoutMode: layoutMode,
-              previousNodeWidthMode: nodeWidthMode,
-              timestamp: new Date().toISOString(),
-            });
             setNodeWidthMode(option as nodeWidthModes);
             focusNodeWithDelay(nodes[0] as SequenceNodeProps);
           }}
