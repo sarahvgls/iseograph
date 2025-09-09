@@ -38,16 +38,6 @@ import {
   createNodes,
   generateIsoformColorMatching,
 } from "./generation-utils/nodes-edges.tsx";
-import {
-  performanceTracker,
-  startTracking,
-} from "../evaluation/trackers/performance-tracker.ts";
-import {
-  measuringTracker,
-  recordEdgeMeasurements,
-  startMeasuring,
-} from "../evaluation/trackers/edge-measuring-tracker.ts";
-import { startRowTracking } from "../evaluation/trackers/row-tracker.ts";
 
 export type SourceToTargets = Record<
   string,
@@ -84,7 +74,6 @@ export type RFState = {
   selectedIsoforms: string[];
   toggleIsoformSelection: (isoform: string) => void;
   deselectAllIsoforms: () => void;
-  selectAllIsoforms: () => void;
   updateIsoformColor: (isoform: string, color: string) => void;
   nodeExtremes: ExtremesBySource;
   edgeExtremes: ExtremesBySource;
@@ -121,14 +110,6 @@ export type RFState = {
 };
 
 // ----- create nodes and edges -----
-const context = {
-  type: "full_rerender",
-  timestamp: new Date().toISOString(),
-};
-startTracking(context);
-startMeasuring(context);
-startRowTracking(context);
-
 const nodes =
   Array.isArray(nodesData) && Object.keys(nodesData).length > 0
     ? nodesData
@@ -141,7 +122,6 @@ const edges =
 const isDataMissing = nodes.length === 0 || edges.length === 0;
 
 // Create empty defaults if data is missing
-const trackedCreateNodes = performanceTracker.time("createNodes", createNodes);
 const [
   customNodes,
   nodesMaxPeptides,
@@ -150,13 +130,12 @@ const [
   peptidesDictNodes,
 ] = isDataMissing
   ? [[], 0, {}, [], {}]
-  : trackedCreateNodes(nodes as SequenceNodeProps[]);
+  : createNodes(nodes as SequenceNodeProps[]);
 
-const trackedCreateEdges = performanceTracker.time("createEdges", createEdges);
 const [customEdges, edgesMaxPeptides, edgeExtremes, peptidesDictEdges] =
   isDataMissing
     ? [[], 0, {}, {}]
-    : trackedCreateEdges(edges as ArrowEdgeProps[], intensitySources);
+    : createEdges(edges as ArrowEdgeProps[], intensitySources);
 
 // Generate color mapping for isoforms
 const initialIsoformColorMapping = generateIsoformColorMatching(
@@ -183,28 +162,12 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
 
   calculatePositionData: () => {
     const { nodes, edges } = get();
-    const trackedFilterAndResetNodes = performanceTracker.time(
-      "filterAndResetNodes",
-      filterAndResetNodes,
-    );
-    const filteredNodes = trackedFilterAndResetNodes(nodes as NodeTypes[]);
-
-    const trackedAssignPositionIndices = performanceTracker.time(
-      "assignPositionIndices",
-      assignPositionIndices,
-    );
-    const [assignedNodes, sourceToTargets] = trackedAssignPositionIndices(
+    const filteredNodes = filterAndResetNodes(nodes as NodeTypes[]);
+    const [assignedNodes, sourceToTargets] = assignPositionIndices(
       filteredNodes,
       edges,
     );
-
-    const trackedAddSymmetricalOffsetForVariations = performanceTracker.time(
-      "addSymmetricalOffsetForVariations",
-      addSymmetricalOffsetForVariations,
-    );
-    const yOffsetNodes =
-      trackedAddSymmetricalOffsetForVariations(assignedNodes);
-
+    const yOffsetNodes = addSymmetricalOffsetForVariations(assignedNodes);
     set({ preparedNodes: yOffsetNodes, sourceToTargets });
   },
 
@@ -228,41 +191,6 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
       preparedNodes,
       sourceToTargets,
     );
-
-    // Record edge measurements after layout is applied
-    if (measuringTracker.isCurrentlyTracking()) {
-      const edgeMeasurements = edges.map((edge) => {
-        const sourceNode = layoutedNodes.find((n) => n.id === edge.source);
-        const targetNode = layoutedNodes.find((n) => n.id === edge.target);
-
-        // console.log(
-        //   "positions: ",
-        //   sourceNode?.position.x,
-        //   sourceNode?.position.y,
-        //   targetNode?.position.x,
-        //   targetNode?.position.y,
-        // );
-        const length =
-          sourceNode && targetNode
-            ? Math.sqrt(
-                Math.pow(targetNode.position.x - sourceNode.position.x, 2) +
-                  Math.pow(targetNode.position.y - sourceNode.position.y, 2),
-              )
-            : 0; // No length
-        // console.log(`Edge ${edge.id} length: ${length}`);
-
-        return {
-          edgeId: edge.id,
-          sourceId: edge.source,
-          targetId: edge.target,
-          length,
-          peptideCount: edge.data?.peptideCount,
-          isoforms: edge.data?.isoforms,
-        };
-      });
-
-      recordEdgeMeasurements(edgeMeasurements);
-    }
 
     set({
       nodes: layoutedNodes,
@@ -393,14 +321,6 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
   },
   deselectAllIsoforms: () => {
     set({ selectedIsoforms: [] });
-  },
-  selectAllIsoforms: () => {
-    const allIsoforms = Object.keys(get().isoformColorMapping).filter(
-      (isoform) => isoform !== "Default",
-    );
-    set({ selectedIsoforms: allIsoforms });
-
-    localStorage.setItem("selectedIsoforms", JSON.stringify(allIsoforms));
   },
   updateIsoformColor: (isoform: string, color: string) => {
     const { isoformColorMapping } = get();
