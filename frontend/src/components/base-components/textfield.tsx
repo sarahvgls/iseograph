@@ -17,12 +17,14 @@ export const TextComponent = ({
   setValue,
   tooltip,
   tooltipTitle,
+  testId,
 }: {
   placeholder: string;
   value: string;
   setValue: (value: string) => void;
   tooltip?: string;
   tooltipTitle?: string;
+  testId?: string;
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   return (
@@ -32,6 +34,7 @@ export const TextComponent = ({
           placeholder={placeholder}
           value={value}
           onChange={(e) => setValue(e.target.value)}
+          data-testid={testId}
         />
         {tooltip && (
           <StyledButton onClick={() => setIsModalOpen(!isModalOpen)}>

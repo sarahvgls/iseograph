@@ -1,30 +1,30 @@
-## Dev tools
-
-### About poetry
-
-Add new dependencies to your project using the command:
+## Execute performance test by running
 
 ```bash
-poetry add <package_name>
+cd frontend
+pnpm exec tsx src/evaluation/performance-test.ts 
 ```
 
-Dependencies will be added to the `pyproject.toml` file.
-
-If specifically dev dependencies are needed, use:
+Debug mode can be enabled:
 
 ```bash
-poetry add --group dev <package_name>
+PWDEBUG=1 pnpm exec tsx src/evaluation/performance-test.ts 
 ```
 
-They will be added to the `pyproject.toml` file under the `[tool.poetry.dev-dependencies]` section.
+Results are saved in `frontend/src/evaluation/downloads/performance_data.csv`.
 
-Start poetry environment:
+### Random proteins
 
-```bash
-poetry shell
-```
+All reviewed proteins have been downloaded from UniProt on 27th of August 2025. The file can be found at
+`frontend/src/evaluation/uniprotkb_AND_reviewed_true_2025_08_27.list`.
 
-### About .env files
+All reviewed proteins with annotated variants and isoforms have been downloaded from UniProt on 26th of August 2025. The
+file can be found at `uniprotkb_ft_positional_VAR_SEQ_2025_08_26.list`
 
-The `.env` file is used to store environment variables for the project. Copy the `.env.template` file to `.env` and
-adjust the variables as needed.
+#### Row data
+
+Per protein:
+
+1. session: snake but collapsed (should be omitted)
+2. session: linear expanded
+3. session: snake expanded

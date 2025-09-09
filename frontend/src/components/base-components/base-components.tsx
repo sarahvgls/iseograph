@@ -31,9 +31,11 @@ export const StyledSectionTitle = styled.h3`
 export const StyledSectionTitleWithButton = ({
   onClose,
   title,
+  testId,
 }: {
   onClose: () => void;
   title: string;
+  testId?: string;
 }) => {
   return (
     <StyledSectionTitle>
@@ -51,6 +53,7 @@ export const StyledSectionTitleWithButton = ({
           onClick={() => {
             onClose();
           }}
+          data-testId={testId}
         >{`>>`}</button>
       </div>
     </StyledSectionTitle>
@@ -132,9 +135,16 @@ export const StyledPanel = styled(Panel)`
   pointer-events: none !important;
 `;
 
-export const CloseButton = ({ onClose }: { onClose: () => void }) => {
+export const CloseButton = ({
+  onClose,
+  testId,
+}: {
+  onClose: () => void;
+  testId?: string;
+}) => {
   return (
     <button
+      data-testId={testId}
       onClick={onClose}
       style={{
         border: "none",

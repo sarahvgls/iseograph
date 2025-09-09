@@ -6,6 +6,7 @@ import { defaultValues, theme } from "../../theme";
 import { applySnakeLayout } from "./snake-layout.tsx";
 import { applyLinearLayout } from "./linear-layout.tsx";
 import { type SourceToTargets } from "../store";
+import { performanceTracker } from "../../evaluation/trackers/performance-tracker.ts";
 
 export function filterAndResetNodes(nodes: NodeTypes[]): SequenceNodeProps[] {
   // remove groups and reset layouting properties
@@ -179,22 +180,45 @@ export const applyLayout = (
     sourceToTargets = cachedSourceToTargets;
   } else {
     // Fall back to calculating values if no cache is provided
-    const filteredNodes = filterAndResetNodes(nodes);
-    [preparedNodes, sourceToTargets] = assignPositionIndices(
+    const trackedFilterAndResetNodes = performanceTracker.time(
+      "filterAndResetNodes",
+      filterAndResetNodes,
+    );
+    const filteredNodes = trackedFilterAndResetNodes(nodes);
+    const trackedAssignPositionIndices = performanceTracker.time(
+      "assignPositionIndices",
+      assignPositionIndices,
+    );
+    [preparedNodes, sourceToTargets] = trackedAssignPositionIndices(
       filteredNodes,
       edges,
     );
-    preparedNodes = addSymmetricalOffsetForVariations(preparedNodes);
+    const trackedAddSymmetricalOffsetForVariations = performanceTracker.time(
+      "addSymmetricalOffsetForVariations",
+      addSymmetricalOffsetForVariations,
+    );
+    preparedNodes = trackedAddSymmetricalOffsetForVariations(preparedNodes);
   }
 
   return new Promise((resolve) => {
     // --- main layouting algorithm ---
     if (layoutMode === layoutModes.Basic) {
-      let linearNodes = applyLinearLayout(preparedNodes, sourceToTargets);
+      const trackedApplyLinearLayout = performanceTracker.time(
+        "applyLinearLayout",
+        applyLinearLayout,
+      );
+      let linearNodes = trackedApplyLinearLayout(
+        preparedNodes,
+        sourceToTargets,
+      );
       resolve(linearNodes);
       return;
     } else if (layoutMode === layoutModes.Snake) {
-      const snakeNodes = applySnakeLayout(
+      const trackedApplySnakeLayout = performanceTracker.time(
+        "applySnakeLayout",
+        applySnakeLayout,
+      );
+      const snakeNodes = trackedApplySnakeLayout(
         preparedNodes,
         maxWidthPerRow,
         sourceToTargets,

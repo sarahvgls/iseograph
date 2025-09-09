@@ -57,7 +57,7 @@ export const SideMenu = ({
         <h2 style={{ margin: 0, fontSize: "22px", fontWeight: "600" }}>
           Settings
         </h2>
-        <CloseButton onClose={onClose} />
+        <CloseButton onClose={onClose} testId={"close-menu-button"} />
       </div>
 
       <SettingsSwitch

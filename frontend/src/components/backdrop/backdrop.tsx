@@ -1,5 +1,9 @@
 import { StyledSection } from "../base-components";
 import styled from "styled-components";
+import { useEffect, useRef } from "react";
+import { endTracking } from "../../evaluation/trackers/performance-tracker.ts";
+import { endMeasuring } from "../../evaluation/trackers/edge-measuring-tracker.ts";
+import { endRowTracking } from "../../evaluation/trackers/row-tracker.ts";
 
 const InfoBox = styled(StyledSection)`
   position: absolute;
@@ -57,10 +61,40 @@ export const SettingsBackdrop = ({
 };
 
 export const LoadingBackdrop = ({ isLoading }: { isLoading: boolean }) => {
+  const wasLoadingRef = useRef(isLoading);
+  const endTrackingTimeoutRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    // Only call endTracking when transitioning from loading to not loading
+    if (wasLoadingRef.current && !isLoading) {
+      // Clear any existing timeout
+      if (endTrackingTimeoutRef.current !== null) {
+        window.clearTimeout(endTrackingTimeoutRef.current);
+      }
+
+      // Delay the endTracking call to ensure UI has updated
+      endTrackingTimeoutRef.current = window.setTimeout(() => {
+        // endTracking();
+        // endMeasuring();
+        // endRowTracking();
+        endTrackingTimeoutRef.current = null;
+      }, 1);
+    }
+    wasLoadingRef.current = isLoading;
+
+    // Cleanup timeout on unmount
+    return () => {
+      if (endTrackingTimeoutRef.current !== null) {
+        window.clearTimeout(endTrackingTimeoutRef.current);
+      }
+    };
+  }, [isLoading]);
+
   return (
     <div>
       {isLoading && (
         <div
+          data-testId="loading-backdrop"
           style={{
             position: "fixed",
             top: 0,
