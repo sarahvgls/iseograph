@@ -83,6 +83,21 @@ export const ProteinSelection = ({
   const [shouldMergePeptides, setShouldMergePeptides] =
     useState<boolean>(false);
 
+  // TODO implement Low and High median
+  // const AggregationOptions = {
+  //   median: "Median",
+  //   lmedian: "Low Median",
+  //   hmedian: "High Median",
+  //   sum: "Sum",
+  //   mean: "Mean",
+  //   None: "None",
+  // };
+  // type AggregationOption = keyof typeof AggregationOptions;
+  // const [selectedOAggregation, setSelectedOAggregation] =
+  //   useState<AggregationOption>("None");
+  // const [selectedMAggregation, setSelectedMAggregation] =
+  //   useState<AggregationOption>("Median");
+
   const AggregationOptions = ["Median", "Sum", "Mean", "None"];
   type AggregationOptions =
     (typeof AggregationOptions)[keyof typeof AggregationOptions];
@@ -104,7 +119,7 @@ export const ProteinSelection = ({
     localStorage.removeItem(localStorageKeys.selectedFile);
 
     // prepare parameters dynamically
-    const bodyParameters: Record<string, any> = {
+    const bodyParameters: Record<string, string | boolean | string[]> = {
       protein_id: newProteinName,
     };
 
