@@ -84,27 +84,18 @@ export const ProteinSelection = ({
     useState<boolean>(false);
 
   // TODO implement Low and High median
-  // const AggregationOptions = {
-  //   median: "Median",
-  //   lmedian: "Low Median",
-  //   hmedian: "High Median",
-  //   sum: "Sum",
-  //   mean: "Mean",
-  //   None: "None",
-  // };
-  // type AggregationOption = keyof typeof AggregationOptions;
-  // const [selectedOAggregation, setSelectedOAggregation] =
-  //   useState<AggregationOption>("None");
-  // const [selectedMAggregation, setSelectedMAggregation] =
-  //   useState<AggregationOption>("Median");
-
-  const AggregationOptions = ["Median", "Sum", "Mean", "None"];
-  type AggregationOptions =
-    (typeof AggregationOptions)[keyof typeof AggregationOptions];
+  const AggregationOptions = {
+    lmedian: "Low Median",
+    hmedian: "High Median",
+    sum: "Sum",
+    mean: "Mean",
+    None: "None",
+  };
+  type AggregationOption = keyof typeof AggregationOptions;
   const [selectedOAggregation, setSelectedOAggregation] =
-    useState<AggregationOptions>(AggregationOptions[3]);
+    useState<AggregationOption>("None");
   const [selectedMAggregation, setSelectedMAggregation] =
-    useState<AggregationOptions>(AggregationOptions[0]);
+    useState<AggregationOption>("lmedian");
 
   const handleAddProtein = async () => {
     if (!newProteinName) {
@@ -307,7 +298,7 @@ export const ProteinSelection = ({
               placeholder={"-- Select one of the methods below --"}
               value={selectedOAggregation as string}
               setValue={setSelectedOAggregation}
-              options={AggregationOptions}
+              options={Object.values(AggregationOptions)}
               label={
                 "How to handle overlapping different peptides with (different) intensities on one node/edge:"
               }
@@ -318,7 +309,7 @@ export const ProteinSelection = ({
               placeholder={"-- Select one of the methods below --"}
               value={selectedMAggregation as string}
               setValue={setSelectedMAggregation}
-              options={AggregationOptions}
+              options={Object.values(AggregationOptions)}
               label={
                 "How to handle multiple instances of the same peptide with different intensities:"
               }
