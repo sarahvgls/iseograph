@@ -1,30 +1,41 @@
-## Dev tools
+# IseoGraph
 
-### About poetry
+developed by me, Sarah Vogels, as part of my bachelor's thesis.
 
-Add new dependencies to your project using the command:
+### Tool summary
 
-```bash
-poetry add <package_name>
+IseoGraph can be used to visualize proteins' primary structure based on amino acid sequences as graphs. It includes all
+known isoforms and single amino acid variations published on UniProt (https://www.uniprot.org/).
+Additionally, peptides can be matched to the amino acid sequence.
+The underlying graph structure is created by Jannes Konarski's modified version of ProtGraph to be found
+at https://github.com/Tisch-hinten-rechts/ProtGraph.
+
+### Installation guide
+
+1.) Clone the repository to your device.
+
+2.) Start the backend server with the following command:
+
+```
+python manage.py runserver
 ```
 
-Dependencies will be added to the `pyproject.toml` file.
+3.) Start the application by navigating into the frontend folder:
 
-If specifically dev dependencies are needed, use:
-
-```bash
-poetry add --group dev <package_name>
+```
+cd frontend
 ```
 
-They will be added to the `pyproject.toml` file under the `[tool.poetry.dev-dependencies]` section.
+And executing the following command:
 
-Start poetry environment:
-
-```bash
-poetry shell
+```
+pnpm dev
 ```
 
-### About .env files
+4). Open the page printed to the console to open the application.
 
-The `.env` file is used to store environment variables for the project. Copy the `.env.template` file to `.env` and
-adjust the variables as needed.
+### Usage
+
+To upload a new protein, open the side menu and follow the instructions listed.
+
+For the user guide, open the side menu and click on the third panel.
