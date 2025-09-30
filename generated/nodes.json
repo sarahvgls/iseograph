@@ -1,0 +1,2046 @@
+[
+  {
+    "id": "n0",
+    "type": "sequence",
+    "data": {
+      "sequence": "__start__",
+      "peptidesString": "None",
+      "intensitiesString": "(AspN, Chymo, GluC, LysC, LysN, Trypsin)",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n1",
+    "type": "sequence",
+    "data": {
+      "sequence": "M",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n2",
+    "type": "sequence",
+    "data": {
+      "sequence": "V",
+      "peptidesString": "FLAGLQQQRSVEPMRL",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 1.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n3",
+    "type": "sequence",
+    "data": {
+      "sequence": "S",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n4",
+    "type": "sequence",
+    "data": {
+      "sequence": "M",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n5",
+    "type": "sequence",
+    "data": {
+      "sequence": "L",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n6",
+    "type": "sequence",
+    "data": {
+      "sequence": "S",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n7",
+    "type": "sequence",
+    "data": {
+      "sequence": "S",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n8",
+    "type": "sequence",
+    "data": {
+      "sequence": "A",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n9",
+    "type": "sequence",
+    "data": {
+      "sequence": "P",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n10",
+    "type": "sequence",
+    "data": {
+      "sequence": "R",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n11",
+    "type": "sequence",
+    "data": {
+      "sequence": "S",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n12",
+    "type": "sequence",
+    "data": {
+      "sequence": "S",
+      "peptidesString": "AQSSPAAPASLSAPEPASQAR",
+      "intensitiesString": "(nan, nan, nan, nan, nan, 36734000.0)",
+      "peptideCount": 1.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n13",
+    "type": "sequence",
+    "data": {
+      "sequence": "R",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n14",
+    "type": "sequence",
+    "data": {
+      "sequence": "K",
+      "peptidesString": "KASLEELQSVHSER, KASLEELQSVHSERHVLLYGTNPLSRL",
+      "intensitiesString": "(nan, nan, nan, nan, nan, 182060000.0), (nan, nan, nan, nan, 314395000.0, nan)",
+      "peptideCount": 2.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n15",
+    "type": "sequence",
+    "data": {
+      "sequence": "L",
+      "peptidesString": "ASLEELQSVHSERHVLLYGTNPLSRLK, KASLEELQSVHSERHVLLYGTNPLSRL",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan), (nan, nan, nan, nan, 314395000.0, nan)",
+      "peptideCount": 2.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n16",
+    "type": "sequence",
+    "data": {
+      "sequence": "K",
+      "peptidesString": "ASLEELQSVHSERHVLLYGTNPLSRLK",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 1.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n17",
+    "type": "sequence",
+    "data": {
+      "sequence": "V",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n18",
+    "type": "sequence",
+    "data": {
+      "sequence": "S",
+      "peptidesString": "DTIWNELHSSNAARWAAGSVT",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 1.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n19",
+    "type": "sequence",
+    "data": {
+      "sequence": "R",
+      "peptidesString": "AVVRPPGHHADHSTAMGF, DLAFKVASRELKNGFAVVRPPGHHA",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan), (45849500.0, nan, nan, nan, nan, nan)",
+      "peptideCount": 2.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n20",
+    "type": "sequence",
+    "data": {
+      "sequence": "K",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n21",
+    "type": "sequence",
+    "data": {
+      "sequence": "H",
+      "peptidesString": "DPSVLYISLHRH",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 1.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n22",
+    "type": "sequence",
+    "data": {
+      "sequence": "G",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n23",
+    "type": "sequence",
+    "data": {
+      "sequence": "A",
+      "peptidesString": "AGGLDPPMGDPEYLAAF",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 1.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n24",
+    "type": "sequence",
+    "data": {
+      "sequence": "A",
+      "peptidesString": "AGGLDPPMGDPEYLAAF",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 1.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n25",
+    "type": "sequence",
+    "data": {
+      "sequence": "F",
+      "peptidesString": "AGGLDPPMGDPEYLAAF",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 1.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n26",
+    "type": "sequence",
+    "data": {
+      "sequence": "R",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n27",
+    "type": "sequence",
+    "data": {
+      "sequence": "Q",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n28",
+    "type": "sequence",
+    "data": {
+      "sequence": "H",
+      "peptidesString": "ALEGGHDLTAICDASEACVAALL, GGHDLTAICDASE, GGHDLTAICDASEACVAALLGNRVDPLSEE",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan), (nan, nan, nan, nan, nan, nan), (nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 3.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n29",
+    "type": "sequence",
+    "data": {
+      "sequence": "E",
+      "peptidesString": "EGWKQKPNLNAIRSLE, GGHDLTAICDASEACVAALLGNRVDPLSEE, GNRVDPLSEEGW",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan), (nan, nan, nan, nan, nan, nan), (nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 3.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n30",
+    "type": "sequence",
+    "data": {
+      "sequence": "S",
+      "peptidesString": "KPNLNAIRSLEAVIRVHS, KQKPNLNAIRSLEAVIRVHS",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan), (nan, nan, nan, nan, 61655000.0, nan)",
+      "peptideCount": 2.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n31",
+    "type": "sequence",
+    "data": {
+      "sequence": "__end__",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n32",
+    "type": "sequence",
+    "data": {
+      "sequence": "M",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n33",
+    "type": "sequence",
+    "data": {
+      "sequence": "A",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n34",
+    "type": "sequence",
+    "data": {
+      "sequence": "A",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n35",
+    "type": "sequence",
+    "data": {
+      "sequence": "A",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n36",
+    "type": "sequence",
+    "data": {
+      "sequence": "A",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n37",
+    "type": "sequence",
+    "data": {
+      "sequence": "A",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n38",
+    "type": "sequence",
+    "data": {
+      "sequence": "A",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n39",
+    "type": "sequence",
+    "data": {
+      "sequence": "F",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n40",
+    "type": "sequence",
+    "data": {
+      "sequence": "Y",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n41",
+    "type": "sequence",
+    "data": {
+      "sequence": "T",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n42",
+    "type": "sequence",
+    "data": {
+      "sequence": "L",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n43",
+    "type": "sequence",
+    "data": {
+      "sequence": "L",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n44",
+    "type": "sequence",
+    "data": {
+      "sequence": "E",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n45",
+    "type": "sequence",
+    "data": {
+      "sequence": "R",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n46",
+    "type": "sequence",
+    "data": {
+      "sequence": "W",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n47",
+    "type": "sequence",
+    "data": {
+      "sequence": "S",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n48",
+    "type": "sequence",
+    "data": {
+      "sequence": "T",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n49",
+    "type": "sequence",
+    "data": {
+      "sequence": "H",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n50",
+    "type": "sequence",
+    "data": {
+      "sequence": "MTTERLSGSGLHWPLSRTR",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n51",
+    "type": "sequence",
+    "data": {
+      "sequence": "LAQGGHRPLSR",
+      "peptidesString": "GSTGDTVLLPLAQGGHRPLSR",
+      "intensitiesString": "(nan, nan, nan, nan, nan, 197410000.0)",
+      "peptideCount": 1.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n52",
+    "type": "sequence",
+    "data": {
+      "sequence": "AQ",
+      "peptidesString": "AQSSPAAPASLSAPEPASQAR",
+      "intensitiesString": "(nan, nan, nan, nan, nan, 36734000.0)",
+      "peptideCount": 1.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n53",
+    "type": "sequence",
+    "data": {
+      "sequence": "MLKHQCSCG",
+      "peptidesString": "DSVMLKHQCSCG",
+      "intensitiesString": "(83383000.0, nan, nan, nan, nan, nan)",
+      "peptideCount": 1.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n54",
+    "type": "sequence",
+    "data": {
+      "sequence": "DNSRHPE",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n55",
+    "type": "sequence",
+    "data": {
+      "sequence": "HAGR",
+      "peptidesString": "HAGRIQSIWSRLQE",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 1.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n56",
+    "type": "sequence",
+    "data": {
+      "sequence": "IQSIWSR",
+      "peptidesString": "HAGRIQSIWSRLQE, IQSIWSR",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan), (nan, nan, nan, nan, nan, 112620000.0)",
+      "peptideCount": 2.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n57",
+    "type": "sequence",
+    "data": {
+      "sequence": "LQE",
+      "peptidesString": "HAGRIQSIWSRLQE",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 1.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n58",
+    "type": "sequence",
+    "data": {
+      "sequence": "RGL",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n59",
+    "type": "sequence",
+    "data": {
+      "sequence": "MHSPGA",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n60",
+    "type": "sequence",
+    "data": {
+      "sequence": "DGTQVSPGAHY",
+      "peptidesString": "DGTQVSPGAHYCSPTGAGCPRPCA",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 1.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n61",
+    "type": "sequence",
+    "data": {
+      "sequence": "CSPTGAGCPRPCA",
+      "peptidesString": "CSPTGAGCPRPCADTPGPQPQPM, DGTQVSPGAHYCSPTGAGCPRPCA",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan), (nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 2.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n62",
+    "type": "sequence",
+    "data": {
+      "sequence": "DTPGPQPQPM",
+      "peptidesString": "CSPTGAGCPRPCADTPGPQPQPM",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 1.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n63",
+    "type": "sequence",
+    "data": {
+      "sequence": "MHSPGAGCPRPCADTPGPQPQPM",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n64",
+    "type": "sequence",
+    "data": {
+      "sequence": "MSDLRKRELGALFTSRGTGGVEW",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n65",
+    "type": "sequence",
+    "data": {
+      "sequence": "DGTQVSPGAHY",
+      "peptidesString": "DGTQVSPGAHYCSPTGAGCPRPCA",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 1.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n66",
+    "type": "sequence",
+    "data": {
+      "sequence": "CSPTGAGCPRPCA",
+      "peptidesString": "CSPTGAGCPRPCADTPGPQPQPM, DGTQVSPGAHYCSPTGAGCPRPCA",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan), (nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 2.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n67",
+    "type": "sequence",
+    "data": {
+      "sequence": "DTPGPQPQPM",
+      "peptidesString": "CSPTGAGCPRPCADTPGPQPQPM",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 1.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n68",
+    "type": "sequence",
+    "data": {
+      "sequence": "MQACVGVRGVYPPGSMWVPAVAVLACSLQPRPWGVRTPWVPALTLAPA",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n69",
+    "type": "sequence",
+    "data": {
+      "sequence": "KASK",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n70",
+    "type": "sequence",
+    "data": {
+      "sequence": "SE",
+      "peptidesString": "HGPNPILGSE",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 1.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n71",
+    "type": "sequence",
+    "data": {
+      "sequence": "DSDRRTHPTLG",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n72",
+    "type": "sequence",
+    "data": {
+      "sequence": "ALLGQRLRLQE",
+      "peptidesString": "ALLGQRLRLQE",
+      "intensitiesString": "(nan, nan, 52304000.0, nan, nan, nan)",
+      "peptideCount": 1.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n73",
+    "type": "sequence",
+    "data": {
+      "sequence": "TSVAPF",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n74",
+    "type": "sequence",
+    "data": {
+      "sequence": "ALPTVSLLPAITL",
+      "peptidesString": "ALPTVSLLPAITL",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 1.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n75",
+    "type": "sequence",
+    "data": {
+      "sequence": "GLPAPAR",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n76",
+    "type": "sequence",
+    "data": {
+      "sequence": "KYWGCMQRLASCPDSWVPRVPGADKEEVEAVTAL",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n77",
+    "type": "sequence",
+    "data": {
+      "sequence": "ASLSVGIL",
+      "peptidesString": "ASLSVGILAEDRPSEQLVEEEEPMNL",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 1.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n78",
+    "type": "sequence",
+    "data": {
+      "sequence": "AE",
+      "peptidesString": "AEDRPSEQLVEEEEPMNL, ASLSVGILAEDRPSEQLVEEEEPMNL",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan), (nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 2.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n79",
+    "type": "sequence",
+    "data": {
+      "sequence": "DRPSEQLVEEEEPMNL",
+      "peptidesString": "AEDRPSEQLVEEEEPMNL, ASLSVGILAEDRPSEQLVEEEEPMNL, DRPSEQLVEEEEPMNL",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan), (nan, nan, nan, nan, nan, nan), (nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 3.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n80",
+    "type": "sequence",
+    "data": {
+      "sequence": "MGALTLSQIPGHGSSQQQAGGAFSRPGHPCRAAVVMVNTGAACSAWPPVQTPGCLECQGLTKKKWRQ",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n81",
+    "type": "sequence",
+    "data": {
+      "sequence": "DLRVGQRPPVEPPPEPTLLALQRPQRLHHHL",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n82",
+    "type": "sequence",
+    "data": {
+      "sequence": "FLAGLQQQRS",
+      "peptidesString": "FLAGLQQQRSVEPMRL",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 1.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n83",
+    "type": "sequence",
+    "data": {
+      "sequence": "VT",
+      "peptidesString": "DTIWNELHSSNAARWAAGSVT",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 1.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n84",
+    "type": "sequence",
+    "data": {
+      "sequence": "DLAFKVASRELKNGF",
+      "peptidesString": "DLAFKVASRELKNGFAVVRPPGHHA",
+      "intensitiesString": "(45849500.0, nan, nan, nan, nan, nan)",
+      "peptideCount": 1.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n85",
+    "type": "sequence",
+    "data": {
+      "sequence": "AVV",
+      "peptidesString": "AVVRPPGHHADHSTAMGF, DLAFKVASRELKNGFAVVRPPGHHA",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan), (45849500.0, nan, nan, nan, nan, nan)",
+      "peptideCount": 2.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n86",
+    "type": "sequence",
+    "data": {
+      "sequence": "GLIY",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n87",
+    "type": "sequence",
+    "data": {
+      "sequence": "DSV",
+      "peptidesString": "DSVMLKHQCSCG",
+      "intensitiesString": "(83383000.0, nan, nan, nan, nan, nan)",
+      "peptideCount": 1.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n88",
+    "type": "sequence",
+    "data": {
+      "sequence": "IVVMPIAR",
+      "peptidesString": "IVVMPIAR",
+      "intensitiesString": "(nan, nan, nan, nan, nan, 167380000.0)",
+      "peptideCount": 1.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n89",
+    "type": "sequence",
+    "data": {
+      "sequence": "EFSPDLVLVSAGF",
+      "peptidesString": "EFSPDLVLVSAGFDAAEGHPAPLGGYHVSAK",
+      "intensitiesString": "(nan, nan, nan, nan, nan, 451000000.0)",
+      "peptideCount": 1.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n90",
+    "type": "sequence",
+    "data": {
+      "sequence": "DAAEGHPAPL",
+      "peptidesString": "DAAEGHPAPL, DAAEGHPAPLGGY, EFSPDLVLVSAGFDAAEGHPAPLGGYHVSAK",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan), (nan, nan, nan, nan, nan, nan), (nan, nan, nan, nan, nan, 451000000.0)",
+      "peptideCount": 3.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n91",
+    "type": "sequence",
+    "data": {
+      "sequence": "GGY",
+      "peptidesString": "DAAEGHPAPLGGY, EFSPDLVLVSAGFDAAEGHPAPLGGYHVSAK",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan), (nan, nan, nan, nan, nan, 451000000.0)",
+      "peptideCount": 2.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n92",
+    "type": "sequence",
+    "data": {
+      "sequence": "HVSAK",
+      "peptidesString": "EFSPDLVLVSAGFDAAEGHPAPLGGYHVSAK",
+      "intensitiesString": "(nan, nan, nan, nan, nan, 451000000.0)",
+      "peptideCount": 1.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n93",
+    "type": "sequence",
+    "data": {
+      "sequence": "CFGYMT",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n94",
+    "type": "sequence",
+    "data": {
+      "sequence": "GPILGSPHTPLFLPHGLEPEAGGTLPSR",
+      "peptidesString": "GPILGSPHTPLFLPHGLEPEAGGTLPSR",
+      "intensitiesString": "(nan, nan, nan, nan, nan, 242840000.0)",
+      "peptideCount": 1.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n95",
+    "type": "sequence",
+    "data": {
+      "sequence": "LQPILLLDPSGSHAPLLTVPGLGPLPFHFAQSL",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n96",
+    "type": "sequence",
+    "data": {
+      "sequence": "RKTV",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n97",
+    "type": "sequence",
+    "data": {
+      "sequence": "PPGHHA",
+      "peptidesString": "AVVRPPGHHADHSTAMGF, DLAFKVASRELKNGFAVVRPPGHHA",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan), (45849500.0, nan, nan, nan, nan, nan)",
+      "peptideCount": 2.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n98",
+    "type": "sequence",
+    "data": {
+      "sequence": "DHSTAMGF",
+      "peptidesString": "AVVRPPGHHADHSTAMGF",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 1.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n99",
+    "type": "sequence",
+    "data": {
+      "sequence": "CFFNSVAIACRQLQQQSKAS",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n100",
+    "type": "sequence",
+    "data": {
+      "sequence": "EPNLKLRYKPKKSLERRKNPLLRKE",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n101",
+    "type": "sequence",
+    "data": {
+      "sequence": "EPMRL",
+      "peptidesString": "FLAGLQQQRSVEPMRL",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 1.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n102",
+    "type": "sequence",
+    "data": {
+      "sequence": "SQCECLRGR",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n103",
+    "type": "sequence",
+    "data": {
+      "sequence": "ASLEELQSVHSER",
+      "peptidesString": "ASLEELQSVHSER, ASLEELQSVHSERHVLLYGTNPLSRLK, KASLEELQSVHSER, KASLEELQSVHSERHVLLYGTNPLSRL",
+      "intensitiesString": "(nan, nan, nan, nan, nan, 187150000.0), (nan, nan, nan, nan, nan, nan), (nan, nan, nan, nan, nan, 182060000.0), (nan, nan, nan, nan, 314395000.0, nan)",
+      "peptideCount": 4.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n104",
+    "type": "sequence",
+    "data": {
+      "sequence": "HVLLYGTNPLSR",
+      "peptidesString": "ASLEELQSVHSERHVLLYGTNPLSRLK, HVLLYGTNPLSR, KASLEELQSVHSERHVLLYGTNPLSRL",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan), (nan, nan, nan, nan, nan, 175910000.0), (nan, nan, nan, nan, 314395000.0, nan)",
+      "peptideCount": 3.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n105",
+    "type": "sequence",
+    "data": {
+      "sequence": "LDNGKLAGLLAQRMF",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n106",
+    "type": "sequence",
+    "data": {
+      "sequence": "DTPMPELQVGPQEQELRQLLHK",
+      "peptidesString": "DTPMPELQVGPQEQELRQLLHK",
+      "intensitiesString": "(204208000.0, nan, nan, nan, nan, nan)",
+      "peptideCount": 1.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n107",
+    "type": "sequence",
+    "data": {
+      "sequence": "DKSKRSAVASSVVKQ",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n108",
+    "type": "sequence",
+    "data": {
+      "sequence": "KLAEVILK",
+      "peptidesString": "KLAEVILK",
+      "intensitiesString": "(nan, nan, nan, nan, 129243000.0, nan)",
+      "peptideCount": 1.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n109",
+    "type": "sequence",
+    "data": {
+      "sequence": "KQQAAL",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n110",
+    "type": "sequence",
+    "data": {
+      "sequence": "ERTVHPNSPGIPY",
+      "peptidesString": "ERTVHPNSPGIPY",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 1.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n111",
+    "type": "sequence",
+    "data": {
+      "sequence": "RTLEPLETE",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n112",
+    "type": "sequence",
+    "data": {
+      "sequence": "GATRSMLSSFLPPVPSLPSDPPE",
+      "peptidesString": "GATRSMLSSFLPPVPSLPSDPPE",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 1.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n113",
+    "type": "sequence",
+    "data": {
+      "sequence": "HFP",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n114",
+    "type": "sequence",
+    "data": {
+      "sequence": "APPSLRRRPAETLGDSSPSSSSTPASGCSSPNDSE",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n115",
+    "type": "sequence",
+    "data": {
+      "sequence": "HGPNPILG",
+      "peptidesString": "HGPNPILGSE",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 1.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n116",
+    "type": "sequence",
+    "data": {
+      "sequence": "QLMNLAGGAVVL",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n117",
+    "type": "sequence",
+    "data": {
+      "sequence": "ALE",
+      "peptidesString": "ALEGGHDLTAICDASEACVAALL",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 1.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n118",
+    "type": "sequence",
+    "data": {
+      "sequence": "GG",
+      "peptidesString": "ALEGGHDLTAICDASEACVAALL, GGHDLTAICDASE, GGHDLTAICDASEACVAALLGNRVDPLSEE",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan), (nan, nan, nan, nan, nan, nan), (nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 3.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n119",
+    "type": "sequence",
+    "data": {
+      "sequence": "IL",
+      "peptidesString": "ILIVDWDVHHGNGTQQTFYQDPSVLYISLHR",
+      "intensitiesString": "(nan, nan, nan, nan, nan, 91839000.0)",
+      "peptideCount": 1.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n120",
+    "type": "sequence",
+    "data": {
+      "sequence": "IVDWDVHHGNGTQQTF",
+      "peptidesString": "ILIVDWDVHHGNGTQQTFYQDPSVLYISLHR, IVDWDVHHGNGTQQTF",
+      "intensitiesString": "(nan, nan, nan, nan, nan, 91839000.0), (nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 2.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n121",
+    "type": "sequence",
+    "data": {
+      "sequence": "YQ",
+      "peptidesString": "ILIVDWDVHHGNGTQQTFYQDPSVLYISLHR",
+      "intensitiesString": "(nan, nan, nan, nan, nan, 91839000.0)",
+      "peptideCount": 1.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n122",
+    "type": "sequence",
+    "data": {
+      "sequence": "DPSVLYISLHR",
+      "peptidesString": "DPSVLYISLHRH, ILIVDWDVHHGNGTQQTFYQDPSVLYISLHR",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan), (nan, nan, nan, nan, nan, 91839000.0)",
+      "peptideCount": 2.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n123",
+    "type": "sequence",
+    "data": {
+      "sequence": "DDGNFFPGSGAVDEVGA",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n124",
+    "type": "sequence",
+    "data": {
+      "sequence": "DLTAIC",
+      "peptidesString": "ALEGGHDLTAICDASEACVAALL, GGHDLTAICDASE, GGHDLTAICDASEACVAALLGNRVDPLSEE",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan), (nan, nan, nan, nan, nan, nan), (nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 3.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n125",
+    "type": "sequence",
+    "data": {
+      "sequence": "DASE",
+      "peptidesString": "ALEGGHDLTAICDASEACVAALL, DASEACVAALLGNRV, GGHDLTAICDASE, GGHDLTAICDASEACVAALLGNRVDPLSEE",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan), (nan, nan, nan, nan, nan, nan), (nan, nan, nan, nan, nan, nan), (nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 4.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n126",
+    "type": "sequence",
+    "data": {
+      "sequence": "ACVAALL",
+      "peptidesString": "ALEGGHDLTAICDASEACVAALL, DASEACVAALLGNRV, GGHDLTAICDASEACVAALLGNRVDPLSEE",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan), (nan, nan, nan, nan, nan, nan), (nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 3.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n127",
+    "type": "sequence",
+    "data": {
+      "sequence": "GNRV",
+      "peptidesString": "DASEACVAALLGNRV, GGHDLTAICDASEACVAALLGNRVDPLSEE, GNRVDPLSEEGW",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan), (nan, nan, nan, nan, nan, nan), (nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 3.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n128",
+    "type": "sequence",
+    "data": {
+      "sequence": "DPLSE",
+      "peptidesString": "GGHDLTAICDASEACVAALLGNRVDPLSEE, GNRVDPLSEEGW",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan), (nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 2.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n129",
+    "type": "sequence",
+    "data": {
+      "sequence": "GW",
+      "peptidesString": "EGWKQKPNLNAIRSLE, GNRVDPLSEEGW, GWKQKPNLNAIRSLE",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan), (nan, nan, nan, nan, nan, nan), (nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 3.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n130",
+    "type": "sequence",
+    "data": {
+      "sequence": "KQ",
+      "peptidesString": "EGWKQKPNLNAIRSLE, GWKQKPNLNAIRSLE, KQKPNLNAIRSLEAVIRVHS",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan), (nan, nan, nan, nan, nan, nan), (nan, nan, nan, nan, 61655000.0, nan)",
+      "peptideCount": 3.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n131",
+    "type": "sequence",
+    "data": {
+      "sequence": "KPNLNAIRSLE",
+      "peptidesString": "EGWKQKPNLNAIRSLE, GWKQKPNLNAIRSLE, KPNLNAIRSLEAVIRVHS, KQKPNLNAIRSLEAVIRVHS",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan), (nan, nan, nan, nan, nan, nan), (nan, nan, nan, nan, nan, nan), (nan, nan, nan, nan, 61655000.0, nan)",
+      "peptideCount": 4.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n132",
+    "type": "sequence",
+    "data": {
+      "sequence": "AVIRVH",
+      "peptidesString": "KPNLNAIRSLEAVIRVHS, KQKPNLNAIRSLEAVIRVHS",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan), (nan, nan, nan, nan, 61655000.0, nan)",
+      "peptideCount": 2.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n133",
+    "type": "sequence",
+    "data": {
+      "sequence": "EPLPPSATAPPPPGPMQPRLEQLKTHVQVIKRSAKPSEKPRLRQIPSAEDLETDGGGPGQVVDDGLEHR",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n134",
+    "type": "sequence",
+    "data": {
+      "sequence": "ELGHGQPE",
+      "peptidesString": "ELGHGQPEAR",
+      "intensitiesString": "(nan, nan, nan, nan, nan, 46682000.0)",
+      "peptideCount": 1.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n135",
+    "type": "sequence",
+    "data": {
+      "sequence": "AR",
+      "peptidesString": "ARGPAPLQQHPQVLLWE, ELGHGQPEAR",
+      "intensitiesString": "(nan, nan, 344500000.0, nan, nan, nan), (nan, nan, nan, nan, nan, 46682000.0)",
+      "peptideCount": 2.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n136",
+    "type": "sequence",
+    "data": {
+      "sequence": "GPAPLQQHPQVLLWE",
+      "peptidesString": "ARGPAPLQQHPQVLLWE, GPAPLQQHPQVLLWEQQR",
+      "intensitiesString": "(nan, nan, 344500000.0, nan, nan, nan), (nan, nan, nan, nan, nan, 466590000.0)",
+      "peptideCount": 2.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n137",
+    "type": "sequence",
+    "data": {
+      "sequence": "QQR",
+      "peptidesString": "GPAPLQQHPQVLLWEQQR",
+      "intensitiesString": "(nan, nan, nan, nan, nan, 466590000.0)",
+      "peptideCount": 1.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n138",
+    "type": "sequence",
+    "data": {
+      "sequence": "LAGRLPR",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n139",
+    "type": "sequence",
+    "data": {
+      "sequence": "GSTGDTVLLP",
+      "peptidesString": "GSTGDTVLLPLAQGGHRPLSR",
+      "intensitiesString": "(nan, nan, nan, nan, nan, 197410000.0)",
+      "peptideCount": 1.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n140",
+    "type": "sequence",
+    "data": {
+      "sequence": "SPAAPASLSAPEPASQAR",
+      "peptidesString": "AQSSPAAPASLSAPEPASQAR",
+      "intensitiesString": "(nan, nan, nan, nan, nan, 36734000.0)",
+      "peptideCount": 1.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n141",
+    "type": "sequence",
+    "data": {
+      "sequence": "VLSSSETPARTLPFTT",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n142",
+    "type": "sequence",
+    "data": {
+      "sequence": "MLPCGGVGVDT",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n143",
+    "type": "sequence",
+    "data": {
+      "sequence": "DTIWNELHSSNAARWAAG",
+      "peptidesString": "DTIWNELHSSNAARWAAGSVT",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 1.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n144",
+    "type": "sequence",
+    "data": {
+      "sequence": "SGEGFNVNVAW",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  {
+    "id": "n145",
+    "type": "sequence",
+    "data": {
+      "sequence": "AGGLDPPMGDPEYL",
+      "peptidesString": "AGGLDPPMGDPEYL, AGGLDPPMGDPEYLAAF",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan), (nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 2.0
+    },
+    "position": {
+      "x": 0,
+      "y": 0
+    }
+  }
+]

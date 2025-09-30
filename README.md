@@ -36,6 +36,8 @@ pnpm dev
 
 ### Usage
 
+The initial example files present the protein Q8WUI4.
+
 To upload a new protein, open the side menu and follow the instructions listed.
 
 For the user guide, open the side menu and click on the third panel.

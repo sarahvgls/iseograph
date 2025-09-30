@@ -1,0 +1,2290 @@
+[
+  {
+    "id": "en0-n1",
+    "source": "n0",
+    "target": "n1",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 3, isoform 4",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en0-n50",
+    "source": "n0",
+    "target": "n50",
+    "type": "arrow",
+    "data": {
+      "isoformString": "isoform 10",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en0-n51",
+    "source": "n0",
+    "target": "n51",
+    "type": "arrow",
+    "data": {
+      "isoformString": "isoform 2",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en0-n53",
+    "source": "n0",
+    "target": "n53",
+    "type": "arrow",
+    "data": {
+      "isoformString": "isoform 9",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en0-n59",
+    "source": "n0",
+    "target": "n59",
+    "type": "arrow",
+    "data": {
+      "isoformString": "isoform 5, isoform 7",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en0-n63",
+    "source": "n0",
+    "target": "n63",
+    "type": "arrow",
+    "data": {
+      "isoformString": "isoform 6",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en0-n64",
+    "source": "n0",
+    "target": "n64",
+    "type": "arrow",
+    "data": {
+      "isoformString": "isoform 8",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en0-n68",
+    "source": "n0",
+    "target": "n68",
+    "type": "arrow",
+    "data": {
+      "isoformString": "isoform 2",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en1-n81",
+    "source": "n1",
+    "target": "n81",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 3, isoform 4",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en2-n101",
+    "source": "n2",
+    "target": "n101",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8",
+      "generic": "None",
+      "peptidesString": "FLAGLQQQRSVEPMRL",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 1.0
+    }
+  },
+  {
+    "id": "en3-n4",
+    "source": "n3",
+    "target": "n4",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en3-n41",
+    "source": "n3",
+    "target": "n41",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8",
+      "generic": "CONFLICT",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en4-n106",
+    "source": "n4",
+    "target": "n106",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en5-n96",
+    "source": "n5",
+    "target": "n96",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en6-n100",
+    "source": "n6",
+    "target": "n100",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en7-n114",
+    "source": "n7",
+    "target": "n114",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en8-n71",
+    "source": "n8",
+    "target": "n71",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en9-n10",
+    "source": "n9",
+    "target": "n10",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en10-n94",
+    "source": "n10",
+    "target": "n94",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en11-n133",
+    "source": "n11",
+    "target": "n133",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 10",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en12-n140",
+    "source": "n12",
+    "target": "n140",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 10",
+      "generic": "None",
+      "peptidesString": "AQSSPAAPASLSAPEPASQAR",
+      "intensitiesString": "(nan, nan, nan, nan, nan, 36734000.0)",
+      "peptideCount": 1.0
+    }
+  },
+  {
+    "id": "en13-n102",
+    "source": "n13",
+    "target": "n102",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en14-n103",
+    "source": "n14",
+    "target": "n103",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "KASLEELQSVHSER, KASLEELQSVHSERHVLLYGTNPLSRL",
+      "intensitiesString": "(nan, nan, nan, nan, nan, 182060000.0), (nan, nan, nan, nan, 314395000.0, nan)",
+      "peptideCount": 2.0
+    }
+  },
+  {
+    "id": "en15-n16",
+    "source": "n15",
+    "target": "n16",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "ASLEELQSVHSERHVLLYGTNPLSRLK",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 1.0
+    }
+  },
+  {
+    "id": "en16-n105",
+    "source": "n16",
+    "target": "n105",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en17-n142",
+    "source": "n17",
+    "target": "n142",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en18-n83",
+    "source": "n18",
+    "target": "n83",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "DTIWNELHSSNAARWAAGSVT",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 1.0
+    }
+  },
+  {
+    "id": "en19-n97",
+    "source": "n19",
+    "target": "n97",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "AVVRPPGHHADHSTAMGF, DLAFKVASRELKNGFAVVRPPGHHA",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan), (45849500.0, nan, nan, nan, nan, nan)",
+      "peptideCount": 2.0
+    }
+  },
+  {
+    "id": "en20-n119",
+    "source": "n20",
+    "target": "n119",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en21-n123",
+    "source": "n21",
+    "target": "n123",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en22-n144",
+    "source": "n22",
+    "target": "n144",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en23-n24",
+    "source": "n23",
+    "target": "n24",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "AGGLDPPMGDPEYLAAF",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 1.0
+    }
+  },
+  {
+    "id": "en23-n48",
+    "source": "n23",
+    "target": "n48",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "CONFLICT",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en24-n25",
+    "source": "n24",
+    "target": "n25",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "AGGLDPPMGDPEYLAAF",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 1.0
+    }
+  },
+  {
+    "id": "en25-n26",
+    "source": "n25",
+    "target": "n26",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en26-n88",
+    "source": "n26",
+    "target": "n88",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en27-n116",
+    "source": "n27",
+    "target": "n116",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en28-n124",
+    "source": "n28",
+    "target": "n124",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "ALEGGHDLTAICDASEACVAALL, GGHDLTAICDASE, GGHDLTAICDASEACVAALLGNRVDPLSEE",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan), (nan, nan, nan, nan, nan, nan), (nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 3.0
+    }
+  },
+  {
+    "id": "en29-n129",
+    "source": "n29",
+    "target": "n129",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "EGWKQKPNLNAIRSLE, GNRVDPLSEEGW",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan), (nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 2.0
+    }
+  },
+  {
+    "id": "en30-n76",
+    "source": "n30",
+    "target": "n76",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en32-n101",
+    "source": "n32",
+    "target": "n101",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8",
+      "generic": "VARIANT",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en33-n96",
+    "source": "n33",
+    "target": "n96",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8",
+      "generic": "MUTAGEN",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en34-n100",
+    "source": "n34",
+    "target": "n100",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8",
+      "generic": "MUTAGEN",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en35-n114",
+    "source": "n35",
+    "target": "n114",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8",
+      "generic": "MUTAGEN",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en36-n133",
+    "source": "n36",
+    "target": "n133",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 10",
+      "generic": "MUTAGEN",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en37-n140",
+    "source": "n37",
+    "target": "n140",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 10",
+      "generic": "MUTAGEN",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en38-n124",
+    "source": "n38",
+    "target": "n124",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "MUTAGEN",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en39-n124",
+    "source": "n39",
+    "target": "n124",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "MUTAGEN",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en40-n124",
+    "source": "n40",
+    "target": "n124",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "MUTAGEN",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en41-n106",
+    "source": "n41",
+    "target": "n106",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8",
+      "generic": "CONFLICT",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en42-n10",
+    "source": "n42",
+    "target": "n10",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8",
+      "generic": "CONFLICT",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en43-n102",
+    "source": "n43",
+    "target": "n102",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "CONFLICT",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en44-n142",
+    "source": "n44",
+    "target": "n142",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "CONFLICT",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en45-n83",
+    "source": "n45",
+    "target": "n83",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "CONFLICT",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en46-n97",
+    "source": "n46",
+    "target": "n97",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "CONFLICT",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en47-n144",
+    "source": "n47",
+    "target": "n144",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "CONFLICT",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en48-n25",
+    "source": "n48",
+    "target": "n25",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "CONFLICT",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en49-n116",
+    "source": "n49",
+    "target": "n116",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "CONFLICT",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en50-n11",
+    "source": "n50",
+    "target": "n11",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 10",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en50-n36",
+    "source": "n50",
+    "target": "n36",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 10",
+      "generic": "MUTAGEN",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en51-n52",
+    "source": "n51",
+    "target": "n52",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 10",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en52-n12",
+    "source": "n52",
+    "target": "n12",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 10",
+      "generic": "None",
+      "peptidesString": "AQSSPAAPASLSAPEPASQAR",
+      "intensitiesString": "(nan, nan, nan, nan, nan, 36734000.0)",
+      "peptideCount": 1.0
+    }
+  },
+  {
+    "id": "en52-n37",
+    "source": "n52",
+    "target": "n37",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 10",
+      "generic": "MUTAGEN",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en53-n54",
+    "source": "n53",
+    "target": "n54",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en54-n55",
+    "source": "n54",
+    "target": "n55",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en55-n56",
+    "source": "n55",
+    "target": "n56",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "HAGRIQSIWSRLQE",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 1.0
+    }
+  },
+  {
+    "id": "en56-n57",
+    "source": "n56",
+    "target": "n57",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "HAGRIQSIWSRLQE",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 1.0
+    }
+  },
+  {
+    "id": "en57-n58",
+    "source": "n57",
+    "target": "n58",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en58-n13",
+    "source": "n58",
+    "target": "n13",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en58-n43",
+    "source": "n58",
+    "target": "n43",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "CONFLICT",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en59-n60",
+    "source": "n59",
+    "target": "n60",
+    "type": "arrow",
+    "data": {
+      "isoformString": "isoform 5, isoform 7",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en60-n61",
+    "source": "n60",
+    "target": "n61",
+    "type": "arrow",
+    "data": {
+      "isoformString": "isoform 5, isoform 7",
+      "generic": "None",
+      "peptidesString": "DGTQVSPGAHYCSPTGAGCPRPCA",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 1.0
+    }
+  },
+  {
+    "id": "en61-n62",
+    "source": "n61",
+    "target": "n62",
+    "type": "arrow",
+    "data": {
+      "isoformString": "isoform 5, isoform 7",
+      "generic": "None",
+      "peptidesString": "CSPTGAGCPRPCADTPGPQPQPM",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 1.0
+    }
+  },
+  {
+    "id": "en62-n81",
+    "source": "n62",
+    "target": "n81",
+    "type": "arrow",
+    "data": {
+      "isoformString": "isoform 5, isoform 7",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en63-n81",
+    "source": "n63",
+    "target": "n81",
+    "type": "arrow",
+    "data": {
+      "isoformString": "isoform 6",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en64-n65",
+    "source": "n64",
+    "target": "n65",
+    "type": "arrow",
+    "data": {
+      "isoformString": "isoform 8",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en65-n66",
+    "source": "n65",
+    "target": "n66",
+    "type": "arrow",
+    "data": {
+      "isoformString": "isoform 8",
+      "generic": "None",
+      "peptidesString": "DGTQVSPGAHYCSPTGAGCPRPCA",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 1.0
+    }
+  },
+  {
+    "id": "en66-n67",
+    "source": "n66",
+    "target": "n67",
+    "type": "arrow",
+    "data": {
+      "isoformString": "isoform 8",
+      "generic": "None",
+      "peptidesString": "CSPTGAGCPRPCADTPGPQPQPM",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 1.0
+    }
+  },
+  {
+    "id": "en67-n81",
+    "source": "n67",
+    "target": "n81",
+    "type": "arrow",
+    "data": {
+      "isoformString": "isoform 8",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en68-n86",
+    "source": "n68",
+    "target": "n86",
+    "type": "arrow",
+    "data": {
+      "isoformString": "isoform 2",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en69-n119",
+    "source": "n69",
+    "target": "n119",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "CONFLICT",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en70-n72",
+    "source": "n70",
+    "target": "n72",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 5, isoform 6, isoform 8",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en70-n75",
+    "source": "n70",
+    "target": "n75",
+    "type": "arrow",
+    "data": {
+      "isoformString": "isoform 4",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en70-n8",
+    "source": "n70",
+    "target": "n8",
+    "type": "arrow",
+    "data": {
+      "isoformString": "isoform 3, isoform 7",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en71-n9",
+    "source": "n71",
+    "target": "n9",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en71-n42",
+    "source": "n71",
+    "target": "n42",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8",
+      "generic": "CONFLICT",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en72-n73",
+    "source": "n72",
+    "target": "n73",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 5, isoform 6, isoform 8",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en73-n74",
+    "source": "n73",
+    "target": "n74",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 5, isoform 6, isoform 8",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en74-n75",
+    "source": "n74",
+    "target": "n75",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 5, isoform 6, isoform 8",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en75-n8",
+    "source": "n75",
+    "target": "n8",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 4, isoform 5, isoform 6, isoform 8",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en76-n77",
+    "source": "n76",
+    "target": "n77",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en77-n78",
+    "source": "n77",
+    "target": "n78",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "ASLSVGILAEDRPSEQLVEEEEPMNL",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 1.0
+    }
+  },
+  {
+    "id": "en78-n79",
+    "source": "n78",
+    "target": "n79",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "AEDRPSEQLVEEEEPMNL, ASLSVGILAEDRPSEQLVEEEEPMNL",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan), (nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 2.0
+    }
+  },
+  {
+    "id": "en79-n31",
+    "source": "n79",
+    "target": "n31",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en80-n31",
+    "source": "n80",
+    "target": "n31",
+    "type": "arrow",
+    "data": {
+      "isoformString": "isoform 8",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en81-n82",
+    "source": "n81",
+    "target": "n82",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en82-n2",
+    "source": "n82",
+    "target": "n2",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8",
+      "generic": "None",
+      "peptidesString": "FLAGLQQQRSVEPMRL",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 1.0
+    }
+  },
+  {
+    "id": "en82-n32",
+    "source": "n82",
+    "target": "n32",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8",
+      "generic": "VARIANT",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en83-n84",
+    "source": "n83",
+    "target": "n84",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en84-n85",
+    "source": "n84",
+    "target": "n85",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "DLAFKVASRELKNGFAVVRPPGHHA",
+      "intensitiesString": "(45849500.0, nan, nan, nan, nan, nan)",
+      "peptideCount": 1.0
+    }
+  },
+  {
+    "id": "en85-n19",
+    "source": "n85",
+    "target": "n19",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "AVVRPPGHHADHSTAMGF, DLAFKVASRELKNGFAVVRPPGHHA",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan), (45849500.0, nan, nan, nan, nan, nan)",
+      "peptideCount": 2.0
+    }
+  },
+  {
+    "id": "en85-n46",
+    "source": "n85",
+    "target": "n46",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "CONFLICT",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en86-n87",
+    "source": "n86",
+    "target": "n87",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 10",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en87-n53",
+    "source": "n87",
+    "target": "n53",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 10",
+      "generic": "None",
+      "peptidesString": "DSVMLKHQCSCG",
+      "intensitiesString": "(83383000.0, nan, nan, nan, nan, nan)",
+      "peptideCount": 1.0
+    }
+  },
+  {
+    "id": "en88-n89",
+    "source": "n88",
+    "target": "n89",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en89-n90",
+    "source": "n89",
+    "target": "n90",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "EFSPDLVLVSAGFDAAEGHPAPLGGYHVSAK",
+      "intensitiesString": "(nan, nan, nan, nan, nan, 451000000.0)",
+      "peptideCount": 1.0
+    }
+  },
+  {
+    "id": "en90-n91",
+    "source": "n90",
+    "target": "n91",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "DAAEGHPAPLGGY, EFSPDLVLVSAGFDAAEGHPAPLGGYHVSAK",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan), (nan, nan, nan, nan, nan, 451000000.0)",
+      "peptideCount": 2.0
+    }
+  },
+  {
+    "id": "en91-n92",
+    "source": "n91",
+    "target": "n92",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "EFSPDLVLVSAGFDAAEGHPAPLGGYHVSAK",
+      "intensitiesString": "(nan, nan, nan, nan, nan, 451000000.0)",
+      "peptideCount": 1.0
+    }
+  },
+  {
+    "id": "en92-n93",
+    "source": "n92",
+    "target": "n93",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en93-n27",
+    "source": "n93",
+    "target": "n27",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en93-n49",
+    "source": "n93",
+    "target": "n49",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "CONFLICT",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en94-n95",
+    "source": "n94",
+    "target": "n95",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en95-n50",
+    "source": "n95",
+    "target": "n50",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en96-n6",
+    "source": "n96",
+    "target": "n6",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en96-n34",
+    "source": "n96",
+    "target": "n34",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8",
+      "generic": "MUTAGEN",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en97-n98",
+    "source": "n97",
+    "target": "n98",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "AVVRPPGHHADHSTAMGF",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 1.0
+    }
+  },
+  {
+    "id": "en98-n99",
+    "source": "n98",
+    "target": "n99",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en99-n69",
+    "source": "n99",
+    "target": "n69",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "CONFLICT",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en99-n20",
+    "source": "n99",
+    "target": "n20",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en100-n7",
+    "source": "n100",
+    "target": "n7",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en100-n35",
+    "source": "n100",
+    "target": "n35",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8",
+      "generic": "MUTAGEN",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en101-n3",
+    "source": "n101",
+    "target": "n3",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en102-n14",
+    "source": "n102",
+    "target": "n14",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en103-n104",
+    "source": "n103",
+    "target": "n104",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "ASLEELQSVHSERHVLLYGTNPLSRLK, KASLEELQSVHSERHVLLYGTNPLSRL",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan), (nan, nan, nan, nan, 314395000.0, nan)",
+      "peptideCount": 2.0
+    }
+  },
+  {
+    "id": "en104-n15",
+    "source": "n104",
+    "target": "n15",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "ASLEELQSVHSERHVLLYGTNPLSRLK, KASLEELQSVHSERHVLLYGTNPLSRL",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan), (nan, nan, nan, nan, 314395000.0, nan)",
+      "peptideCount": 2.0
+    }
+  },
+  {
+    "id": "en105-n17",
+    "source": "n105",
+    "target": "n17",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en105-n44",
+    "source": "n105",
+    "target": "n44",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "CONFLICT",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en106-n107",
+    "source": "n106",
+    "target": "n107",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en107-n108",
+    "source": "n107",
+    "target": "n108",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en108-n109",
+    "source": "n108",
+    "target": "n109",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en109-n110",
+    "source": "n109",
+    "target": "n110",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en110-n111",
+    "source": "n110",
+    "target": "n111",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en111-n112",
+    "source": "n111",
+    "target": "n112",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en112-n113",
+    "source": "n112",
+    "target": "n113",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en113-n5",
+    "source": "n113",
+    "target": "n5",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en113-n33",
+    "source": "n113",
+    "target": "n33",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8",
+      "generic": "MUTAGEN",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en114-n115",
+    "source": "n114",
+    "target": "n115",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en115-n70",
+    "source": "n115",
+    "target": "n70",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8",
+      "generic": "None",
+      "peptidesString": "HGPNPILGSE",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 1.0
+    }
+  },
+  {
+    "id": "en115-n71",
+    "source": "n115",
+    "target": "n71",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8",
+      "generic": "CONFLICT",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en116-n117",
+    "source": "n116",
+    "target": "n117",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en117-n118",
+    "source": "n117",
+    "target": "n118",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "ALEGGHDLTAICDASEACVAALL",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 1.0
+    }
+  },
+  {
+    "id": "en118-n28",
+    "source": "n118",
+    "target": "n28",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "ALEGGHDLTAICDASEACVAALL, GGHDLTAICDASE, GGHDLTAICDASEACVAALLGNRVDPLSEE",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan), (nan, nan, nan, nan, nan, nan), (nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 3.0
+    }
+  },
+  {
+    "id": "en118-n38",
+    "source": "n118",
+    "target": "n38",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "MUTAGEN",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en118-n39",
+    "source": "n118",
+    "target": "n39",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "MUTAGEN",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en118-n40",
+    "source": "n118",
+    "target": "n40",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "MUTAGEN",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en119-n120",
+    "source": "n119",
+    "target": "n120",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "ILIVDWDVHHGNGTQQTFYQDPSVLYISLHR",
+      "intensitiesString": "(nan, nan, nan, nan, nan, 91839000.0)",
+      "peptideCount": 1.0
+    }
+  },
+  {
+    "id": "en120-n121",
+    "source": "n120",
+    "target": "n121",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "ILIVDWDVHHGNGTQQTFYQDPSVLYISLHR",
+      "intensitiesString": "(nan, nan, nan, nan, nan, 91839000.0)",
+      "peptideCount": 1.0
+    }
+  },
+  {
+    "id": "en121-n122",
+    "source": "n121",
+    "target": "n122",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "ILIVDWDVHHGNGTQQTFYQDPSVLYISLHR",
+      "intensitiesString": "(nan, nan, nan, nan, nan, 91839000.0)",
+      "peptideCount": 1.0
+    }
+  },
+  {
+    "id": "en122-n21",
+    "source": "n122",
+    "target": "n21",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "DPSVLYISLHRH",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 1.0
+    }
+  },
+  {
+    "id": "en123-n22",
+    "source": "n123",
+    "target": "n22",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en123-n47",
+    "source": "n123",
+    "target": "n47",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "CONFLICT",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en124-n125",
+    "source": "n124",
+    "target": "n125",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "ALEGGHDLTAICDASEACVAALL, GGHDLTAICDASE, GGHDLTAICDASEACVAALLGNRVDPLSEE",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan), (nan, nan, nan, nan, nan, nan), (nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 3.0
+    }
+  },
+  {
+    "id": "en125-n126",
+    "source": "n125",
+    "target": "n126",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "ALEGGHDLTAICDASEACVAALL, DASEACVAALLGNRV, GGHDLTAICDASEACVAALLGNRVDPLSEE",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan), (nan, nan, nan, nan, nan, nan), (nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 3.0
+    }
+  },
+  {
+    "id": "en126-n127",
+    "source": "n126",
+    "target": "n127",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "DASEACVAALLGNRV, GGHDLTAICDASEACVAALLGNRVDPLSEE",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan), (nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 2.0
+    }
+  },
+  {
+    "id": "en127-n128",
+    "source": "n127",
+    "target": "n128",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "GGHDLTAICDASEACVAALLGNRVDPLSEE, GNRVDPLSEEGW",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan), (nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 2.0
+    }
+  },
+  {
+    "id": "en128-n29",
+    "source": "n128",
+    "target": "n29",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "GGHDLTAICDASEACVAALLGNRVDPLSEE, GNRVDPLSEEGW",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan), (nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 2.0
+    }
+  },
+  {
+    "id": "en129-n130",
+    "source": "n129",
+    "target": "n130",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "EGWKQKPNLNAIRSLE, GWKQKPNLNAIRSLE",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan), (nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 2.0
+    }
+  },
+  {
+    "id": "en130-n131",
+    "source": "n130",
+    "target": "n131",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "EGWKQKPNLNAIRSLE, GWKQKPNLNAIRSLE, KQKPNLNAIRSLEAVIRVHS",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan), (nan, nan, nan, nan, nan, nan), (nan, nan, nan, nan, 61655000.0, nan)",
+      "peptideCount": 3.0
+    }
+  },
+  {
+    "id": "en131-n132",
+    "source": "n131",
+    "target": "n132",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "KPNLNAIRSLEAVIRVHS, KQKPNLNAIRSLEAVIRVHS",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan), (nan, nan, nan, nan, 61655000.0, nan)",
+      "peptideCount": 2.0
+    }
+  },
+  {
+    "id": "en132-n80",
+    "source": "n132",
+    "target": "n80",
+    "type": "arrow",
+    "data": {
+      "isoformString": "isoform 8",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en132-n30",
+    "source": "n132",
+    "target": "n30",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "KPNLNAIRSLEAVIRVHS, KQKPNLNAIRSLEAVIRVHS",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan), (nan, nan, nan, nan, 61655000.0, nan)",
+      "peptideCount": 2.0
+    }
+  },
+  {
+    "id": "en133-n134",
+    "source": "n133",
+    "target": "n134",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 10",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en134-n135",
+    "source": "n134",
+    "target": "n135",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 10",
+      "generic": "None",
+      "peptidesString": "ELGHGQPEAR",
+      "intensitiesString": "(nan, nan, nan, nan, nan, 46682000.0)",
+      "peptideCount": 1.0
+    }
+  },
+  {
+    "id": "en135-n136",
+    "source": "n135",
+    "target": "n136",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 10",
+      "generic": "None",
+      "peptidesString": "ARGPAPLQQHPQVLLWE",
+      "intensitiesString": "(nan, nan, 344500000.0, nan, nan, nan)",
+      "peptideCount": 1.0
+    }
+  },
+  {
+    "id": "en136-n137",
+    "source": "n136",
+    "target": "n137",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 10",
+      "generic": "None",
+      "peptidesString": "GPAPLQQHPQVLLWEQQR",
+      "intensitiesString": "(nan, nan, nan, nan, nan, 466590000.0)",
+      "peptideCount": 1.0
+    }
+  },
+  {
+    "id": "en137-n138",
+    "source": "n137",
+    "target": "n138",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 10",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en138-n139",
+    "source": "n138",
+    "target": "n139",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 10",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en139-n51",
+    "source": "n139",
+    "target": "n51",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 10",
+      "generic": "None",
+      "peptidesString": "GSTGDTVLLPLAQGGHRPLSR",
+      "intensitiesString": "(nan, nan, nan, nan, nan, 197410000.0)",
+      "peptideCount": 1.0
+    }
+  },
+  {
+    "id": "en139-n68",
+    "source": "n139",
+    "target": "n68",
+    "type": "arrow",
+    "data": {
+      "isoformString": "isoform 2",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en140-n141",
+    "source": "n140",
+    "target": "n141",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 10",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en141-n86",
+    "source": "n141",
+    "target": "n86",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 10",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en142-n143",
+    "source": "n142",
+    "target": "n143",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en143-n18",
+    "source": "n143",
+    "target": "n18",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "DTIWNELHSSNAARWAAGSVT",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 1.0
+    }
+  },
+  {
+    "id": "en143-n45",
+    "source": "n143",
+    "target": "n45",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "CONFLICT",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en144-n145",
+    "source": "n144",
+    "target": "n145",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "None",
+      "intensitiesString": "None",
+      "peptideCount": ""
+    }
+  },
+  {
+    "id": "en145-n23",
+    "source": "n145",
+    "target": "n23",
+    "type": "arrow",
+    "data": {
+      "isoformString": "canonical, isoform 2, isoform 3, isoform 4, isoform 5, isoform 6, isoform 7, isoform 8, isoform 9, isoform 10",
+      "generic": "None",
+      "peptidesString": "AGGLDPPMGDPEYLAAF",
+      "intensitiesString": "(nan, nan, nan, nan, nan, nan)",
+      "peptideCount": 1.0
+    }
+  }
+]
