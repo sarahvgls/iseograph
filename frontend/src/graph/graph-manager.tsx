@@ -1,7 +1,6 @@
 import {
   ReactFlow,
   type NodeOrigin,
-  Panel,
   type NodeMouseHandler,
   MiniMap,
   type Edge,
@@ -39,7 +38,11 @@ import DirectionMiniMapNode from "../components/minimap/direction-minimap-node.t
 import ArrowEdge from "../components/arrow-edge/arrow-edge.tsx";
 import { SideMenu } from "../components/side-menu/side-menu.tsx";
 import { OnScreenMenu } from "../components/on-screen-menu/on-screen-menu.tsx";
-import { StyledPanel } from "../components/base-components";
+import {
+  SecondaryButton,
+  StyledButtonPanel,
+  StyledPanel,
+} from "../components/base-components";
 import {
   LoadingBackdrop,
   SettingsBackdrop,
@@ -58,6 +61,7 @@ import {
   MenuStackContainer,
   OverlayContainer,
 } from "../components/base-components/graph-wrapper.tsx";
+import { createSearchIndex, DAGSearchIndex } from "../search";
 
 // Split the selectors to minimize re-renders
 const graphDataSelector = (state: RFState) => ({
@@ -169,6 +173,8 @@ const Flow = memo(() => {
     shallow,
   );
 
+  const [searchIndex, setSearchIndex] = useState<DAGSearchIndex>();
+
   // Memoize these stable functions from store to avoid recreating them
   const setNodeWidthMode = useMemo(
     () => useGraphStore.getState().setGlobalNodeWidthMode,
@@ -248,6 +254,9 @@ const Flow = memo(() => {
     let nodes = useGraphStore.getState().nodes;
     const layoutMode = useGraphStore.getState().layoutMode;
     const nodeWidthMode = useGraphStore.getState().nodeWidthMode;
+
+    const searchIndex = createSearchIndex(nodes, edges);
+    setSearchIndex(searchIndex);
 
     if (nodes.length === 0) {
       console.warn(
@@ -468,6 +477,21 @@ const Flow = memo(() => {
     isInitializing,
   ]);
 
+  const [searchValue, setSearchValue] = useState<string>("");
+
+  const onSearch = useCallback(() => {
+    if (!searchIndex) {
+      console.warn("Search index is not initialized yet.");
+      setSearchIndex(createSearchIndex(nodes, edges));
+      return;
+    }
+    const results = searchIndex.search(searchValue, {
+      searchCrossNode: true,
+      nodeFields: ["sequence"],
+    });
+
+  }, [edges, nodes, searchIndex, searchValue]);
+
   // Memoize UI components that don't need to re-render with graph data
   const overlayControls = useMemo(
     () => (
@@ -513,6 +537,29 @@ const Flow = memo(() => {
           />
         </StyledPanel>
         <Panel position="top-right" style={{ pointerEvents: "auto" }}>
+        <StyledButtonPanel
+          position="top-right"
+          style={{ pointerEvents: "auto", right: "200px", top: "10px" }}
+        >
+          <div className="search">
+            <input
+              type={"search"}
+              placeholder={"Enter an amino acid sequence"}
+              value={searchValue}
+              style={{
+                width: "300px",
+                padding: "8px",
+                borderRadius: "4px",
+                border: "1px solid #ccc",
+              }}
+              onChange={(e) => {
+                setSearchValue(e.target.value);
+              }}
+            />
+            <SecondaryButton style={{ marginLeft: "8px" }} onClick={onSearch}>
+              Search
+            </SecondaryButton>
+          </div>
           <ToggleMenuButton
             onToggle={() => {
               if (glowMethod === glowMethods.intensity) {
@@ -539,7 +586,7 @@ const Flow = memo(() => {
             isShifted={shouldShiftButtons}
             testId="open-menu-button"
           />
-        </Panel>
+        </StyledButtonPanel>
         <MiniMapContainer isOpen={isMapOpen} style={{ pointerEvents: "auto" }}>
           <button
             style={{
@@ -603,6 +650,8 @@ const Flow = memo(() => {
       shouldShiftButtons,
       glowMethod,
       focusNodeWithDelay,
+      searchValue,
+      onSearch,
     ],
   );
 
