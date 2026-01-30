@@ -38,6 +38,7 @@ import {
   createNodes,
   generateIsoformColorMatching,
 } from "./generation-utils/nodes-edges.tsx";
+import type { SearchResultDict } from "../search/types.ts";
 
 export type SourceToTargets = Record<
   string,
@@ -107,6 +108,9 @@ export type RFState = {
   rowWidth: number;
   labelVisibility: labelVisibilities;
   zeroValuesPeptides: boolean;
+
+  searchResults: SearchResultDict;
+  setSearchResults: (results: SearchResultDict) => void;
 };
 
 // ----- create nodes and edges -----
@@ -394,6 +398,12 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
   rowWidth: defaultValues.rowWidth,
   labelVisibility: defaultValues.labelVisibility,
   zeroValuesPeptides: defaultValues.zeroValuesPeptides,
+
+  // --- search ---
+  searchResults: {},
+  setSearchResults: (results: SearchResultDict) => {
+    set({ searchResults: results });
+  },
 }));
 
 export default useGraphStore;

@@ -62,6 +62,7 @@ import {
   OverlayContainer,
 } from "../components/base-components/graph-wrapper.tsx";
 import { createSearchIndex, DAGSearchIndex } from "../search";
+import type { SearchResultDict } from "../search/types.ts";
 
 // Split the selectors to minimize re-renders
 const graphDataSelector = (state: RFState) => ({
@@ -172,6 +173,10 @@ const Flow = memo(() => {
     graphMenuSelector,
     shallow,
   );
+
+  const { setSearchResults } = useGraphStore((state) => ({
+    setSearchResults: state.setSearchResults,
+  }));
 
   const [searchIndex, setSearchIndex] = useState<DAGSearchIndex>();
 
@@ -490,6 +495,21 @@ const Flow = memo(() => {
       nodeFields: ["sequence"],
     });
 
+    if (results.totalPathMatches > 0) {
+      const searchResults: SearchResultDict = {};
+      results.pathMatches.forEach((pathMatch) => {
+        Object.entries(pathMatch.nodeMatches).forEach(
+          ([nodeId, matchIndices]) => {
+            if (!searchResults[nodeId]) {
+              searchResults[nodeId] = matchIndices;
+            }
+          },
+        );
+      });
+      setSearchResults(searchResults);
+    } else {
+      setSearchResults({});
+    }
   }, [edges, nodes, searchIndex, searchValue]);
 
   // Memoize UI components that don't need to re-render with graph data
@@ -554,6 +574,9 @@ const Flow = memo(() => {
               }}
               onChange={(e) => {
                 setSearchValue(e.target.value);
+                if (e.target.value === "") {
+                  setSearchResults({});
+                }
               }}
             />
             <SecondaryButton style={{ marginLeft: "8px" }} onClick={onSearch}>

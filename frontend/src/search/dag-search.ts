@@ -280,8 +280,11 @@ export class DAGSearchIndex {
                 const matchStart = match.startIndex;
                 const matchEnd = match.endIndex;
 
-                // Find which nodes this match touches
+                // Find which nodes this match touches and calculate indices within each node
                 const touchedNodeIds: string[] = [];
+                const nodeMatchesDict: {
+                  [nodeId: string]: { startIndex: number; endIndex: number };
+                } = {};
 
                 for (let i = 0; i < nodeLengths.length; i++) {
                   const nodeStart = nodeLengths[i];
@@ -292,7 +295,25 @@ export class DAGSearchIndex {
 
                   // Check if match overlaps with this node's sequence
                   if (matchStart < nodeEnd && matchEnd > nodeStart) {
-                    touchedNodeIds.push(currentPath[i].id);
+                    const nodeId = currentPath[i].id;
+                    touchedNodeIds.push(nodeId);
+
+                    // Calculate the match indices within this specific node
+                    // startIndex: how far into this node the match starts (0 if match starts before this node)
+                    // endIndex: how far into this node the match ends (node length if match extends beyond)
+                    const matchStartInNode = Math.max(
+                      0,
+                      matchStart - nodeStart,
+                    );
+                    const matchEndInNode = Math.min(
+                      nodeEnd - nodeStart,
+                      matchEnd - nodeStart,
+                    );
+
+                    nodeMatchesDict[nodeId] = {
+                      startIndex: matchStartInNode,
+                      endIndex: matchEndInNode,
+                    };
                   }
                 }
 
@@ -329,6 +350,7 @@ export class DAGSearchIndex {
                     combinedSequence,
                     matches: [match], // Store only this specific match for this path
                     totalMatches: 1,
+                    nodeMatches: nodeMatchesDict,
                   });
                 }
               }

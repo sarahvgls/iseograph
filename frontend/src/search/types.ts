@@ -37,6 +37,13 @@ export interface NodeMatch {
 }
 
 /**
+ * Search result: a dictionary of nodeIds (strings) matching to tuples of indices (numbers) of match in that node
+ */
+export interface SearchResultDict {
+  [nodeId: string]: { startIndex: number; endIndex: number };
+}
+
+/**
  * Path match result (spanning multiple nodes)
  */
 export interface PathMatch {
@@ -45,6 +52,7 @@ export interface PathMatch {
   combinedSequence: string;
   matches: MatchResult[];
   totalMatches: number;
+  nodeMatches: { [nodeId: string]: { startIndex: number; endIndex: number } }; // Maps node IDs to match indices within that node
 }
 
 /**
