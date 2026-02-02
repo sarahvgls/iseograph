@@ -7,10 +7,10 @@ interface SequenceContainerProps {
   sequence: string;
   isReversed?: boolean;
   containerWidthRef: React.RefObject<HTMLDivElement> | null;
-  searchResultIndices?: {
+  searchResultIndices?: Array<{
     startIndex: number;
     endIndex: number;
-  };
+  }>;
 }
 
 const CollapsedContainer = styled.div`
@@ -46,38 +46,89 @@ export const SequenceContainer: React.FC<SequenceContainerProps> = ({
   containerWidthRef,
   searchResultIndices,
 }) => {
-  const { startIndex, endIndex } = searchResultIndices || {};
-
   const renderSequence = () => {
-    if (startIndex !== undefined && endIndex !== undefined) {
-      const length = sequence.length;
-      const before = isReversed
-        ? sequence.slice(0, length - endIndex)
-        : sequence.slice(0, startIndex);
-      const highlighted = isReversed
-        ? sequence.slice(length - endIndex, length - startIndex)
-        : sequence.slice(startIndex, endIndex);
-      const after = isReversed
-        ? sequence.slice(length - startIndex, length)
-        : sequence.slice(endIndex);
+    if (!searchResultIndices || searchResultIndices.length === 0) {
+      return <span style={{ color: "black" }}>{sequence}</span>;
+    }
 
-      return (
-        <>
-          <span style={{ color: "black" }}>{before}</span>
-          <span
-            style={{
-              color: theme.searchResult.matchingAminoAcid,
-              fontWeight: "bold",
-              // backgroundColor: "red",
-            }}
-          >
-            {highlighted}
-          </span>
-          <span style={{ color: "black" }}>{after}</span>
-        </>
+    const length = sequence.length;
+
+    // Convert indices based on isReversed flag
+    const adjustedRanges = searchResultIndices.map(
+      ({ startIndex, endIndex }) => {
+        if (isReversed) {
+          return {
+            start: length - endIndex,
+            end: length - startIndex,
+          };
+        }
+        return {
+          start: startIndex,
+          end: endIndex,
+        };
+      },
+    );
+
+    // Sort and merge overlapping ranges
+    const sortedRanges = adjustedRanges.sort((a, b) => a.start - b.start);
+    const mergedRanges: Array<{ start: number; end: number }> = [];
+
+    for (const range of sortedRanges) {
+      if (mergedRanges.length === 0) {
+        mergedRanges.push(range);
+      } else {
+        const lastRange = mergedRanges[mergedRanges.length - 1];
+        if (range.start <= lastRange.end) {
+          // Overlapping or adjacent, merge them
+          lastRange.end = Math.max(lastRange.end, range.end);
+        } else {
+          mergedRanges.push(range);
+        }
+      }
+    }
+
+    // Build the rendered sequence with highlights
+    const parts: React.ReactNode[] = [];
+    let currentPos = 0;
+
+    for (let i = 0; i < mergedRanges.length; i++) {
+      const range = mergedRanges[i];
+
+      // Add text before the highlight
+      if (currentPos < range.start) {
+        parts.push(
+          <span key={`before-${i}`} style={{ color: "black" }}>
+            {sequence.slice(currentPos, range.start)}
+          </span>,
+        );
+      }
+
+      // Add highlighted text
+      parts.push(
+        <span
+          key={`highlight-${i}`}
+          style={{
+            color: theme.searchResult.matchingAminoAcid,
+            fontWeight: "bold",
+          }}
+        >
+          {sequence.slice(range.start, range.end)}
+        </span>,
+      );
+
+      currentPos = range.end;
+    }
+
+    // Add remaining text after the last highlight
+    if (currentPos < length) {
+      parts.push(
+        <span key="after" style={{ color: "black" }}>
+          {sequence.slice(currentPos)}
+        </span>,
       );
     }
-    return <span style={{ color: "black" }}>{sequence}</span>;
+
+    return <>{parts}</>;
   };
 
   return (

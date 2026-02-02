@@ -9,6 +9,7 @@
 import type { Node, Edge } from "@xyflow/react";
 import { kmpSearchWithContext } from "./kmp-algorithm";
 import {
+  type MatchResult,
   type NodeMatch,
   NodeSearchField,
   type PathMatch,
@@ -206,8 +207,7 @@ export class DAGSearchIndex {
   }
 
   /**
-   * Search across paths (multiple connected nodes)
-   * This enables finding patterns that span across node boundaries
+   * Search patterns across node boundaries
    * Deduplicates matches so each unique occurrence (by node IDs and match positions) appears only once
    **/
   searchPaths(pattern: string, options: SearchOptions = {}): PathMatch[] {
@@ -275,17 +275,31 @@ export class DAGSearchIndex {
                 }
               }
 
-              // For each match, determine which nodes it spans and create a unique key
+              // Process all matches for this path
+              // Group matches by the nodes they touch to handle multiple matches per node
+              const pathMatchData: {
+                touchedNodeIds: string[];
+                nodeMatchesDict: {
+                  [nodeId: string]: Array<{
+                    startIndex: number;
+                    endIndex: number;
+                  }>;
+                };
+                matches: MatchResult[];
+              } = {
+                touchedNodeIds: [],
+                nodeMatchesDict: {},
+                matches: [],
+              };
+
+              // Process each match to build the complete nodeMatches dictionary
               for (const match of pathMatches) {
                 const matchStart = match.startIndex;
                 const matchEnd = match.endIndex;
 
-                // Find which nodes this match touches and calculate indices within each node
-                const touchedNodeIds: string[] = [];
-                const nodeMatchesDict: {
-                  [nodeId: string]: { startIndex: number; endIndex: number };
-                } = {};
+                pathMatchData.matches.push(match);
 
+                // Find which nodes this match touches and calculate indices within each node
                 for (let i = 0; i < nodeLengths.length; i++) {
                   const nodeStart = nodeLengths[i];
                   const nodeEnd =
@@ -296,11 +310,13 @@ export class DAGSearchIndex {
                   // Check if match overlaps with this node's sequence
                   if (matchStart < nodeEnd && matchEnd > nodeStart) {
                     const nodeId = currentPath[i].id;
-                    touchedNodeIds.push(nodeId);
+
+                    // Add to touched nodes if not already present
+                    if (!pathMatchData.touchedNodeIds.includes(nodeId)) {
+                      pathMatchData.touchedNodeIds.push(nodeId);
+                    }
 
                     // Calculate the match indices within this specific node
-                    // startIndex: how far into this node the match starts (0 if match starts before this node)
-                    // endIndex: how far into this node the match ends (node length if match extends beyond)
                     const matchStartInNode = Math.max(
                       0,
                       matchStart - nodeStart,
@@ -310,49 +326,55 @@ export class DAGSearchIndex {
                       matchEnd - nodeStart,
                     );
 
-                    nodeMatchesDict[nodeId] = {
+                    // Initialize array for this node if not exists
+                    if (!pathMatchData.nodeMatchesDict[nodeId]) {
+                      pathMatchData.nodeMatchesDict[nodeId] = [];
+                    }
+
+                    // Add this match to the node's match list
+                    pathMatchData.nodeMatchesDict[nodeId].push({
                       startIndex: matchStartInNode,
                       endIndex: matchEndInNode,
-                    };
+                    });
                   }
                 }
+              }
 
-                // Create unique key based on touched nodes
-                const uniqueKey = `${touchedNodeIds.join(",")}`;
+              // Create unique key based on touched nodes
+              const uniqueKey = `${pathMatchData.touchedNodeIds.join(",")}`;
 
-                // Check if this match should be registered
-                // A match should NOT be registered if its touchedNodeIds are a subset
-                // of any existing match's pathIds (meaning it's already been found in a longer path)
-                let shouldRegister = true;
+              // Check if this match should be registered
+              // A match should NOT be registered if its touchedNodeIds are a subset
+              // of any existing match's pathIds (meaning it's already been found in a longer path)
+              let shouldRegister = true;
 
-                for (const existingMatch of uniqueMatches.values()) {
-                  const existingPathIds = existingMatch.pathIds;
+              for (const existingMatch of uniqueMatches.values()) {
+                const existingPathIds = existingMatch.pathIds;
 
-                  // Check if all touchedNodeIds are in existingPathIds
-                  const isSubset = touchedNodeIds.every((id) =>
-                    existingPathIds.includes(id),
-                  );
+                // Check if all touchedNodeIds are in existingPathIds
+                const isSubset = pathMatchData.touchedNodeIds.every((id) =>
+                  existingPathIds.includes(id),
+                );
 
-                  if (isSubset) {
-                    // This match has already been registered in a longer path
-                    // Skip registration regardless of position (position differs based on path start)
-                    shouldRegister = false;
-                    break;
-                  }
+                if (isSubset) {
+                  // This match has already been registered in a longer path
+                  // Skip registration regardless of position (position differs based on path start)
+                  shouldRegister = false;
+                  break;
                 }
+              }
 
-                // Only add if this match hasn't been found before
-                if (shouldRegister && !uniqueMatches.has(uniqueKey)) {
-                  // Store the path that contains this match
-                  uniqueMatches.set(uniqueKey, {
-                    path: [...currentPath],
-                    pathIds: currentPath.map((n) => n.id),
-                    combinedSequence,
-                    matches: [match], // Store only this specific match for this path
-                    totalMatches: 1,
-                    nodeMatches: nodeMatchesDict,
-                  });
-                }
+              // Only add if this match hasn't been found before
+              if (shouldRegister && !uniqueMatches.has(uniqueKey)) {
+                // Store the path that contains this match
+                uniqueMatches.set(uniqueKey, {
+                  path: [...currentPath],
+                  pathIds: currentPath.map((n) => n.id),
+                  combinedSequence,
+                  matches: pathMatchData.matches,
+                  totalMatches: pathMatchData.matches.length,
+                  nodeMatches: pathMatchData.nodeMatchesDict,
+                });
               }
             }
           }
