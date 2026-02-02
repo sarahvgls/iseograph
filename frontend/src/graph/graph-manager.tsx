@@ -179,6 +179,7 @@ const Flow = memo(() => {
   }));
 
   const [searchIndex, setSearchIndex] = useState<DAGSearchIndex>();
+  const [searchResultText, setSearchResultText] = useState<string>("");
 
   // Memoize these stable functions from store to avoid recreating them
   const setNodeWidthMode = useMemo(
@@ -496,6 +497,10 @@ const Flow = memo(() => {
     });
 
     if (results.totalPathMatches > 0) {
+      setSearchResultText(
+        `Found ${results.totalPathMatches} matches across ${results.totalNodeMatches} nodes`,
+      );
+
       const searchResults: SearchResultDict = {};
       results.pathMatches.forEach((pathMatch) => {
         Object.entries(pathMatch.nodeMatches).forEach(
@@ -556,32 +561,40 @@ const Flow = memo(() => {
             setIsOpen={setIsPeptideMonitorOpen}
           />
         </StyledPanel>
-        <Panel position="top-right" style={{ pointerEvents: "auto" }}>
         <StyledButtonPanel
           position="top-right"
           style={{ pointerEvents: "auto", right: "200px", top: "10px" }}
         >
-          <div className="search">
-            <input
-              type={"search"}
-              placeholder={"Enter an amino acid sequence"}
-              value={searchValue}
-              style={{
-                width: "300px",
-                padding: "8px",
-                borderRadius: "4px",
-                border: "1px solid #ccc",
-              }}
-              onChange={(e) => {
-                setSearchValue(e.target.value);
-                if (e.target.value === "") {
-                  setSearchResults({});
-                }
-              }}
-            />
-            <SecondaryButton style={{ marginLeft: "8px" }} onClick={onSearch}>
-              Search
-            </SecondaryButton>
+          <div
+            className="search"
+            style={{
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            <div>
+              <input
+                type={"search"}
+                placeholder={"Enter an amino acid sequence"}
+                value={searchValue}
+                style={{
+                  width: "300px",
+                  padding: "8px",
+                  borderRadius: "4px",
+                  border: "1px solid #ccc",
+                }}
+                onChange={(e) => {
+                  setSearchValue(e.target.value);
+                  if (e.target.value === "") {
+                    setSearchResults({});
+                  }
+                }}
+              />
+              <SecondaryButton style={{ marginLeft: "8px" }} onClick={onSearch}>
+                Search
+              </SecondaryButton>
+            </div>
+            <button> {searchResultText} </button>
           </div>
           <ToggleMenuButton
             onToggle={() => {
