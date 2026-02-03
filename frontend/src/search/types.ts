@@ -26,18 +26,7 @@ export interface MatchResult {
 }
 
 /**
- * Node match result
- */
-export interface NodeMatch {
-  nodeId: string;
-  node: Node;
-  field: string;
-  matches: MatchResult[];
-  totalMatches: number;
-}
-
-/**
- * Search result: a dictionary of nodeIds (strings) matching to arrays of tuples of indices (numbers) of matches in that node
+ * Search result: a dictionary of nodeIds (strings) matching to tuples of indices (numbers) of match in that node
  */
 export interface SearchResultDict {
   [nodeId: string]: Array<{ startIndex: number; endIndex: number }>;
@@ -52,21 +41,13 @@ export interface PathMatch {
   combinedSequence: string;
   matches: MatchResult[];
   totalMatches: number;
-  nodeMatches: {
-    [nodeId: string]: Array<{ startIndex: number; endIndex: number }>;
-  }; // Maps node IDs to array of match indices within that node
+  nodeMatches: SearchResultDict;
 }
 
-/**
- * Combined search results
- */
-export interface SearchResults {
-  nodeMatches: NodeMatch[];
-  pathMatches: PathMatch[];
-  totalNodeMatches: number;
-  totalPathMatches: number;
-  searchPattern: string;
-  timestamp: number;
+export interface SearchResult {
+  totalMatches: number;
+  numberOfNodesMatched: number;
+  nodeMatches: SearchResultDict; // Maps node IDs to match indices within that node
 }
 
 /**
@@ -75,7 +56,5 @@ export interface SearchResults {
 export interface SearchOptions {
   contextLength?: number;
   nodeFields?: NodeSearchField[];
-  maxResults?: number;
-  searchCrossNode?: boolean; // Enable searching across node boundaries
   maxPathLength?: number; // Maximum path length for cross-node search (default: 5)
 }

@@ -10,11 +10,11 @@ import type { Node, Edge } from "@xyflow/react";
 import { kmpSearchWithContext } from "./kmp-algorithm";
 import {
   type MatchResult,
-  type NodeMatch,
   NodeSearchField,
   type PathMatch,
   type SearchOptions,
-  type SearchResults,
+  type SearchResult,
+  type SearchResultDict,
 } from "./types.ts";
 
 /**
@@ -160,58 +160,11 @@ export class DAGSearchIndex {
   }
 
   /**
-   * Search in nodes
-   */
-  searchNodes(
-    pattern: string,
-    fields: NodeSearchField[] = [NodeSearchField.SEQUENCE],
-    options: SearchOptions = {},
-  ): NodeMatch[] {
-    const { contextLength = 10, maxResults } = options;
-
-    const matches: NodeMatch[] = [];
-    let resultCount = 0;
-
-    for (const node of this.nodes) {
-      if (maxResults && resultCount >= maxResults) {
-        break;
-      }
-
-      const textFields = this.nodeTextCache.get(node.id);
-      if (!textFields) continue;
-
-      for (const field of fields) {
-        const text = textFields.get(field);
-        if (!text || text === "None" || text === "") continue;
-
-        const fieldMatches = kmpSearchWithContext(text, pattern, contextLength);
-
-        if (fieldMatches.length > 0) {
-          matches.push({
-            nodeId: node.id,
-            node,
-            field,
-            matches: fieldMatches,
-            totalMatches: fieldMatches.length,
-          });
-          resultCount++;
-
-          if (maxResults && resultCount >= maxResults) {
-            break;
-          }
-        }
-      }
-    }
-
-    return matches;
-  }
-
-  /**
    * Search patterns across node boundaries
    * Deduplicates matches so each unique occurrence (by node IDs and match positions) appears only once
    **/
   searchPaths(pattern: string, options: SearchOptions = {}): PathMatch[] {
-    const { contextLength = 10, maxResults, maxPathLength = 5 } = options;
+    const { contextLength = 10, maxPathLength = 5 } = options;
     const visitedPaths = new Set<string>();
 
     // Track unique matches by their node IDs and match positions
@@ -234,7 +187,6 @@ export class DAGSearchIndex {
       depth: number,
     ): void => {
       if (depth > maxPathLength) return;
-      if (maxResults && uniqueMatches.size >= maxResults) return;
 
       currentPath.push(currentNode);
 
@@ -393,7 +345,6 @@ export class DAGSearchIndex {
 
     // Start DFS from each node
     for (const node of this.nodes) {
-      if (maxResults && uniqueMatches.size >= maxResults) break;
       generatePaths(node, [], 0);
     }
 
@@ -402,48 +353,33 @@ export class DAGSearchIndex {
   }
 
   /**
-   * Main search method that searches both nodes and edges
+   * Main search method that searches across nodes
    */
-  search(
-    pattern: string,
-    options: SearchOptions = {},
-    nodeFields: NodeSearchField[] = [NodeSearchField.SEQUENCE],
-  ): SearchResults {
-    const nodeMatches = this.searchNodes(pattern, nodeFields, options);
-    const pathMatches = options.searchCrossNode
-      ? this.searchPaths(pattern, options)
-      : [];
+  search(pattern: string, options: SearchOptions = {}): SearchResult {
+    const pathMatches = this.searchPaths(pattern, options);
 
-    const totalNodeMatches = nodeMatches.reduce(
-      (sum, match) => sum + match.totalMatches,
-      0,
-    );
     const totalPathMatches = pathMatches.reduce(
       (sum, match) => sum + match.totalMatches,
       0,
     );
 
-    return {
-      nodeMatches,
-      pathMatches,
-      totalNodeMatches,
-      totalPathMatches,
-      searchPattern: pattern,
-      timestamp: Date.now(),
-    };
-  }
-  /**
-   * Get node by ID
-   */
-  getNode(nodeId: string): Node | undefined {
-    return this.nodes.find((n) => n.id === nodeId);
-  }
+    const nodeMatches: SearchResultDict = pathMatches.reduce((dict, match) => {
+      for (const [nodeId, matchIndices] of Object.entries(match.nodeMatches)) {
+        if (!dict[nodeId]) {
+          dict[nodeId] = [];
+        }
+        dict[nodeId].push(...matchIndices);
+      }
+      return dict;
+    }, {} as SearchResultDict);
 
-  /**
-   * Get edge by ID
-   */
-  getEdge(edgeId: string): Edge | undefined {
-    return this.edges.find((e) => e.id === edgeId);
+    const numberOfNodesMatched = Object.keys(nodeMatches).length;
+
+    return {
+      totalMatches: totalPathMatches,
+      numberOfNodesMatched,
+      nodeMatches,
+    };
   }
 
   /**
