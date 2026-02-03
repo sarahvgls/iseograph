@@ -38,11 +38,7 @@ import DirectionMiniMapNode from "../components/minimap/direction-minimap-node.t
 import ArrowEdge from "../components/arrow-edge/arrow-edge.tsx";
 import { SideMenu } from "../components/side-menu/side-menu.tsx";
 import { OnScreenMenu } from "../components/on-screen-menu/on-screen-menu.tsx";
-import {
-  SecondaryButton,
-  StyledButtonPanel,
-  StyledPanel,
-} from "../components/base-components";
+import { StyledButtonPanel, StyledPanel } from "../components/base-components";
 import {
   LoadingBackdrop,
   SettingsBackdrop,
@@ -62,7 +58,7 @@ import {
   OverlayContainer,
 } from "../components/base-components/graph-wrapper.tsx";
 import { createSearchIndex, DAGSearchIndex } from "../search";
-import type { SearchResultDict } from "../search/types.ts";
+import { SearchBar } from "../components/search-bar/search-bar.tsx";
 
 // Split the selectors to minimize re-renders
 const graphDataSelector = (state: RFState) => ({
@@ -484,6 +480,18 @@ const Flow = memo(() => {
   ]);
 
   const [searchValue, setSearchValue] = useState<string>("");
+  const [searchMaxPathLength, setSearchMaxPathLength] = useState<number>(5);
+
+  const handleSearchValueChange = useCallback(
+    (value: string) => {
+      setSearchValue(value);
+      if (value === "") {
+        setSearchResults({});
+        setSearchResultText("");
+      }
+    },
+    [setSearchResults],
+  );
 
   const onSearch = useCallback(() => {
     if (!searchIndex) {
@@ -492,30 +500,27 @@ const Flow = memo(() => {
       return;
     }
     const results = searchIndex.search(searchValue, {
-      searchCrossNode: true,
-      nodeFields: ["sequence"],
+      maxPathLength: searchMaxPathLength - 1, // Adjust for zero-based indexing
     });
 
-    if (results.totalPathMatches > 0) {
+    if (results.totalMatches > 0) {
       setSearchResultText(
-        `Found ${results.totalPathMatches} matches across ${results.totalNodeMatches} nodes`,
+        `Found ${results.totalMatches} matches across ${results.numberOfNodesMatched} nodes`,
       );
 
-      const searchResults: SearchResultDict = {};
-      results.pathMatches.forEach((pathMatch) => {
-        Object.entries(pathMatch.nodeMatches).forEach(
-          ([nodeId, matchIndices]) => {
-            if (!searchResults[nodeId]) {
-              searchResults[nodeId] = matchIndices;
-            }
-          },
-        );
-      });
-      setSearchResults(searchResults);
+      setSearchResults(results.nodeMatches);
     } else {
       setSearchResults({});
+      setSearchResultText("No matches found");
     }
-  }, [edges, nodes, searchIndex, searchValue]);
+  }, [
+    edges,
+    nodes,
+    searchIndex,
+    searchValue,
+    setSearchResults,
+    searchMaxPathLength,
+  ]);
 
   // Memoize UI components that don't need to re-render with graph data
   const overlayControls = useMemo(
@@ -565,37 +570,14 @@ const Flow = memo(() => {
           position="top-right"
           style={{ pointerEvents: "auto", right: "200px", top: "10px" }}
         >
-          <div
-            className="search"
-            style={{
-              display: "flex",
-              flexDirection: "column",
-            }}
-          >
-            <div>
-              <input
-                type={"search"}
-                placeholder={"Enter an amino acid sequence"}
-                value={searchValue}
-                style={{
-                  width: "300px",
-                  padding: "8px",
-                  borderRadius: "4px",
-                  border: "1px solid #ccc",
-                }}
-                onChange={(e) => {
-                  setSearchValue(e.target.value);
-                  if (e.target.value === "") {
-                    setSearchResults({});
-                  }
-                }}
-              />
-              <SecondaryButton style={{ marginLeft: "8px" }} onClick={onSearch}>
-                Search
-              </SecondaryButton>
-            </div>
-            <button> {searchResultText} </button>
-          </div>
+          <SearchBar
+            searchValue={searchValue}
+            onSearchValueChange={handleSearchValueChange}
+            onSearch={onSearch}
+            searchResultText={searchResultText}
+            maxPathLength={searchMaxPathLength}
+            onMaxPathLengthChange={setSearchMaxPathLength}
+          />
           <ToggleMenuButton
             onToggle={() => {
               if (glowMethod === glowMethods.intensity) {
@@ -687,7 +669,10 @@ const Flow = memo(() => {
       glowMethod,
       focusNodeWithDelay,
       searchValue,
+      handleSearchValueChange,
       onSearch,
+      searchResultText,
+      searchMaxPathLength,
     ],
   );
 
