@@ -83,6 +83,7 @@ const SequenceNode = memo(function SequenceNode({
     intensityMethod,
     getPeptides,
     setHoveredNode,
+    searchResults,
   } = useGraphStore(
     (state) => ({
       maxPeptides: state.maxPeptidesNodes,
@@ -92,6 +93,7 @@ const SequenceNode = memo(function SequenceNode({
       intensityMethod: state.intensityMethod,
       getPeptides: state.getPeptidesForNode,
       setHoveredNode: state.setHoveredNode,
+      searchResults: state.searchResults,
     }),
     shallow,
   );
@@ -189,11 +191,20 @@ const SequenceNode = memo(function SequenceNode({
           type={data.isReversed ? "source" : "target"}
           position={Position.Left}
         />
-        <StyledNode style={{ borderWidth: selected ? 5 : 1 }}>
+        <StyledNode
+          style={{
+            borderWidth: selected ? 5 : 1,
+            backgroundColor: searchResults[id]
+              ? theme.searchResult.wholeNode
+              : "#fff",
+          }}
+        >
           <SequenceContainer
             sequence={sequence}
+            isReversed={data.isReversed}
             nodeWidthMode={data.nodeWidthMode}
             containerWidthRef={containerRef! as React.RefObject<HTMLDivElement>}
+            searchResultIndices={searchResults[id]}
           />
           <DirectionArrow
             $isReversed={data.isReversed && reverseNodes}

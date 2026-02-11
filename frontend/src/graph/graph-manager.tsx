@@ -1,7 +1,6 @@
 import {
   ReactFlow,
   type NodeOrigin,
-  Panel,
   type NodeMouseHandler,
   MiniMap,
   type Edge,
@@ -39,7 +38,7 @@ import DirectionMiniMapNode from "../components/minimap/direction-minimap-node.t
 import ArrowEdge from "../components/arrow-edge/arrow-edge.tsx";
 import { SideMenu } from "../components/side-menu/side-menu.tsx";
 import { OnScreenMenu } from "../components/on-screen-menu/on-screen-menu.tsx";
-import { StyledPanel } from "../components/base-components";
+import { StyledButtonPanel, StyledPanel } from "../components/base-components";
 import {
   LoadingBackdrop,
   SettingsBackdrop,
@@ -58,6 +57,8 @@ import {
   MenuStackContainer,
   OverlayContainer,
 } from "../components/base-components/graph-wrapper.tsx";
+import { createSearchIndex, DAGSearchIndex } from "../search";
+import { SearchBar } from "../components/search-bar/search-bar.tsx";
 
 // Split the selectors to minimize re-renders
 const graphDataSelector = (state: RFState) => ({
@@ -169,6 +170,13 @@ const Flow = memo(() => {
     shallow,
   );
 
+  const { setSearchResults } = useGraphStore((state) => ({
+    setSearchResults: state.setSearchResults,
+  }));
+
+  const [searchIndex, setSearchIndex] = useState<DAGSearchIndex>();
+  const [searchResultText, setSearchResultText] = useState<string>("");
+
   // Memoize these stable functions from store to avoid recreating them
   const setNodeWidthMode = useMemo(
     () => useGraphStore.getState().setGlobalNodeWidthMode,
@@ -248,6 +256,9 @@ const Flow = memo(() => {
     let nodes = useGraphStore.getState().nodes;
     const layoutMode = useGraphStore.getState().layoutMode;
     const nodeWidthMode = useGraphStore.getState().nodeWidthMode;
+
+    const searchIndex = createSearchIndex(nodes, edges);
+    setSearchIndex(searchIndex);
 
     if (nodes.length === 0) {
       console.warn(
@@ -468,6 +479,51 @@ const Flow = memo(() => {
     isInitializing,
   ]);
 
+  const [searchValue, setSearchValue] = useState<string>("");
+  const [searchMaxPathLength, setSearchMaxPathLength] = useState<number>(5);
+
+  const handleSearchValueChange = useCallback(
+    (value: string) => {
+      setSearchValue(value);
+      if (value === "") {
+        setSearchResults({});
+        setSearchResultText("");
+      }
+    },
+    [setSearchResults],
+  );
+
+  const onSearch = useCallback(() => {
+    if (!searchIndex) {
+      console.warn("Search index is not initialized yet.");
+      setSearchIndex(createSearchIndex(nodes, edges));
+      return;
+    }
+    const results = searchIndex.search(searchValue, {
+      maxPathLength: searchMaxPathLength - 1, // Adjust for zero-based indexing
+    });
+
+    if (results.totalMatches > 0) {
+      setSearchResultText(
+        `Found ${results.totalMatches} matches across ${results.numberOfNodesMatched} nodes`,
+      );
+
+      setSearchResults(results.nodeMatches);
+    } else {
+      setSearchResults({});
+      setSearchResultText(
+        "No matches found. Increase path length or check input.",
+      );
+    }
+  }, [
+    edges,
+    nodes,
+    searchIndex,
+    searchValue,
+    setSearchResults,
+    searchMaxPathLength,
+  ]);
+
   // Memoize UI components that don't need to re-render with graph data
   const overlayControls = useMemo(
     () => (
@@ -512,7 +568,18 @@ const Flow = memo(() => {
             setIsOpen={setIsPeptideMonitorOpen}
           />
         </StyledPanel>
-        <Panel position="top-right" style={{ pointerEvents: "auto" }}>
+        <StyledButtonPanel
+          position="top-right"
+          style={{ pointerEvents: "auto", right: "200px", top: "10px" }}
+        >
+          <SearchBar
+            searchValue={searchValue}
+            onSearchValueChange={handleSearchValueChange}
+            onSearch={onSearch}
+            searchResultText={searchResultText}
+            maxPathLength={searchMaxPathLength}
+            onMaxPathLengthChange={setSearchMaxPathLength}
+          />
           <ToggleMenuButton
             onToggle={() => {
               if (glowMethod === glowMethods.intensity) {
@@ -539,7 +606,7 @@ const Flow = memo(() => {
             isShifted={shouldShiftButtons}
             testId="open-menu-button"
           />
-        </Panel>
+        </StyledButtonPanel>
         <MiniMapContainer isOpen={isMapOpen} style={{ pointerEvents: "auto" }}>
           <button
             style={{
@@ -603,6 +670,11 @@ const Flow = memo(() => {
       shouldShiftButtons,
       glowMethod,
       focusNodeWithDelay,
+      searchValue,
+      handleSearchValueChange,
+      onSearch,
+      searchResultText,
+      searchMaxPathLength,
     ],
   );
 

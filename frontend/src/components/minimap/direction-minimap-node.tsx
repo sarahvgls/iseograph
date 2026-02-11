@@ -1,6 +1,8 @@
 import type { MiniMapNodeProps } from "@xyflow/react";
 import { useReactFlow } from "@xyflow/react";
 import { nodeTypes, nodeWidthModes } from "../../theme/types";
+import useGraphStore from "../../graph/store.ts";
+import { theme } from "../../theme";
 
 const DirectionMiniMapNode = ({
   id,
@@ -13,6 +15,14 @@ const DirectionMiniMapNode = ({
 }: MiniMapNodeProps) => {
   const { getInternalNode } = useReactFlow();
   const node = getInternalNode(id);
+
+  // Highlight for search results
+  const { searchResults } = useGraphStore((state) => ({
+    searchResults: state.searchResults,
+  }));
+  const isSearchResult = searchResults
+    ? Object.keys(searchResults).includes(id)
+    : false;
 
   // Check if it's a sequence node and has the isReversed property
   const isSequenceNode = node?.type === nodeTypes.SequenceNode;
@@ -84,7 +94,11 @@ const DirectionMiniMapNode = ({
       <path
         d={pathData}
         fill={
-          isSequenceNode ? "rgb(191, 117, 255, 0.5)" : "rgb(255, 234, 0, 0.3)"
+          isSequenceNode
+            ? isSearchResult
+              ? theme.miniMap.searchResult
+              : theme.miniMap.sequenceNode
+            : theme.miniMap.rowNode
         }
         stroke={strokeColor || "rgb(0, 0, 0, 0.1)"}
         strokeWidth={1}

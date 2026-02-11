@@ -153,6 +153,15 @@ export const theme = {
     defaultPalette.redHover,
   ],
   defaultColor: "#9e9e9e",
+  miniMap: {
+    sequenceNode: "rgb(191, 117, 255, 0.5)",
+    rowNode: "rgb(255, 234, 0, 0.3)",
+    searchResult: "rgb(221,34,34)",
+  },
+  searchResult: {
+    wholeNode: "rgb(255,235,235)",
+    matchingAminoAcid: "rgb(255,0,0)",
+  },
 };
 
 export const baseTheme = {

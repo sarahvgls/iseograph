@@ -135,6 +135,15 @@ export const StyledPanel = styled(Panel)`
   pointer-events: none !important;
 `;
 
+export const StyledButtonPanel = styled(Panel)`
+  pointer-events: auto;
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+`;
+
 export const CloseButton = ({
   onClose,
   testId,
