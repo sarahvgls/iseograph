@@ -1,3 +1,7 @@
+# Node / Vite
+# Poetry virtual env
+.env/
+poetry.lock
 # Python / Poetry
 __pycache__/
 *.py[cod]

@@ -15,6 +15,7 @@ import {
 
 // --- Helper Functions ---
 // TODO should be semicolon separated when jannes is finished
+/*
 const convertIsoformStringToList = (input: string): string[] => {
   // split string at semicolons and trim whitespace
   if (!input) return [];
@@ -24,6 +25,7 @@ const convertIsoformStringToList = (input: string): string[] => {
     .map((input) => input.trim());
   return stringList.filter((item) => item.toLowerCase() !== "none");
 };
+*/
 
 const convertStringToList = (input: string): string[] => {
   // split string at commas and trim whitespace

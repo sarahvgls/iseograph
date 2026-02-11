@@ -9,7 +9,11 @@ import {
 import { MultiCompatibleCheckbox } from "../base-components/checkbox.tsx";
 import { useEffect, useState } from "react";
 import { callApiWithParameters } from "../../helper/api-call.ts";
-import { localStorageKeys } from "../../theme/types.tsx";
+import {
+  type AggregationOption,
+  AggregationOptions,
+  localStorageKeys,
+} from "../../theme/types.tsx";
 import { DropdownComponent } from "../base-components/dropdown.tsx";
 import { TextComponent } from "../base-components/textfield.tsx";
 import { tooltips } from "./tooltip-content.tsx";
@@ -84,14 +88,7 @@ export const ProteinSelection = ({
     useState<boolean>(false);
 
   // TODO implement Low and High median
-  const AggregationOptions = {
-    lmedian: "Low Median",
-    hmedian: "High Median",
-    sum: "Sum",
-    mean: "Mean",
-    None: "None",
-  };
-  type AggregationOption = keyof typeof AggregationOptions;
+
   const [selectedOAggregation, setSelectedOAggregation] =
     useState<AggregationOption>("None");
   const [selectedMAggregation, setSelectedMAggregation] =

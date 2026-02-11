@@ -157,3 +157,14 @@ export const settingsKeysToTypes: Record<string, any> = {
   intensitySource: "string",
   zeroValuesPeptides: "boolean",
 };
+
+// --- aggregation options for ProtGraph
+
+export const AggregationOptions = {
+  lmedian: "Low Median",
+  hmedian: "High Median",
+  sum: "Sum",
+  mean: "Mean",
+  None: "None",
+};
+export type AggregationOption = keyof typeof AggregationOptions;

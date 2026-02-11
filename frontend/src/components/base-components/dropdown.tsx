@@ -6,6 +6,7 @@ import {
 } from "./base-components.tsx";
 import { useState } from "react";
 import { Modal } from "./modal.tsx";
+import type { AggregationOption } from "../../theme/types.tsx";
 
 export const DropdownComponent = ({
   placeholder,
@@ -19,7 +20,7 @@ export const DropdownComponent = ({
 }: {
   placeholder: string;
   value: string;
-  setValue: (value: string) => void;
+  setValue: (value: AggregationOption) => void;
   options: string[];
   label?: string;
   tooltip?: string;
@@ -40,7 +41,7 @@ export const DropdownComponent = ({
       <StyledDropdown
         value={value}
         onChange={(e) => {
-          setValue(e.target.value);
+          setValue(e.target.value as AggregationOption);
         }}
         data-testid={testId}
       >

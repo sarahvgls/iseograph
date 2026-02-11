@@ -139,7 +139,7 @@ const [
 const [customEdges, edgesMaxPeptides, edgeExtremes, peptidesDictEdges] =
   isDataMissing
     ? [[], 0, {}, {}]
-    : createEdges(edges as ArrowEdgeProps[], intensitySources);
+    : createEdges(edges as unknown as ArrowEdgeProps[], intensitySources);
 
 // Generate color mapping for isoforms
 const initialIsoformColorMapping = generateIsoformColorMatching(
