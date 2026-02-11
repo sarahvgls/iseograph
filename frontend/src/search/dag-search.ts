@@ -16,6 +16,7 @@ import {
   type SearchResult,
   type SearchResultDict,
 } from "./types.ts";
+import { theme } from "../theme";
 
 /**
  * Preprocessed search index for faster repeated searches
@@ -156,7 +157,9 @@ export class DAGSearchIndex {
       this.nodeTextCache.set(node.id, textFields);
     }
 
-    console.log("DAGSearchIndex: Cache built for nodes.");
+    if (theme.debugMode) {
+      console.log("DAGSearchIndex: Cache built for nodes.");
+    }
   }
 
   /**

@@ -7,9 +7,7 @@
 export {
   type NodeSearchField,
   type MatchResult,
-  type NodeMatch,
   type PathMatch,
-  type SearchResults,
   type SearchOptions,
 } from "./types";
 

@@ -511,7 +511,9 @@ const Flow = memo(() => {
       setSearchResults(results.nodeMatches);
     } else {
       setSearchResults({});
-      setSearchResultText("No matches found");
+      setSearchResultText(
+        "No matches found. Increase path length or check input.",
+      );
     }
   }, [
     edges,
