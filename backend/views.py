@@ -5,6 +5,7 @@ import subprocess
 from django.views.decorators.csrf import ensure_csrf_cookie
 
 from django.http import JsonResponse
+from django.shortcuts import render
 import requests
 
 from backend.consts import PROJECT_ROOT_DIR, TEST_MODE
@@ -123,6 +124,13 @@ def clean_up(file_name: str) -> None:
 
 
 # --- api calls ---
+
+def index(request):
+    """
+    Serve the frontend index.html file.
+    """
+    return render(request, 'index.html')
+
 
 @ensure_csrf_cookie
 def get_csrf_token(request):

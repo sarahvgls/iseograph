@@ -16,10 +16,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.conf import settings
+from django.conf.urls.static import static
 
 from . import views
 
 urlpatterns = [
+    path('', views.index, name='index'),  # Serve frontend at root
     path('admin/', admin.site.urls),
     path("get_csrf_token/", views.get_csrf_token, name="get_csrf_token"),
     path('api/get_available_files/', views.get_available_files, name='get_available_files'),
@@ -27,3 +30,18 @@ urlpatterns = [
     path('api/generate_base_graph/', views.generate_base_graph, name='generate_base_graph'),
     path('api/upload_file/', views.upload_file, name='upload_file'),
 ]
+
+# Serve static files - always enabled for built mode and development
+# In production with a real web server, use nginx/apache instead
+import os
+
+static_root = None
+if settings.STATICFILES_DIRS and os.path.exists(settings.STATICFILES_DIRS[0]):
+    static_root = settings.STATICFILES_DIRS[0]
+elif os.path.exists(settings.STATIC_ROOT):
+    static_root = settings.STATIC_ROOT
+else:
+    # Fallback: try to find static folder relative to BASE_DIR
+    static_root = os.path.join(settings.BASE_DIR, 'static')
+
+urlpatterns += static(settings.STATIC_URL, document_root=static_root)
