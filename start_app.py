@@ -51,7 +51,7 @@ def run_server(port=8000):
     from django.core.management import execute_from_command_line
 
     print(f"\n{'=' * 60}")
-    print("PROTEOFORM WEB APPLICATION")
+    print("IseoGraph WEB APPLICATION")
     print(f"{'=' * 60}")
     print(f"\nStarting server on http://127.0.0.1:{port}")
     print(f"Press CTRL+C to stop the server")

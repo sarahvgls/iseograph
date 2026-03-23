@@ -10,29 +10,17 @@ Additionally, peptides can be matched to the amino acid sequence.
 The underlying graph structure is created by Jannes Konarski's modified version of ProtGraph to be found
 at https://github.com/Tisch-hinten-rechts/ProtGraph.
 
-### Installation guide
+### Usage guide
 
-1.) Clone the repository to your device.
+Enter folder `/dist`. Double click IseoGraphApp. The application is opened automatically in a browser window.
 
-2.) Start the backend server with the following command:
+### Dev Guide: Serve Application
 
-```
-python manage.py runserver
-```
-
-3.) Start the application by navigating into the frontend folder:
+Serve a new version of IseoGraph via Pyinstaller by running.
 
 ```
-cd frontend
+python build_executable.py
 ```
-
-And executing the following command:
-
-```
-pnpm dev
-```
-
-4). Open the page printed to the console to open the application.
 
 ### Usage
 

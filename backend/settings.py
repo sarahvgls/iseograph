@@ -159,10 +159,20 @@ STATIC_URL = '/static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
-]
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+# Handle static files differently for frozen vs development
+if getattr(sys, 'frozen', False):
+    # Running as compiled executable - files are in _MEIPASS
+    # Use the static directory from the bundle
+    STATICFILES_DIRS = [
+        os.path.join(BASE_DIR, 'static'),
+    ]
+    STATIC_ROOT = None  # Not used in frozen mode
+else:
+    # Running as script - normal development setup
+    STATICFILES_DIRS = [
+        os.path.join(BASE_DIR, 'static'),
+    ]
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Logging configuration
 LOGGING = {

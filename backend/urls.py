@@ -31,17 +31,34 @@ urlpatterns = [
     path('api/upload_file/', views.upload_file, name='upload_file'),
 ]
 
-# Serve static files - always enabled for built mode and development
+# Serve static files in development and frozen executable mode
 # In production with a real web server, use nginx/apache instead
 import os
+import sys
+from django.views.static import serve as static_serve
 
-static_root = None
-if settings.STATICFILES_DIRS and os.path.exists(settings.STATICFILES_DIRS[0]):
-    static_root = settings.STATICFILES_DIRS[0]
-elif os.path.exists(settings.STATIC_ROOT):
-    static_root = settings.STATIC_ROOT
-else:
-    # Fallback: try to find static folder relative to BASE_DIR
+# Determine the correct static files directory
+if getattr(sys, 'frozen', False):
+    # Running as frozen executable - use _MEIPASS/static
     static_root = os.path.join(settings.BASE_DIR, 'static')
+    print(f"[FROZEN MODE] Serving static files from: {static_root}")
+    print(f"[FROZEN MODE] Static directory exists: {os.path.exists(static_root)}")
+    if os.path.exists(static_root):
+        print(f"[FROZEN MODE] Contents: {os.listdir(static_root)}")
 
-urlpatterns += static(settings.STATIC_URL, document_root=static_root)
+    # Add explicit static file serving URL pattern for frozen mode
+    # This works even when DEBUG=False
+    urlpatterns += [
+        path('static/<path:path>', static_serve, {'document_root': static_root}),
+    ]
+else:
+    # Development mode - use standard static file serving
+    if settings.STATICFILES_DIRS and os.path.exists(settings.STATICFILES_DIRS[0]):
+        static_root = settings.STATICFILES_DIRS[0]
+    elif settings.STATIC_ROOT and os.path.exists(settings.STATIC_ROOT):
+        static_root = settings.STATIC_ROOT
+    else:
+        static_root = os.path.join(settings.BASE_DIR, 'static')
+
+    # Use standard static file serving
+    urlpatterns += static(settings.STATIC_URL, document_root=static_root)

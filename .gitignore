@@ -21,6 +21,7 @@ poetry.lock
 /static/
 /media/
 /staticfiles/
+/templates/
 
 # Node / Vite
 frontend/node_modules/
