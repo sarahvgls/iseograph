@@ -21,6 +21,14 @@ jobs:
         with:
           node-version: '18'
 
+      - name: Verify npm is installed
+        run: |
+          npm --version
+          node --version
+
+      - name: Install pnpm globally
+        run: npm install -g pnpm
+
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip

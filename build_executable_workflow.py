@@ -16,6 +16,14 @@ import subprocess
 import shutil
 from pathlib import Path
 
+# Set UTF-8 encoding for Windows console output
+if sys.platform == 'win32':
+    os.environ['PYTHONIOENCODING'] = 'utf-8'
+    import codecs
+
+    sys.stdout = codecs.getwriter("utf-8")(sys.stdout.buffer, 'strict')
+    sys.stderr = codecs.getwriter("utf-8")(sys.stderr.buffer, 'strict')
+
 # Get the project root directory
 BASE_DIR = Path(__file__).resolve().parent
 FRONTEND_DIR = BASE_DIR / "frontend"
@@ -59,12 +67,15 @@ def check_pnpm_installed():
 def install_pnpm():
     """Install pnpm globally using npm."""
     print("\nInstalling pnpm via npm...")
-    if not run_command(["npm", "install", "-g", "pnpm"]):
+
+    # On Windows, npm needs shell=True to work properly in GitHub Actions
+    shell_flag = sys.platform == 'win32'
+
+    if not run_command(["npm", "install", "-g", "pnpm"], shell=shell_flag):
         print("Warning: Failed to install pnpm globally")
-        # Try using npx as fallback
         print("Attempting to use npx pnpm instead...")
         return False
-    print("✓ pnpm installed successfully")
+    print("[OK] pnpm installed successfully")
     return True
 
 
@@ -86,16 +97,17 @@ def build_frontend():
 
     # Determine which command to use
     pnpm_cmd = ["pnpm"] if pnpm_available else ["npx", "pnpm"]
+    use_shell = sys.platform == 'win32'
 
     # Install dependencies
     print("\nInstalling frontend dependencies...")
-    if not run_command(pnpm_cmd + ["install"], cwd=FRONTEND_DIR):
+    if not run_command(pnpm_cmd + ["install"], cwd=FRONTEND_DIR, shell=use_shell):
         print("Failed to install frontend dependencies")
         return False
 
     # Build the frontend
     print("\nBuilding frontend...")
-    if not run_command(pnpm_cmd + ["run", "build"], cwd=FRONTEND_DIR):
+    if not run_command(pnpm_cmd + ["run", "build"], cwd=FRONTEND_DIR, shell=use_shell):
         print("Failed to build frontend")
         return False
 
@@ -105,7 +117,7 @@ def build_frontend():
         print(f"Error: Frontend build output not found at {frontend_dist}")
         return False
 
-    print("\n✓ Frontend built successfully!")
+    print("\n[OK] Frontend built successfully!")
     return True
 
 
@@ -168,7 +180,7 @@ def setup_django_static():
             else:
                 print(f"  - {item.name}/ (directory)")
 
-    print(f"✓ Static files prepared at {static_root} and {templates_root}")
+    print(f"[OK] Static files prepared at {static_root} and {templates_root}")
     return True
 
 
@@ -202,7 +214,7 @@ def create_requirements_txt():
     with open(requirements_file, "a") as f:
         f.write("\npyinstaller==6.3.0\n")
 
-    print(f"✓ Requirements saved to {requirements_file}")
+    print(f"[OK] Requirements saved to {requirements_file}")
     return True
 
 
@@ -223,7 +235,7 @@ def create_requirements_manually():
     with open(requirements_file, "w") as f:
         f.write("\n".join(requirements))
 
-    print(f"✓ Requirements created manually at {requirements_file}")
+    print(f"[OK] Requirements created manually at {requirements_file}")
 
 
 def create_pyinstaller_spec():
@@ -361,7 +373,7 @@ exe = EXE(
     with open(spec_file, "w") as f:
         f.write(spec_content)
 
-    print(f"✓ PyInstaller spec file created at {spec_file}")
+    print(f"[OK] PyInstaller spec file created at {spec_file}")
     return True
 
 
@@ -396,12 +408,12 @@ def build_executable():
         if path.exists():
             exe_found = True
             exe_path = path
-            print(f"\n✓ Executable found at: {exe_path}")
+            print(f"\n[OK] Executable found at: {exe_path}")
             break
 
     if exe_found:
         print("\n" + "=" * 60)
-        print("✓ BUILD SUCCESSFUL!")
+        print("[OK] BUILD SUCCESSFUL!")
         print("=" * 60)
         print(f"\nExecutable created at: {exe_path}")
         return True
@@ -433,11 +445,11 @@ def verify_executable():
     for path in possible_paths:
         if path.exists():
             size = path.stat().st_size / (1024 * 1024)  # Size in MB
-            print(f"✓ Executable verified: {path.name}")
+            print(f"[OK] Executable verified: {path.name}")
             print(f"  Size: {size:.2f} MB")
             return True
 
-    print("✗ No executable found for verification")
+    print("[FAIL] No executable found for verification")
     return False
 
 
@@ -461,27 +473,27 @@ def main():
 
     # Run build steps
     if not build_frontend():
-        print("\n✗ Frontend build failed")
+        print("\n[FAIL] Frontend build failed")
         return False
 
     if not setup_django_static():
-        print("\n✗ Django static setup failed")
+        print("\n[FAIL] Django static setup failed")
         return False
 
     if not create_requirements_txt():
-        print("\n✗ Requirements extraction failed")
+        print("\n[FAIL] Requirements extraction failed")
         return False
 
     if not create_pyinstaller_spec():
-        print("\n✗ PyInstaller spec creation failed")
+        print("\n[FAIL] PyInstaller spec creation failed")
         return False
 
     if not build_executable():
-        print("\n✗ Executable build failed")
+        print("\n[FAIL] Executable build failed")
         return False
 
     if not verify_executable():
-        print("\n✗ Executable verification failed")
+        print("\n[FAIL] Executable verification failed")
         return False
 
     print("\n" + "=" * 60)
