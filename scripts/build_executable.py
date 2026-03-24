@@ -307,6 +307,9 @@ except Exception as e:
 # Add backend module
 datas += [('backend', 'backend')]
 
+# Add scripts module (for convert_graphml_to_json, etc.)
+datas += [('scripts', 'scripts')]
+
 # Add static files if they exist
 if os.path.exists('static'):
     datas += [('static', 'static')]
@@ -355,6 +358,8 @@ hiddenimports = [
     'decouple',
     'networkx',
     'tqdm',
+    'scripts',
+    'scripts.convert_graphml_to_json',
 ]
 
 a = Analysis(

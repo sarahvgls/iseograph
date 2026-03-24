@@ -36,7 +36,7 @@ def setup_environment():
     return base_dir
 
 
-def open_browser(port=8000, delay=2):
+def open_browser(port=8002, delay=2):
     """Open the default web browser after a delay."""
     time.sleep(delay)
     url = f"http://127.0.0.1:{port}/"
@@ -46,7 +46,7 @@ def open_browser(port=8000, delay=2):
     webbrowser.open(url)
 
 
-def run_server(port=8000):
+def run_server(port=8002):
     """Run the Django development server."""
     from django.core.management import execute_from_command_line
 
@@ -77,7 +77,7 @@ def main():
         django.setup()
 
         # Run the server
-        run_server(port=8000)
+        run_server(port=8002)
 
     except KeyboardInterrupt:
         print("\n\nShutting down server...")

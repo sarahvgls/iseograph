@@ -25,6 +25,10 @@ Opening browser at: http://127.0.0.1:8000/
 ============================================================
 ```
 
+#### Trouble shooting
+
+Error "Port already in use": Try to find out what uses this port and kill that process. (Google/ AI may help here.)
+
 ### Dev Guide: Serve Application
 
 Manually serve a new version of IseoGraph via Pyinstaller by running.
@@ -35,6 +39,30 @@ python scripts/build_executable.py
 
 The executable file is created in `\dist\IseoGraphApp`. Note: This file is only compatible with the operating system of
 the device, the script was executed on due to platform-specific PyInstaller.
+
+### Dev Guide: Set up locally
+
+1.) Clone the repository to your device.
+
+2.) Start the backend server with the following command:
+
+```
+python manage.py runserver
+```
+
+3.) Start the application by navigating into the frontend folder:
+
+```
+cd frontend
+```
+
+And executing the following command:
+
+```
+pnpm dev
+```
+
+4). Open the page printed to the console to open the application.
 
 ### Usage
 
