@@ -44,6 +44,12 @@ the device, the script was executed on due to platform-specific PyInstaller.
 
 1.) Clone the repository to your device.
 
+2.) Install dependencies:
+
+```
+uv sync
+```
+
 2.) Start the backend server with the following command:
 
 ```

@@ -11,9 +11,10 @@ __pycache__/
 # exclude .env.template from gitignore
 !.env.template
 
-# Poetry virtual env
+# Virtual env
 .env/
 poetry.lock
+uv.lock
 .venv
 /venv/
 

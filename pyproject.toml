@@ -1,28 +1,30 @@
-[tool.poetry]
+[project]
 name = "backend"
 version = "0.1.0"
 description = "Repository for Jannes' and Sarah's BA on proteoforms and graphs."
-authors = ["sarah <sarah.vogels@aol.de>"]
+authors = [{ name = "sarah", email = "sarah.vogels@aol.de" }]
 readme = "README.md"
+requires-python = ">=3.10,<3.12"
+dependencies = [
+    "django>=5.2,<6",
+    "djangorestframework>=3.16.0,<4",
+    "django-cors-headers>=4.7.0,<5",
+    "python-decouple>=3.8,<4",
+    "networkx>=3.4.2,<4",
+    "protgraph",
+    "requests>=2.32.4,<3",
+]
 
-[tool.poetry.dependencies]
-python = ">=3.10,<3.15"
-django = "^5.2"
-djangorestframework = "^3.16.0"
-django-cors-headers = "^4.7.0"
-python-decouple = "^3.8"
-networkx = "^3.4.2"
-protgraph = { git = "https://github.com/Tisch-hinten-rechts/ProtGraph.git", rev = "dev" }
-requests = "^2.32.4"
-pyinstaller = "^6.18.0"
-tqdm = "^4.66.0"
+[dependency-groups]
+dev = [
+    "pytest>=8.3.5,<9",
+    "pytest-django>=4.11.1,<5",
+    "coverage>=7.8.0,<8",
+]
 
-
-[tool.poetry.group.dev.dependencies]
-pytest = "^8.3.5"
-pytest-django = "^4.11.1"
-coverage = "^7.8.0"
+[tool.uv.sources]
+protgraph = { git = "https://github.com/Tisch-hinten-rechts/ProtGraph.git", branch = "dev" }
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
