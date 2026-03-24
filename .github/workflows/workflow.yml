@@ -1,0 +1,57 @@
+name: Build and Release
+
+on:
+  push:
+    branches: [ feature/install ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build Project
+        run: make compile-mac
+
+      - name: Zip Executable
+        run: Compress-Archive -Path ./dist/IseoGraphApp.exe -DestinationPath ./IseoGraph.zip
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: MyProjectExecutable
+          path: IseoGraph.zip
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: release-${{ github.ref_name }}-${{ github.run_number }}
+          release_name: Release for ${{ github.ref_name }} at ${{ github.run_number }}
+          #release_name: ${{ steps.version.outputs.version }}
+          draft: false
+          prerelease: false
+          body: "Main executable release"
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./IseoGraph.zip
+          asset_name: IseoGraph.zip
+          asset_content_type: application/zip
+
+    # - name: Upload Release Asset (EXE)
+    #   uses: actions/upload-release-asset@v1
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #   with:
+    #     upload_url: ${{ steps.create_release.outputs.upload_url }}
+    #     asset_path: ./compiled/img2pdf.exe
+    #     asset_name: img2pdf.exe
+    #     asset_content_type: application/exe
