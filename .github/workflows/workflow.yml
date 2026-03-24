@@ -2,7 +2,7 @@ name: Build and Release
 
 on:
   push:
-    branches: [ feature/install ]
+    branches: [ main ]
 
 jobs:
   build:
@@ -39,7 +39,7 @@ jobs:
           SECRET_KEY: 'github-actions-build-secret'
           DEBUG: 'False'
           DJANGO_SETTINGS_MODULE: 'backend.settings'
-        run: python build_executable_workflow.py
+        run: python scripts/build_executable.py
 
       - name: Verify Executable Exists
         run: |

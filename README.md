@@ -12,15 +12,29 @@ at https://github.com/Tisch-hinten-rechts/ProtGraph.
 
 ### Usage guide
 
-Enter folder `/dist`. Double click IseoGraphApp. The application is opened automatically in a browser window.
+Download `IseoGraph.zip` from the latest release from the
+release-tab (https://github.com/sarahvgls/iseograph/releases/tag/release-feature%2Finstall-6).
+After expanding the Zipfile, execute the `IseoGraphApp` file found by double clicking on it. Your operation system might
+ask you to approve the file even though it was downloaded from the internet. You have to accept this.
+A console window is opened. Wait until the following text appears. The application will open on its own:
+
+```
+
+============================================================
+Opening browser at: http://127.0.0.1:8000/
+============================================================
+```
 
 ### Dev Guide: Serve Application
 
-Serve a new version of IseoGraph via Pyinstaller by running.
+Manually serve a new version of IseoGraph via Pyinstaller by running.
 
 ```
-python build_executable.py
+python scripts/build_executable.py
 ```
+
+The executable file is created in `\dist\IseoGraphApp`. Note: This file is only compatible with the operating system of
+the device, the script was executed on due to platform-specific PyInstaller.
 
 ### Usage
 
