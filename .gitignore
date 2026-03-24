@@ -16,7 +16,6 @@ poetry.lock
 .playwright-mcp/
 
 # Claude Code
-CLAUDE.md
 .mcp.json
 
 # Django
