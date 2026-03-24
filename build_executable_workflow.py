@@ -31,7 +31,7 @@ DIST_DIR = BASE_DIR / "dist"
 BUILD_DIR = BASE_DIR / "build"
 
 
-def run_command(command, cwd=None, shell=False):
+def run_command(command, cwd=None, shell=False, capture_output=False):
     """Run a shell command and handle errors."""
     print(f"\n{'=' * 60}")
     print(f"Running: {' '.join(command) if isinstance(command, list) else command}")
@@ -44,11 +44,17 @@ def run_command(command, cwd=None, shell=False):
             shell=shell,
             check=True,
             text=True,
-            capture_output=False
+            capture_output=capture_output
         )
+        if capture_output and result.stderr:
+            print(f"STDERR:\n{result.stderr}")
         return result.returncode == 0
     except subprocess.CalledProcessError as e:
         print(f"Error running command: {e}")
+        if e.stderr:
+            print(f"STDERR:\n{e.stderr}")
+        if e.stdout:
+            print(f"STDOUT:\n{e.stdout}")
         return False
     except FileNotFoundError as e:
         print(f"Command not found: {e}")
@@ -215,6 +221,15 @@ def create_requirements_txt():
         f.write("\npyinstaller==6.3.0\n")
 
     print(f"[OK] Requirements saved to {requirements_file}")
+
+    # Install all requirements so they're available for PyInstaller
+    print("\nInstalling all dependencies...")
+    if not run_command(
+            ["pip", "install", "-r", str(requirements_file)],
+            shell=sys.platform == 'win32'
+    ):
+        print("Warning: Some dependencies may have failed to install")
+
     return True
 
 
@@ -246,86 +261,77 @@ def create_pyinstaller_spec():
 
     spec_content = """# -*- mode: python ; coding: utf-8 -*-
 import os
-from PyInstaller.utils.hooks import collect_all, collect_data_files, collect_submodules
+from PyInstaller.utils.hooks import collect_data_files
 
 block_cipher = None
 
-# Collect all Django files
+# Collect data files
 datas = []
 binaries = []
 hiddenimports = []
 
-# Add Django
-django_datas, django_binaries, django_hiddenimports = collect_all('django')
-datas += django_datas
-binaries += binaries
-hiddenimports += django_hiddenimports
-
-# Add DRF
-drf_datas, drf_binaries, drf_hiddenimports = collect_all('rest_framework')
-datas += drf_datas
-binaries += binaries
-hiddenimports += drf_hiddenimports
-
-# Add CORS headers
-cors_datas, cors_binaries, cors_hiddenimports = collect_all('corsheaders')
-datas += cors_datas
-binaries += binaries
-hiddenimports += cors_hiddenimports
-
-# Add networkx
-nx_datas, nx_binaries, nx_hiddenimports = collect_all('networkx')
-datas += nx_datas
-binaries += binaries
-hiddenimports += nx_hiddenimports
-
-# Add tqdm (required by protgraph)
-tqdm_datas, tqdm_binaries, tqdm_hiddenimports = collect_all('tqdm')
-datas += tqdm_datas
-binaries += binaries
-hiddenimports += tqdm_hiddenimports
-
-# Add protgraph if available
+# Collect Django data files
 try:
-    pg_datas, pg_binaries, pg_hiddenimports = collect_all('protgraph')
-    datas += pg_datas
-    binaries += binaries
-    hiddenimports += pg_hiddenimports
+    datas += collect_data_files('django')
+except:
+    pass
+
+try:
+    datas += collect_data_files('rest_framework')
+except:
+    pass
+
+try:
+    datas += collect_data_files('corsheaders')
 except:
     pass
 
 # Add backend module
 datas += [('backend', 'backend')]
 
-# Add static files
-datas += [('staticfiles', 'staticfiles')]
-datas += [('static', 'static')]
+# Add static files if they exist
+if os.path.exists('static'):
+    datas += [('static', 'static')]
 
-# Add templates
-datas += [('templates', 'templates')]
+if os.path.exists('staticfiles'):
+    datas += [('staticfiles', 'staticfiles')]
+
+# Add templates if they exist
+if os.path.exists('templates'):
+    datas += [('templates', 'templates')]
 
 # Add data directory
-datas += [('data', 'data')]
+if os.path.exists('data'):
+    datas += [('data', 'data')]
 
 # Add database if exists
 if os.path.exists('db.sqlite3'):
     datas += [('db.sqlite3', '.')]
 
-
-# Additional hidden imports
-hiddenimports += [
+# Hidden imports for Django and related modules
+hiddenimports = [
+    'django',
+    'django.conf',
+    'django.apps',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.core',
+    'django.db',
+    'django.http',
+    'django.urls',
+    'django.views',
     'rest_framework',
+    'rest_framework.decorators',
+    'rest_framework.response',
     'corsheaders',
+    'corsheaders.middleware',
     'decouple',
     'networkx',
     'tqdm',
-    'tqdm.std',
 ]
 
 a = Analysis(
@@ -337,7 +343,7 @@ a = Analysis(
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
-    excludes=[],
+    excludes=['tcl', 'tk', 'tkinter', '_tkinter', 'matplotlib', 'scipy', 'numpy'],
     win_no_prefer_redirects=False,
     win_private_assemblies=False,
     cipher=block_cipher,
@@ -357,7 +363,7 @@ exe = EXE(
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
-    upx=True,
+    upx=False,
     upx_exclude=[],
     runtime_tmpdir=None,
     console=True,
@@ -389,9 +395,28 @@ def build_executable():
         print("Error: Spec file not found")
         return False
 
+    print(f"\nSpec file location: {spec_file}")
+    print(f"Working directory: {BASE_DIR}")
     print("\nBuilding executable (this may take several minutes)...")
-    if not run_command(["pyinstaller", "--clean", str(spec_file)], cwd=BASE_DIR):
-        print("Failed to build executable")
+
+    # Build with verbose output to debug issues
+    if not run_command(
+            ["pyinstaller", "--clean", str(spec_file)],
+            cwd=BASE_DIR,
+            capture_output=True
+    ):
+        print("\nPyInstaller build failed. Trying with verbose output...")
+        # Run again without clean to get better error messages
+        result = subprocess.run(
+            ["pyinstaller", str(spec_file)],
+            cwd=BASE_DIR,
+            text=True,
+            capture_output=True
+        )
+        if result.stdout:
+            print(f"\nPyInstaller STDOUT:\n{result.stdout}")
+        if result.stderr:
+            print(f"\nPyInstaller STDERR:\n{result.stderr}")
         return False
 
     # Check multiple possible output locations
@@ -453,6 +478,52 @@ def verify_executable():
     return False
 
 
+def validate_build_environment():
+    """Validate that all required files exist before building."""
+    print("\n" + "=" * 60)
+    print("VALIDATION: Checking Build Environment")
+    print("=" * 60)
+
+    required_files = [
+        (BASE_DIR / "start_app.py", "Entry point script"),
+        (BASE_DIR / "backend" / "settings.py", "Django settings"),
+        (BASE_DIR / "backend" / "urls.py", "Django URL config"),
+        (BASE_DIR / "manage.py", "Django manage script"),
+    ]
+
+    required_dirs = [
+        (BASE_DIR / "backend", "Backend module"),
+        (BASE_DIR / "templates", "Templates directory"),
+        (BASE_DIR / "static", "Static files directory"),
+        (BASE_DIR / "data", "Data directory"),
+    ]
+
+    all_good = True
+
+    print("\nChecking required files:")
+    for file_path, description in required_files:
+        if file_path.exists():
+            print(f"  [OK] {description}: {file_path.name}")
+        else:
+            print(f"  [FAIL] {description}: NOT FOUND at {file_path}")
+            all_good = False
+
+    print("\nChecking required directories:")
+    for dir_path, description in required_dirs:
+        if dir_path.exists():
+            file_count = sum(1 for _ in dir_path.rglob("*") if _.is_file())
+            print(f"  [OK] {description}: {dir_path.name}/ ({file_count} files)")
+        else:
+            print(f"  [WARNING] {description}: NOT FOUND at {dir_path}")
+
+    if all_good:
+        print("\n[OK] All essential files present!")
+        return True
+    else:
+        print("\n[FAIL] Missing essential files!")
+        return False
+
+
 def main():
     """Main build process."""
     print("\n" + "=" * 60)
@@ -469,6 +540,11 @@ def main():
     # Check Python version
     if sys.version_info < (3, 10):
         print("Error: Python 3.10 or higher is required")
+        return False
+
+    # Validate build environment
+    if not validate_build_environment():
+        print("\n[FAIL] Build environment validation failed")
         return False
 
     # Run build steps
