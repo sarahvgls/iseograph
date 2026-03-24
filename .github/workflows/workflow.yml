@@ -2,7 +2,7 @@ name: Build and Release
 
 on:
   push:
-    branches: [ feature/install, main ]
+    branches: [ main ]
 
 jobs:
   build:
