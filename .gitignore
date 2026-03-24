@@ -7,9 +7,16 @@ __pycache__/
 # exclude .env.template from gitignore
 !.env.template
 
-# Poetry virtual env
+# Virtual env
 .env/
+.venv/
 poetry.lock
+
+# Playwright
+.playwright-mcp/
+
+# Claude Code
+.mcp.json
 
 # Django
 /static/
