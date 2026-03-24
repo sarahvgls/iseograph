@@ -191,29 +191,28 @@ def setup_django_static():
 
 
 def create_requirements_txt():
-    """Create requirements.txt from poetry."""
+    """Create requirements.txt from uv."""
     print("\n" + "=" * 60)
     print("STEP 3: Extracting Dependencies")
     print("=" * 60)
 
-    # Export dependencies from poetry
-    print("Exporting dependencies from poetry...")
+    # Export dependencies from uv
+    print("Exporting dependencies from uv...")
     requirements_file = BASE_DIR / "requirements.txt"
 
     try:
-        # Try to use poetry export
+        # Try to use uv export
         result = subprocess.run(
-            ["poetry", "export", "-f", "requirements.txt", "--output", str(requirements_file), "--without-hashes"],
+            ["uv", "export", "-f", "requirements.txt", "--output", str(requirements_file)],
             cwd=BASE_DIR,
             capture_output=True,
             text=True
         )
-
         if result.returncode != 0:
-            print("Poetry export failed, creating requirements.txt manually...")
+            print("Uv export failed, creating requirements.txt manually...")
             create_requirements_manually()
     except FileNotFoundError:
-        print("Poetry not found, creating requirements.txt manually...")
+        print("Uv not found, creating requirements.txt manually...")
         create_requirements_manually()
 
     # Add PyInstaller to requirements
