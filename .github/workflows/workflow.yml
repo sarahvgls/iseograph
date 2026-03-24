@@ -35,6 +35,10 @@ jobs:
           pip install pyinstaller
 
       - name: Build Project
+        env:
+          SECRET_KEY: 'github-actions-build-secret'
+          DEBUG: 'False'
+          DJANGO_SETTINGS_MODULE: 'backend.settings'
         run: python build_executable_workflow.py
 
       - name: Verify Executable Exists

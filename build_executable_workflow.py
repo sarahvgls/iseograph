@@ -224,11 +224,28 @@ def create_requirements_txt():
 
     # Install all requirements so they're available for PyInstaller
     print("\nInstalling all dependencies...")
-    if not run_command(
+
+    # Set environment variables for installation
+    env = os.environ.copy()
+    env['SECRET_KEY'] = 'build-time-secret-key'
+    env['DEBUG'] = 'False'
+    env['DJANGO_SETTINGS_MODULE'] = 'backend.settings'
+
+    # Run pip install with environment
+    try:
+        result = subprocess.run(
             ["pip", "install", "-r", str(requirements_file)],
-            shell=sys.platform == 'win32'
-    ):
-        print("Warning: Some dependencies may have failed to install")
+            shell=sys.platform == 'win32',
+            env=env,
+            text=True,
+            capture_output=True
+        )
+        if result.returncode != 0:
+            print("Warning: Some dependencies may have failed to install")
+            if result.stderr:
+                print(f"Errors:\n{result.stderr}")
+    except Exception as e:
+        print(f"Warning: Error installing dependencies: {e}")
 
     return True
 
@@ -261,6 +278,7 @@ def create_pyinstaller_spec():
 
     spec_content = """# -*- mode: python ; coding: utf-8 -*-
 import os
+import sys
 from PyInstaller.utils.hooks import collect_data_files
 
 block_cipher = None
@@ -272,19 +290,19 @@ hiddenimports = []
 
 # Collect Django data files
 try:
-    datas += collect_data_files('django')
-except:
-    pass
+    datas += collect_data_files('django', subdir='conf/locale')
+except Exception as e:
+    print(f"Warning: Could not collect Django data files: {e}")
 
 try:
     datas += collect_data_files('rest_framework')
-except:
-    pass
+except Exception as e:
+    print(f"Warning: Could not collect DRF data files: {e}")
 
 try:
     datas += collect_data_files('corsheaders')
-except:
-    pass
+except Exception as e:
+    print(f"Warning: Could not collect CORS data files: {e}")
 
 # Add backend module
 datas += [('backend', 'backend')]
@@ -313,13 +331,18 @@ hiddenimports = [
     'django',
     'django.conf',
     'django.apps',
+    'django.apps.registry',
     'django.contrib.admin',
     'django.contrib.auth',
+    'django.contrib.auth.models',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.core',
+    'django.core.management',
+    'django.core.management.commands',
+    'django.core.management.commands.runserver',
     'django.db',
     'django.http',
     'django.urls',
@@ -343,7 +366,7 @@ a = Analysis(
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
-    excludes=['tcl', 'tk', 'tkinter', '_tkinter', 'matplotlib', 'scipy', 'numpy'],
+    excludes=['tcl', 'tk', 'tkinter', '_tkinter', 'matplotlib', 'scipy', 'numpy', 'pytest'],
     win_no_prefer_redirects=False,
     win_private_assemblies=False,
     cipher=block_cipher,
@@ -399,24 +422,34 @@ def build_executable():
     print(f"Working directory: {BASE_DIR}")
     print("\nBuilding executable (this may take several minutes)...")
 
+    # Set Django environment variables for PyInstaller analysis
+    env = os.environ.copy()
+    env['SECRET_KEY'] = 'build-time-secret-key-for-pyinstaller-analysis'
+    env['DEBUG'] = 'False'
+    env['DJANGO_SETTINGS_MODULE'] = 'backend.settings'
+
     # Build with verbose output to debug issues
-    if not run_command(
+    try:
+        result = subprocess.run(
             ["pyinstaller", "--clean", str(spec_file)],
             cwd=BASE_DIR,
-            capture_output=True
-    ):
-        print("\nPyInstaller build failed. Trying with verbose output...")
-        # Run again without clean to get better error messages
-        result = subprocess.run(
-            ["pyinstaller", str(spec_file)],
-            cwd=BASE_DIR,
             text=True,
-            capture_output=True
+            capture_output=True,
+            env=env,
+            check=False
         )
-        if result.stdout:
-            print(f"\nPyInstaller STDOUT:\n{result.stdout}")
-        if result.stderr:
-            print(f"\nPyInstaller STDERR:\n{result.stderr}")
+
+        if result.returncode != 0:
+            print("\nPyInstaller build failed. Error output:")
+            if result.stdout:
+                print(f"\nSTDOUT:\n{result.stdout}")
+            if result.stderr:
+                print(f"\nSTDERR:\n{result.stderr}")
+            return False
+        else:
+            print("PyInstaller completed successfully")
+    except Exception as e:
+        print(f"Error running PyInstaller: {e}")
         return False
 
     # Check multiple possible output locations
@@ -448,9 +481,12 @@ def build_executable():
         # List contents of dist directory for debugging
         if DIST_DIR.exists():
             print(f"\nContents of {DIST_DIR}:")
-            for item in DIST_DIR.rglob("*"):
-                if item.is_file():
-                    print(f"  - {item.relative_to(DIST_DIR)}")
+            try:
+                for item in DIST_DIR.rglob("*"):
+                    if item.is_file():
+                        print(f"  - {item.relative_to(DIST_DIR)}")
+            except Exception as e:
+                print(f"Error listing directory: {e}")
         return False
 
 
