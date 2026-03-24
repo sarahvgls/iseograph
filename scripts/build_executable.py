@@ -25,7 +25,7 @@ if sys.platform == 'win32':
     sys.stderr = codecs.getwriter("utf-8")(sys.stderr.buffer, 'strict')
 
 # Get the project root directory
-BASE_DIR = Path(__file__).resolve().parent
+BASE_DIR = Path(__file__).resolve().parent.parent
 FRONTEND_DIR = BASE_DIR / "frontend"
 DIST_DIR = BASE_DIR / "dist"
 BUILD_DIR = BASE_DIR / "build"
@@ -358,7 +358,7 @@ hiddenimports = [
 ]
 
 a = Analysis(
-    ['start_app.py'],
+    ['scripts/start_app.py'],
     pathex=[],
     binaries=binaries,
     datas=datas,
@@ -521,7 +521,7 @@ def validate_build_environment():
     print("=" * 60)
 
     required_files = [
-        (BASE_DIR / "start_app.py", "Entry point script"),
+        (BASE_DIR / "scripts/start_app.py", "Entry point script"),
         (BASE_DIR / "backend" / "settings.py", "Django settings"),
         (BASE_DIR / "backend" / "urls.py", "Django URL config"),
         (BASE_DIR / "manage.py", "Django manage script"),
