@@ -63,6 +63,8 @@ import {
 } from "../components/base-components/graph-wrapper.tsx";
 import { createSearchIndex, DAGSearchIndex } from "../search";
 import { SearchBar } from "../components/search-bar/search-bar.tsx";
+import { IconButton } from "../components/icon";
+import { CaptureButton } from "../components/base-components/capture-button.tsx";
 
 // Split the selectors to minimize re-renders
 const graphDataSelector = (state: RFState) => ({
@@ -552,6 +554,14 @@ const Flow = memo(() => {
             }}
           >
             <ApplicationLabel />
+            <SearchBar
+              searchValue={searchValue}
+              onSearchValueChange={handleSearchValueChange}
+              onSearch={onSearch}
+              searchResultText={searchResultText}
+              maxPathLength={searchMaxPathLength}
+              onMaxPathLengthChange={setSearchMaxPathLength}
+            />
           </div>
 
           <PeptideMonitor
@@ -563,14 +573,7 @@ const Flow = memo(() => {
           position="top-right"
           style={{ pointerEvents: "auto", right: "200px", top: "10px" }}
         >
-          <SearchBar
-            searchValue={searchValue}
-            onSearchValueChange={handleSearchValueChange}
-            onSearch={onSearch}
-            searchResultText={searchResultText}
-            maxPathLength={searchMaxPathLength}
-            onMaxPathLengthChange={setSearchMaxPathLength}
-          />
+          <CaptureButton toggleCapture={() => {}} />
           <ToggleMenuButton
             onToggle={() => {
               if (glowMethod === glowMethods.intensity) {
