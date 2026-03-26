@@ -16,6 +16,7 @@ import {
 import { getColor } from "../../controls/peptides-color.tsx";
 import { useState } from "react";
 import { MultiCompatibleCheckbox } from "../base-components/checkbox.tsx";
+import { IconButton } from "../icon";
 
 const MenuContainer = styled.div<{ isOpen: boolean }>`
   display: flex;
@@ -114,7 +115,7 @@ export const OnScreenPeptidesMenu = ({
   }));
 
   const [isScaleSelectionOpen, setIsScaleSelectionOpen] =
-    useState<boolean>(true);
+    useState<boolean>(false);
 
   // Helper function to generate gradient CSS for each color scale
   const generateGradient = (colorScaleOption: colorScaleOptions) => {
@@ -149,9 +150,9 @@ export const OnScreenPeptidesMenu = ({
               <ColorLegendBox>
                 {isScaleSelectionOpen && (
                   <>
-                    <button
+                    <IconButton
+                      icon={"focus"}
                       style={{
-                        background: "#e8e8e8",
                         borderRadius: "5px",
                         padding: "4px",
                         display: "flex",
@@ -160,9 +161,12 @@ export const OnScreenPeptidesMenu = ({
                         border: "none",
                         cursor: "pointer",
                         margin: "0",
+                        fill: "gray",
+                        width: "15px",
+                        height: "15px",
                       }}
                       onClick={() => setIsScaleSelectionOpen(false)}
-                    >{`>>`}</button>
+                    />
                     <div
                       style={{
                         display: "flex",
@@ -207,18 +211,18 @@ export const OnScreenPeptidesMenu = ({
                 </ColorSelection>
               ) : (
                 <>
-                  <button
+                  <IconButton
+                    icon={"sliders"}
                     style={{
-                      background: "#e8e8e8",
                       borderRadius: "5px",
                       padding: "4px",
                       border: "none",
-                      height: "25px",
+                      fill: "gray",
+                      width: "20px",
+                      height: "20px",
                     }}
                     onClick={() => setIsScaleSelectionOpen(true)}
-                  >
-                    {`<<`}
-                  </button>
+                  />
                   <div
                     style={{
                       display: "flex",
@@ -255,6 +259,7 @@ export const OnScreenPeptidesMenu = ({
               )}
             </div>
             <StyledSectionTitle>Method selection:</StyledSectionTitle>
+
             <StyledSlimmDropdown
               style={{ marginBottom: "10px" }}
               value={glowMethod}
