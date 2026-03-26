@@ -10,14 +10,12 @@ import { shallow } from "zustand/shallow";
 import { useOutsidePress } from "../../helper/outside-press.tsx";
 import styled from "styled-components";
 import { theme } from "../../theme";
-import { layoutModes, nodeTypes, nodeWidthModes } from "../../theme/types.tsx";
-import { Switch } from "../base-components/switch.tsx";
-import type { SequenceNodeProps } from "../sequence-node/sequence-node.props.tsx";
 
 const MenuContainer = styled.div<{ isOpen: boolean }>`
   display: flex;
   flex-direction: row;
   align-items: flex-end;
+  justify-content: end;
   gap: 15px;
   transform: translateX(${({ isOpen }) => (isOpen ? "0" : "100%")});
   transition: transform 0.3s ease-in-out;
@@ -42,8 +40,8 @@ const ColorSelection = styled.div`
 
 const ColorPickerBox = styled.div`
   position: absolute;
-  top: 10px;
-  left: 375px;
+  top: 120px;
+  left: -170px;
   display: inline-block;
   width: 200px;
   height: 200px;
@@ -57,35 +55,23 @@ const ColorPickerBox = styled.div`
 export const OnScreenMenu = ({
   isOpen,
   setIsOpen,
-  focusNodeWithDelay,
 }: {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
-  focusNodeWithDelay: (nodeToBeFocused: SequenceNodeProps) => void;
 }) => {
   const {
-    nodes,
     isoformColorMapping,
     selectedIsoforms,
     toggleIsoformSelection,
     deselectAllIsoforms,
     updateIsoformColor,
-    layoutMode,
-    setLayoutMode,
-    nodeWidthMode,
-    setNodeWidthMode,
   } = useGraphStore(
     (state) => ({
-      nodes: state.nodes,
       isoformColorMapping: state.isoformColorMapping,
       selectedIsoforms: state.selectedIsoforms,
       toggleIsoformSelection: state.toggleIsoformSelection,
       deselectAllIsoforms: state.deselectAllIsoforms,
       updateIsoformColor: state.updateIsoformColor,
-      layoutMode: state.layoutMode,
-      setLayoutMode: state.setLayoutMode,
-      nodeWidthMode: state.nodeWidthMode,
-      setNodeWidthMode: state.setGlobalNodeWidthModeAndApplyLayout,
     }),
     shallow,
   );
@@ -101,14 +87,6 @@ export const OnScreenMenu = ({
     activeColorPicker !== null,
     false,
   );
-
-  const changeLayoutMode = (mode: layoutModes) => {
-    setLayoutMode(mode);
-    const firstSequenceNode = nodes.find(
-      (node) => node.type === nodeTypes.SequenceNode,
-    ) as SequenceNodeProps;
-    focusNodeWithDelay(firstSequenceNode);
-  };
 
   const resetColors = () => {
     const defaultColors = theme.colors;
@@ -127,34 +105,9 @@ export const OnScreenMenu = ({
     deselectAllIsoforms();
   };
 
-  const allLayoutModes = Object.values(layoutModes);
-  const allNodeWidthModes = Object.values(nodeWidthModes);
-
   return (
     <div>
       <MenuContainer isOpen={isOpen}>
-        {/*--- Graph Settings Switches ---*/}
-        <Switch
-          label={"Layout Mode"}
-          options={allLayoutModes}
-          selected={layoutMode}
-          selectOption={changeLayoutMode}
-          isShy={false}
-          testId="layout-mode-switch"
-        />
-        <Switch
-          label={"Node Width Mode"}
-          options={allNodeWidthModes}
-          selected={nodeWidthMode}
-          selectOption={(option) => {
-            setNodeWidthMode(option as nodeWidthModes);
-            focusNodeWithDelay(nodes[0] as SequenceNodeProps);
-          }}
-          isShy={false}
-          testId="node-width-mode-switch"
-        />
-
-        {/*--- Isoform color selection ---*/}
         <StyledSection
           style={{
             marginBottom: 0,
