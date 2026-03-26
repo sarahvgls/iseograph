@@ -184,3 +184,28 @@ export const SettingsBorder = styled.div`
   border-top-left-radius: 5px;
   padding-left: 5px;
 `;
+
+export const ApplicationLabel = () => {
+  return (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "end",
+        justifyContent: "start",
+        marginBottom: "8px",
+      }}
+    >
+      <h2
+        style={{
+          fontSize: "1.8rem",
+          margin: "0",
+          fontWeight: 600,
+          color: "#333",
+          textShadow: "0px 1px 2px rgba(0,0,0,0.1)",
+        }}
+      >
+        IseoGraph
+      </h2>
+    </div>
+  );
+};
