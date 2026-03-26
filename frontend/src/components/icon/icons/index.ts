@@ -6,3 +6,4 @@ export { default as settings } from "./burger-menu.svg?react";
 export { default as pencil_brush } from "./pencil-brush.svg?react";
 export { default as reset } from "./power-reset.svg?react";
 export { default as map } from "./map.svg?react";
+export { default as invisible } from "./invisible.svg?react";

@@ -599,19 +599,26 @@ const Flow = memo(() => {
           />
         </StyledButtonPanel>
         <MiniMapContainer isOpen={isMapOpen} style={{ pointerEvents: "auto" }}>
-          <button
+          <IconButton
+            icon={"invisible"}
             style={{
               border: "none",
               position: "relative",
-              height: "30px",
+              height: "25px",
               left: 60,
-              bottom: 180,
+              bottom: 175,
               zIndex: 110,
+              background: "white",
+              width: "25px",
+              fill: "gray",
+              padding: "4px",
+              borderRadius: "20%",
+              boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
             }}
             onClick={() => {
               setIsMapOpen(false);
             }}
-          >{`<<`}</button>
+          ></IconButton>
           <MiniMap
             style={{
               width: 350,

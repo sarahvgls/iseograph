@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { Panel } from "@xyflow/react";
+import { IconButton } from "../icon";
 
 export const StyledSection = styled.div`
   margin-bottom: 24px;
@@ -48,13 +49,22 @@ export const StyledSectionTitleWithButton = ({
         }}
       >
         <div>{title}</div>
-        <button
-          style={{ border: "none", height: "30px" }}
+        <IconButton
+          icon={"invisible"}
+          style={{
+            position: "relative",
+            height: "25px",
+            width: "25px",
+            fill: "gray",
+            padding: "4px",
+            borderRadius: "20%",
+            boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+          }}
+          data-testId={testId}
           onClick={() => {
             onClose();
           }}
-          data-testId={testId}
-        >{`>>`}</button>
+        ></IconButton>
       </div>
     </StyledSectionTitle>
   );
