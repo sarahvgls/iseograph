@@ -174,14 +174,14 @@ export const GraphSettings = ({ onClose }: { onClose: () => void }) => {
             isShy={true}
           />
           <Switch
-            label={"Default Layout Mode:"}
+            label={"Layout Mode:"}
             options={Object.values(layoutModes)}
             selected={selectedLayoutMode}
             selectOption={(mode) => setSelectedLayoutMode(mode as layoutModes)}
             isShy={true}
           />
           <Switch
-            label={"Default Node Width Mode:"}
+            label={"Node Width Mode:"}
             options={Object.values(nodeWidthModes)}
             selected={selectedNodeWidthMode}
             selectOption={(mode) =>
