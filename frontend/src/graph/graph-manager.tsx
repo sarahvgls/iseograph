@@ -70,6 +70,7 @@ import {
   exportViewportToPNG,
   DEFAULT_EXPORT_CONFIG,
   type ExportConfig,
+  type ExportMetadata,
 } from "../utils/export-utils.ts";
 
 // Split the selectors to minimize re-renders
@@ -230,13 +231,21 @@ const Flow = memo(() => {
           config.imageWidth = bounds.width;
         }
 
-        await exportViewportToPNG(config);
+        // Build metadata for filename generation
+        const metadata: ExportMetadata = {
+          highlightMethod:
+            glowMethod === glowMethods.intensity ? "intensity" : "peptide-count",
+          intensitySource:
+            glowMethod === glowMethods.intensity ? intensitySourceTop : undefined,
+        };
+
+        await exportViewportToPNG(config, metadata);
         setIsCaptureModeActive(false);
       } catch (error) {
         console.error("Export failed:", error);
       }
     },
-    [exportConfig],
+    [exportConfig, glowMethod, intensitySourceTop],
   );
 
   const handleCaptureCancel = useCallback(() => {
