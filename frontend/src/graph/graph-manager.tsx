@@ -4,8 +4,13 @@ import {
   type NodeMouseHandler,
   MiniMap,
   type Edge,
+  getViewportForBounds,
+  useReactFlow,
+  useViewport,
+  type OnSelectionChangeParams,
 } from "@xyflow/react";
 import DevTools from "./devtools/devtools.tsx";
+import { toPng } from "html-to-image";
 
 import "@xyflow/react/dist/style.css";
 import useGraphStore, { type RFState } from "./store.ts";
@@ -109,6 +114,7 @@ function renderGraph(
   edges: Edge[],
   onNodesChange: (changes: any) => void,
   onEdgesChange: (changes: any) => void,
+  onSelectionChange: (params: OnSelectionChangeParams) => void,
   allowInteraction: boolean,
   handleNodeClick: NodeMouseHandler,
   fitViewOptions: { minZoom: number; maxZoom: number; nodes: NodeTypes[] },
@@ -139,6 +145,7 @@ function renderGraph(
           nodesDraggable={allowInteraction}
           nodesConnectable={false}
           edgesReconnectable={false}
+          onSelectionChange={onSelectionChange}
         >
           {theme.debugMode && <DevTools />}
         </ReactFlow>
@@ -153,6 +160,17 @@ const Flow = memo(() => {
   const initializationTriggeredRef = useRef(false);
   const initializationCompletedRef = useRef(false);
   const isUpdatingRef = useRef(false); // Add flag to prevent concurrent updates
+
+  const { getNodesBounds } = useReactFlow();
+  const { x, y, zoom } = useViewport();
+
+  const [selectedNodes, setSelectedNodes] = useState<NodeTypes[]>([]);
+
+  const onSelectionChange = (params: OnSelectionChangeParams) => {
+    // This function can be used to handle selection changes if needed
+    console.log("Selection changed:", params);
+    setSelectedNodes(params.nodes);
+  };
 
   const { nodes, edges, onNodesChange, onEdgesChange } = useGraphStore(
     graphDataSelector,
@@ -295,6 +313,7 @@ const Flow = memo(() => {
         edges,
         onNodesChange,
         onEdgesChange,
+        onSelectionChange,
         allowInteraction,
         handleNodeClick,
         fitViewOptions,
@@ -312,6 +331,7 @@ const Flow = memo(() => {
           edges,
           onNodesChange,
           onEdgesChange,
+          onSelectionChange,
           allowInteraction,
           handleNodeClick,
           fitViewOptions,
@@ -431,6 +451,7 @@ const Flow = memo(() => {
         edges,
         onNodesChange,
         onEdgesChange,
+        onSelectionChange,
         allowInteraction,
         handleNodeClick,
         fitViewOptions,
@@ -465,6 +486,7 @@ const Flow = memo(() => {
         edges,
         onNodesChange,
         onEdgesChange,
+        onSelectionChange,
         allowInteraction,
         handleNodeClick,
         fitViewOptions,
@@ -564,6 +586,12 @@ const Flow = memo(() => {
             />
           </div>
 
+          <div>
+            <p>
+              The viewport is currently at ({x}, {y}) and zoomed to {zoom}.
+            </p>
+          </div>
+
           <PeptideMonitor
             isOpen={isPeptideMonitorOpen}
             setIsOpen={setIsPeptideMonitorOpen}
@@ -573,7 +601,44 @@ const Flow = memo(() => {
           position="top-right"
           style={{ pointerEvents: "auto", right: "200px", top: "10px" }}
         >
-          <CaptureButton toggleCapture={() => {}} />
+          <CaptureButton
+            toggleCapture={() => {
+              const imageWidth = 1024;
+              const imageHeight = 768;
+              const imageWidthStr = "1024px";
+              const imageHeightStr = "768px";
+
+              const nodeBounds = getNodesBounds(selectedNodes);
+              const viewport = getViewportForBounds(
+                nodeBounds,
+                imageWidth,
+                imageHeight,
+                1,
+                50,
+                20,
+              );
+              console.log("Viewport for capture", viewport);
+
+              toPng(
+                document.querySelector(".react-flow__viewport") as HTMLElement,
+                {
+                  backgroundColor: "#1a365d",
+                  width: imageWidth,
+                  height: imageHeight,
+                  style: {
+                    width: imageWidthStr,
+                    height: imageHeightStr,
+                    transform: `translate(${viewport.x}px, ${viewport.y}px) scale(${viewport.zoom})`,
+                  },
+                },
+              ).then((dataUrl: string) => {
+                const a = document.createElement("a");
+                a.setAttribute("download", "reactflow.png");
+                a.setAttribute("href", dataUrl);
+                a.click();
+              });
+            }}
+          />
           <ToggleMenuButton
             onToggle={() => {
               if (glowMethod === glowMethods.intensity) {
