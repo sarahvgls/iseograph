@@ -128,6 +128,38 @@ const ControlPanel = styled.div`
   z-index: 10001;
 `;
 
+const BoundsDisplay = styled.div`
+  font-size: 13px;
+  font-weight: 600;
+  color: #555;
+  padding: 0 10px;
+  border-right: 1px solid #ddd;
+  min-width: 180px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+`;
+
+const BoundsInput = styled.input`
+  width: 100%;
+  padding: 4px 6px;
+  font-size: 12px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  font-weight: 600;
+  color: #333;
+
+  &:focus {
+    outline: none;
+    border-color: #ff6b6b;
+    box-shadow: 0 0 3px rgba(255, 107, 107, 0.3);
+  }
+
+  &::placeholder {
+    color: #999;
+  }
+`;
+
 const ConfirmButton = styled.button`
   padding: 10px 24px;
   background-color: #7ab67e;
@@ -196,15 +228,53 @@ export const CaptureBoundsUI = ({
     window.innerHeight - OFFSET_MARGIN,
   );
   const [isDragging, setIsDragging] = useState(false);
+  const [heightInput, setHeightInput] = useState<string>(
+    String(window.innerHeight - OFFSET_MARGIN),
+  );
+  const [widthInput, setWidthInput] = useState<string>(
+    String(window.innerWidth - OFFSET_MARGIN),
+  );
 
   // Initialize position based on mode
   useEffect(() => {
     if (mode === "horizontal") {
-      setPosition(window.innerHeight - OFFSET_MARGIN);
+      const initialHeight = window.innerHeight - OFFSET_MARGIN;
+      setPosition(initialHeight);
+      setHeightInput(String(initialHeight));
     } else {
-      setPosition(window.innerWidth - OFFSET_MARGIN);
+      const initialWidth = window.innerWidth - OFFSET_MARGIN;
+      setPosition(initialWidth);
+      setWidthInput(String(initialWidth));
     }
   }, [mode]);
+
+  // Handle height input change
+  const handleHeightInputChange = useCallback((value: string) => {
+    setHeightInput(value);
+    const parsed = parseInt(value, 10);
+    if (!isNaN(parsed)) {
+      const newPosition = Math.max(
+        50,
+        Math.min(parsed, window.innerHeight - 50),
+      );
+      setPosition(newPosition);
+      setHeightInput(String(newPosition));
+    }
+  }, []);
+
+  // Handle width input change
+  const handleWidthInputChange = useCallback((value: string) => {
+    setWidthInput(value);
+    const parsed = parseInt(value, 10);
+    if (!isNaN(parsed)) {
+      const newPosition = Math.max(
+        50,
+        Math.min(parsed, window.innerWidth - 50),
+      );
+      setPosition(newPosition);
+      setWidthInput(String(newPosition));
+    }
+  }, []);
 
   const handleMouseDown = useCallback(() => {
     setIsDragging(true);
@@ -220,12 +290,14 @@ export const CaptureBoundsUI = ({
           Math.min(e.clientY, window.innerHeight - 50),
         );
         setPosition(newPosition);
+        setHeightInput(String(newPosition));
       } else {
         const newPosition = Math.max(
           50,
           Math.min(e.clientX, window.innerWidth - 50),
         );
         setPosition(newPosition);
+        setWidthInput(String(newPosition));
       }
     };
 
@@ -247,8 +319,8 @@ export const CaptureBoundsUI = ({
   const handleConfirm = () => {
     const bounds =
       mode === "horizontal"
-        ? { height: position, width: window.innerWidth }
-        : { width: position, height: window.innerHeight };
+        ? { height: parseInt(heightInput, 10), width: window.innerWidth }
+        : { width: parseInt(widthInput, 10), height: window.innerHeight };
 
     onConfirm(bounds);
   };
@@ -273,6 +345,43 @@ export const CaptureBoundsUI = ({
 
       {/* Control panel */}
       <ControlPanel>
+        <BoundsDisplay>
+          <div style={{ display: "flex", gap: "4px", alignItems: "center" }}>
+            Height:
+            {mode === "horizontal" ? (
+              <BoundsInput
+                type="number"
+                value={heightInput}
+                onChange={(e) => handleHeightInputChange(e.target.value)}
+                placeholder="Height (px)"
+                min="50"
+                max={window.innerHeight - 50}
+              />
+            ) : (
+              <span style={{ fontWeight: 600, color: "#333" }}>
+                {window.innerHeight}px
+              </span>
+            )}
+          </div>
+          <div style={{ display: "flex", gap: "4px", alignItems: "center" }}>
+            Width:
+            {mode === "vertical" ? (
+              <BoundsInput
+                type="number"
+                value={widthInput}
+                onChange={(e) => handleWidthInputChange(e.target.value)}
+                placeholder="Width (px)"
+                min="50"
+                max={window.innerWidth - 50}
+              />
+            ) : (
+              <span style={{ fontWeight: 600, color: "#333" }}>
+                {window.innerWidth}px
+              </span>
+            )}
+          </div>
+        </BoundsDisplay>
+
         <SwitchWrapper>
           <ModeLabel>Bound Mode:</ModeLabel>
           <Switch
@@ -285,7 +394,7 @@ export const CaptureBoundsUI = ({
         </SwitchWrapper>
 
         <CancelButton onClick={onCancel}>Cancel</CancelButton>
-        <ConfirmButton onClick={handleConfirm}>Capture</ConfirmButton>
+        <ConfirmButton onClick={handleConfirm}>Create</ConfirmButton>
       </ControlPanel>
     </OverlayContainer>
   );
