@@ -65,6 +65,12 @@ import { createSearchIndex, DAGSearchIndex } from "../search";
 import { SearchBar } from "../components/search-bar/search-bar.tsx";
 import { IconButton } from "../components/icon";
 import { CaptureButton } from "../components/base-components/capture-button.tsx";
+import { CaptureBoundsUI } from "../components/base-components/capture-bounds-ui.tsx";
+import {
+  exportViewportToPNG,
+  DEFAULT_EXPORT_CONFIG,
+  type ExportConfig,
+} from "../utils/export-utils.ts";
 
 // Split the selectors to minimize re-renders
 const graphDataSelector = (state: RFState) => ({
@@ -207,7 +213,35 @@ const Flow = memo(() => {
   const [isOnScreenMenuOpen, setIsOnScreenMenuOpen] = useState(true);
   const [isPeptideMonitorOpen, setIsPeptideMonitorOpen] = useState(false);
   const [isMapOpen, setIsMapOpen] = useState(true);
+
+  // Capture mode state
+  const [isCaptureModeActive, setIsCaptureModeActive] = useState(false);
+  const [exportConfig] = useState<ExportConfig>(DEFAULT_EXPORT_CONFIG);
   const shouldShiftButtons = isPeptideMenuFullSize && isIsoformMenuFullSize;
+
+  const handleCaptureConfirm = useCallback(
+    async (bounds: { width?: number; height?: number }) => {
+      try {
+        const config = { ...exportConfig };
+        if (bounds.height !== undefined) {
+          config.imageHeight = bounds.height;
+        }
+        if (bounds.width !== undefined) {
+          config.imageWidth = bounds.width;
+        }
+
+        await exportViewportToPNG(config);
+        setIsCaptureModeActive(false);
+      } catch (error) {
+        console.error("Export failed:", error);
+      }
+    },
+    [exportConfig],
+  );
+
+  const handleCaptureCancel = useCallback(() => {
+    setIsCaptureModeActive(false);
+  }, []);
 
   // graph component
   const [topGraphComponent, setTopGraphComponent] =
@@ -561,6 +595,7 @@ const Flow = memo(() => {
               searchResultText={searchResultText}
               maxPathLength={searchMaxPathLength}
               onMaxPathLengthChange={setSearchMaxPathLength}
+              isHidden={isCaptureModeActive}
             />
           </div>
 
@@ -574,7 +609,13 @@ const Flow = memo(() => {
           style={{ pointerEvents: "auto", right: "200px", top: "10px" }}
         >
           <CaptureButton
+            setIsActive={setIsCaptureModeActive}
+            isActive={isCaptureModeActive}
             testId="capture-mode-button"
+            onActivate={() => {
+              setIsOnScreenMenuOpen(false);
+              setIsMapOpen(false);
+            }}
           />
           <ToggleMenuButton
             onToggle={() => {
@@ -669,6 +710,7 @@ const Flow = memo(() => {
       isPeptideMonitorOpen,
       setIsPeptideMonitorOpen,
       isOnScreenMenuOpen,
+      isCaptureModeActive,
       isMapOpen,
       shouldShiftButtons,
       glowMethod,
@@ -696,6 +738,14 @@ const Flow = memo(() => {
         {/* Overlay controls that apply to both graphs */}
         {overlayControls}
       </GraphContainer>
+
+      {/* Capture bounds UI */}
+      {isCaptureModeActive && (
+        <CaptureBoundsUI
+          onConfirm={handleCaptureConfirm}
+          onCancel={handleCaptureCancel}
+        />
+      )}
 
       {isSideMenuOpen && (
         <SideMenu
