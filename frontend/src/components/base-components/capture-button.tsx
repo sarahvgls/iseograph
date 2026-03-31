@@ -1,7 +1,6 @@
 import { Icon } from "../icon";
 import styled from "styled-components";
 import { toPng } from "html-to-image";
-import type { ExportConfig } from "../../graph/export-utils";
 
 const Container = styled.div`
   padding: 10px;
@@ -36,7 +35,7 @@ const StyledButton = styled.button`
   }
 `;
 
-export const DEFAULT_EXPORT_CONFIG: ExportConfig = {
+export const DEFAULT_EXPORT_CONFIG = {
   padding: 30,
   backgroundColor: "#ffffff",
   imageWidth: 2024,
@@ -44,10 +43,6 @@ export const DEFAULT_EXPORT_CONFIG: ExportConfig = {
 };
 
 export const CaptureButton = ({ testId }: { testId?: string }) => {
-  const toggleActive = () => {
-    exportPNG();
-  };
-
   function exportPNG() {
     const viewportElement = document.querySelector(
       ".react-flow__viewport",
@@ -83,7 +78,7 @@ export const CaptureButton = ({ testId }: { testId?: string }) => {
     <Container>
       <StyledButton
         data-testid={testId || "capture-button"}
-        onClick={toggleActive}
+        onClick={exportPNG}
       >
         <Icon icon={"capture"} color={"onPrimary"} />
       </StyledButton>
