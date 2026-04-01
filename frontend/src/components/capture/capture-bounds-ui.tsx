@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { useState, useEffect, useCallback } from "react";
-import { Switch } from "./switch.tsx";
+import { Switch } from "../base-components/switch.tsx";
 
 type BoundMode = "horizontal" | "vertical";
 
@@ -42,7 +42,7 @@ const DraggableLine = styled.div<{
   position: number;
 }>`
   position: fixed;
-  background-color: #ff6b6b;
+  background-color: rgba(255, 102, 75, 0.58);
   cursor: ${(props) =>
     props.mode === "horizontal" ? "row-resize" : "col-resize"};
   pointer-events: auto;
@@ -118,10 +118,10 @@ const ControlPanel = styled.div`
   left: 50%;
   transform: translateX(-50%);
   display: flex;
-  gap: 20px;
+  gap: 10px;
   align-items: center;
   background-color: white;
-  padding: 15px 20px;
+  padding: 5px 10px;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   pointer-events: auto;
@@ -134,7 +134,7 @@ const BoundsDisplay = styled.div`
   color: #555;
   padding: 0 10px;
   border-right: 1px solid #ddd;
-  min-width: 180px;
+  min-width: 120px;
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -204,6 +204,12 @@ const SwitchWrapper = styled.div`
   display: flex;
   gap: 10px;
   align-items: center;
+  justify-content: space-between;
+`;
+
+const StyledSwitch = styled(Switch)`
+  box-shadow: none;
+  background-color: transparent;
 `;
 
 const ModeLabel = styled.span`
@@ -384,17 +390,17 @@ export const CaptureBoundsUI = ({
 
         <SwitchWrapper>
           <ModeLabel>Bound Mode:</ModeLabel>
-          <Switch
+          <StyledSwitch
             options={["horizontal", "vertical"]}
             selected={mode}
             selectOption={handleModeChange}
-            isShy={true}
+            isShy={false}
             testId="capture-mode-switch"
           />
         </SwitchWrapper>
 
         <CancelButton onClick={onCancel}>Cancel</CancelButton>
-        <ConfirmButton onClick={handleConfirm}>Create</ConfirmButton>
+        <ConfirmButton onClick={handleConfirm}>Capture</ConfirmButton>
       </ControlPanel>
     </OverlayContainer>
   );

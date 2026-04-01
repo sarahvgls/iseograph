@@ -64,8 +64,8 @@ import {
 import { createSearchIndex, DAGSearchIndex } from "../search";
 import { SearchBar } from "../components/search-bar/search-bar.tsx";
 import { IconButton } from "../components/icon";
-import { CaptureButton } from "../components/base-components/capture-button.tsx";
-import { CaptureBoundsUI } from "../components/base-components/capture-bounds-ui.tsx";
+import { CaptureButton } from "../components/capture/capture-button.tsx";
+import { CaptureBoundsUI } from "../components/capture/capture-bounds-ui.tsx";
 import {
   exportViewportToPNG,
   DEFAULT_EXPORT_CONFIG,
@@ -234,9 +234,13 @@ const Flow = memo(() => {
         // Build metadata for filename generation
         const metadata: ExportMetadata = {
           highlightMethod:
-            glowMethod === glowMethods.intensity ? "intensity" : "peptide-count",
+            glowMethod === glowMethods.intensity
+              ? "intensity"
+              : "peptide-count",
           intensitySource:
-            glowMethod === glowMethods.intensity ? intensitySourceTop : undefined,
+            glowMethod === glowMethods.intensity
+              ? intensitySourceTop
+              : undefined,
         };
 
         await exportViewportToPNG(config, metadata);
