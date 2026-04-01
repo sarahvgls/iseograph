@@ -115,6 +115,7 @@ export const SearchBar = memo(function SearchBar({
   searchResultText,
   maxPathLength = 5,
   onMaxPathLengthChange,
+  isHidden = false,
 }: SearchBarProps) {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [maxPathLengthInput, setMaxPathLengthInput] = useState<string>(
@@ -159,7 +160,10 @@ export const SearchBar = memo(function SearchBar({
   };
 
   return (
-    <SearchContainer onClick={() => isSettingsOpen && setIsSettingsOpen(false)}>
+    <SearchContainer
+      onClick={() => isSettingsOpen && setIsSettingsOpen(false)}
+      style={{ display: isHidden ? "none" : "flex" }}
+    >
       <SearchInputWrapper>
         <SearchInput
           type="search"

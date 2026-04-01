@@ -26,7 +26,7 @@ const MenuContainer = styled.div<{ isOpen: boolean }>`
   justify-content: flex-end;
   justify-self: flex-end;
   gap: 99px;
-  transform: translateX(${({ isOpen }) => (isOpen ? "0" : "100%")});
+  transform: translateX(${({ isOpen }) => (isOpen ? "0" : "150%")});
   transition: transform 0.3s ease-in-out;
   pointer-events: none;
   z-index: 5;
