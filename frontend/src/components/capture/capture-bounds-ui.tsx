@@ -254,10 +254,19 @@ export const CaptureBoundsUI = ({
     }
   }, [mode]);
 
-  // Handle height input change
+  // Handle height input change - just update the input, don't move the line yet
   const handleHeightInputChange = useCallback((value: string) => {
     setHeightInput(value);
-    const parsed = parseInt(value, 10);
+  }, []);
+
+  // Handle width input change - just update the input, don't move the line yet
+  const handleWidthInputChange = useCallback((value: string) => {
+    setWidthInput(value);
+  }, []);
+
+  // Apply height change when Enter is pressed or field loses focus
+  const handleHeightInputCommit = useCallback(() => {
+    const parsed = parseInt(heightInput, 10);
     if (!isNaN(parsed)) {
       const newPosition = Math.max(
         50,
@@ -266,12 +275,11 @@ export const CaptureBoundsUI = ({
       setPosition(newPosition);
       setHeightInput(String(newPosition));
     }
-  }, []);
+  }, [heightInput]);
 
-  // Handle width input change
-  const handleWidthInputChange = useCallback((value: string) => {
-    setWidthInput(value);
-    const parsed = parseInt(value, 10);
+  // Apply width change when Enter is pressed or field loses focus
+  const handleWidthInputCommit = useCallback(() => {
+    const parsed = parseInt(widthInput, 10);
     if (!isNaN(parsed)) {
       const newPosition = Math.max(
         50,
@@ -280,7 +288,7 @@ export const CaptureBoundsUI = ({
       setPosition(newPosition);
       setWidthInput(String(newPosition));
     }
-  }, []);
+  }, [widthInput]);
 
   const handleMouseDown = useCallback(() => {
     setIsDragging(true);
@@ -323,12 +331,17 @@ export const CaptureBoundsUI = ({
   }, [isDragging, mode]);
 
   const handleConfirm = () => {
-    const bounds =
-      mode === "horizontal"
-        ? { height: parseInt(heightInput, 10), width: window.innerWidth }
-        : { width: parseInt(widthInput, 10), height: window.innerHeight };
-
-    onConfirm(bounds);
+    if (mode === "horizontal") {
+      const parsedHeight = parseInt(heightInput, 10);
+      const height = Number.isNaN(parsedHeight) ? position : parsedHeight;
+      const bounds = { height, width: window.innerWidth };
+      onConfirm(bounds);
+    } else {
+      const parsedWidth = parseInt(widthInput, 10);
+      const width = Number.isNaN(parsedWidth) ? position : parsedWidth;
+      const bounds = { width, height: window.innerHeight };
+      onConfirm(bounds);
+    }
   };
 
   const handleModeChange = (newMode: string) => {
@@ -359,6 +372,12 @@ export const CaptureBoundsUI = ({
                 type="number"
                 value={heightInput}
                 onChange={(e) => handleHeightInputChange(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handleHeightInputCommit();
+                  }
+                }}
+                onBlur={handleHeightInputCommit}
                 placeholder="Height (px)"
                 min="50"
                 max={window.innerHeight - 50}
@@ -376,6 +395,12 @@ export const CaptureBoundsUI = ({
                 type="number"
                 value={widthInput}
                 onChange={(e) => handleWidthInputChange(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handleWidthInputCommit();
+                  }
+                }}
+                onBlur={handleWidthInputCommit}
                 placeholder="Width (px)"
                 min="50"
                 max={window.innerWidth - 50}

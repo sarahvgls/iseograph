@@ -1,7 +1,6 @@
 import { toPng } from "html-to-image";
 
 export interface ExportConfig {
-  padding: number;
   backgroundColor: string;
   imageWidth: number;
   imageHeight: number;
@@ -13,7 +12,6 @@ export interface ExportMetadata {
 }
 
 export const DEFAULT_EXPORT_CONFIG: ExportConfig = {
-  padding: 30,
   backgroundColor: "#ffffff",
   imageWidth: 2024,
   imageHeight: 768,
@@ -37,7 +35,13 @@ export function generateFileName(metadata: ExportMetadata): string {
 
   let highlightStr: string;
   if (metadata.highlightMethod === "intensity" && metadata.intensitySource) {
-    highlightStr = `intensity-${metadata.intensitySource}`;
+    // convert metadata.intensitySource to a valid string (not empty or containing whitespace)
+    const str = metadata.intensitySource.trim().replace(/\s+/g, "-");
+    if (str.length === 0) {
+      highlightStr = "intensity-unknown";
+    } else {
+      highlightStr = `intensity-${metadata.intensitySource}`;
+    }
   } else {
     highlightStr = "peptide-count";
   }
@@ -56,7 +60,7 @@ export async function exportViewportToPNG(
 ): Promise<void> {
   const viewportElement = document.querySelector(
     ".react-flow__viewport",
-  ) as HTMLElement;
+  ) as HTMLElement | null;
 
   if (!viewportElement) {
     throw new Error("Viewport element not found");
@@ -71,7 +75,6 @@ export async function exportViewportToPNG(
     });
     downloadPng(dataUrl, fileName);
   } catch (error) {
-    console.error("Error generating PNG:", error);
     throw new Error(`Failed to generate PNG: ${error}`);
   }
 }
@@ -87,4 +90,3 @@ function downloadPng(dataUrl: string, fileName: string): void {
   link.setAttribute("href", dataUrl);
   link.click();
 }
-
