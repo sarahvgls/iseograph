@@ -38,7 +38,11 @@ import DirectionMiniMapNode from "../components/minimap/direction-minimap-node.t
 import ArrowEdge from "../components/arrow-edge/arrow-edge.tsx";
 import { SideMenu } from "../components/side-menu/side-menu.tsx";
 import { OnScreenMenu } from "../components/on-screen-menu/on-screen-menu.tsx";
-import { StyledButtonPanel, StyledPanel } from "../components/base-components";
+import {
+  ApplicationLabel,
+  StyledButtonPanel,
+  StyledPanel,
+} from "../components/base-components";
 import {
   LoadingBackdrop,
   SettingsBackdrop,
@@ -59,6 +63,8 @@ import {
 } from "../components/base-components/graph-wrapper.tsx";
 import { createSearchIndex, DAGSearchIndex } from "../search";
 import { SearchBar } from "../components/search-bar/search-bar.tsx";
+import { IconButton } from "../components/icon";
+import { CaptureButton } from "../components/base-components/capture-button.tsx";
 
 // Split the selectors to minimize re-renders
 const graphDataSelector = (state: RFState) => ({
@@ -542,27 +548,22 @@ const Flow = memo(() => {
           <div
             style={{
               display: "flex",
-              alignItems: "end",
-              justifyContent: "end",
-              marginBottom: "8px",
+              flexDirection: "row",
+              gap: "20px",
+              pointerEvents: "auto",
             }}
           >
-            <h2
-              style={{
-                fontSize: "1.8rem",
-                margin: "0",
-                fontWeight: 600,
-                color: "#333",
-                textShadow: "0px 1px 2px rgba(0,0,0,0.1)",
-              }}
-            >
-              IseoGraph
-            </h2>
-            <p style={{ margin: "0 0 0 12px", fontSize: "0.9rem" }}>
-              {" "}
-              open-source software by Sarah Vogels
-            </p>
+            <ApplicationLabel />
+            <SearchBar
+              searchValue={searchValue}
+              onSearchValueChange={handleSearchValueChange}
+              onSearch={onSearch}
+              searchResultText={searchResultText}
+              maxPathLength={searchMaxPathLength}
+              onMaxPathLengthChange={setSearchMaxPathLength}
+            />
           </div>
+
           <PeptideMonitor
             isOpen={isPeptideMonitorOpen}
             setIsOpen={setIsPeptideMonitorOpen}
@@ -572,14 +573,7 @@ const Flow = memo(() => {
           position="top-right"
           style={{ pointerEvents: "auto", right: "200px", top: "10px" }}
         >
-          <SearchBar
-            searchValue={searchValue}
-            onSearchValueChange={handleSearchValueChange}
-            onSearch={onSearch}
-            searchResultText={searchResultText}
-            maxPathLength={searchMaxPathLength}
-            onMaxPathLengthChange={setSearchMaxPathLength}
-          />
+          <CaptureButton toggleCapture={() => {}} />
           <ToggleMenuButton
             onToggle={() => {
               if (glowMethod === glowMethods.intensity) {
@@ -608,19 +602,26 @@ const Flow = memo(() => {
           />
         </StyledButtonPanel>
         <MiniMapContainer isOpen={isMapOpen} style={{ pointerEvents: "auto" }}>
-          <button
+          <IconButton
+            icon={"invisible"}
             style={{
               border: "none",
               position: "relative",
-              height: "30px",
+              height: "25px",
               left: 60,
-              bottom: 180,
+              bottom: 175,
               zIndex: 110,
+              background: "white",
+              width: "25px",
+              fill: "gray",
+              padding: "4px",
+              borderRadius: "20%",
+              boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
             }}
             onClick={() => {
               setIsMapOpen(false);
             }}
-          >{`<<`}</button>
+          ></IconButton>
           <MiniMap
             style={{
               width: 350,

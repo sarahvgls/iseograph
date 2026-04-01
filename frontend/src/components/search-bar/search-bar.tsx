@@ -9,6 +9,7 @@ const SearchContainer = styled.div`
   flex-direction: column;
   gap: 8px;
   position: relative;
+  top: 5px;
 `;
 
 const SearchInputWrapper = styled.div`
@@ -18,7 +19,7 @@ const SearchInputWrapper = styled.div`
 `;
 
 const SearchInput = styled.input`
-  width: 300px;
+  width: 250px;
   padding: 8px 32px 8px 8px;
   border-radius: 4px;
   border: 1px solid #ccc;
