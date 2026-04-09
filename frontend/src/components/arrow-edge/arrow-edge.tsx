@@ -148,8 +148,8 @@ export default function ArrowEdge({
   const labelColor = isoforms.includes("Canonical")
     ? isoformColorMapping["Canonical"]
     : hasSelectedIsoform
-      ? isoformColorMapping[isoforms[0]] || theme.defaultColor
-      : isoformColorMapping["Default"] || theme.defaultColor;
+      ? isoformColorMapping[isoforms[0]] || theme.defaultColorEdge
+      : isoformColorMapping["Default"] || theme.defaultColorEdge;
   // get text color based on the label color with much contrast
   const labelTextColor = useMemo(() => {
     const rgb = labelColor.match(/\d+/g);
@@ -182,7 +182,7 @@ export default function ArrowEdge({
         path={defaultPath}
         markerEnd={`url(#${edgeId})`}
         style={{
-          stroke: isoformColorMapping["Default"] || theme.defaultColor,
+          stroke: isoformColorMapping["Default"] || theme.defaultColorEdge,
           strokeWidth: style.strokeWidth || 2,
           ...style,
         }}

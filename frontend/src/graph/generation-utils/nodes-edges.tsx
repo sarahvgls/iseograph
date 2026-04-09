@@ -138,7 +138,7 @@ export const generateIsoformColorMatching = (
   });
 
   // Add a default color for no isoform
-  isoformsColors["Default"] = theme.defaultColor;
+  isoformsColors["Default"] = theme.defaultColorEdge;
   return isoformsColors;
 };
 

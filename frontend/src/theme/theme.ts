@@ -152,6 +152,7 @@ export const theme = {
     defaultPalette.yellowHover,
     defaultPalette.redHover,
   ],
+  defaultColorEdge: "#d5d5d5",
   defaultColor: "#9e9e9e",
   miniMap: {
     sequenceNode: "rgb(191, 117, 255, 0.5)",

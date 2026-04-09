@@ -324,7 +324,7 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
     localStorage.setItem("selectedIsoforms", JSON.stringify(newSelection));
   },
   deselectAllIsoforms: () => {
-    set({ selectedIsoforms: [] });
+    set({ selectedIsoforms: ["Default"] });
   },
   updateIsoformColor: (isoform: string, color: string) => {
     const { isoformColorMapping } = get();
