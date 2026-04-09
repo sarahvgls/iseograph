@@ -106,6 +106,30 @@ def load_protein_file(id, peptide_file):
     return protein_file
 
 
+def validate_protein_file(file_path: str) -> bool:
+    """
+    Validates that an uploaded file is a valid protein text file from UniProt.
+    Checks for basic structure and content validation.
+    """
+    try:
+        with open(file_path, "r", encoding="utf-8", errors="ignore") as file:
+            content = file.read()
+
+        # Check if file contains typical UniProt protein file markers
+        # A valid UniProt text file should contain lines starting with two-letter codes like "ID ", "AC ", "DT ", etc.
+        if not content:
+            return False
+
+        lines = content.split("\n")
+        # Check for at least some UniProt-format lines
+        has_id = any(line.startswith("ID ") for line in lines[:10])
+        has_content = len(lines) > 5
+
+        return has_id and has_content
+    except Exception:
+        return False
+
+
 def clean_up(file_name: str) -> None:
     # clear downloads and uploads folder
     downloads_dir = PROJECT_ROOT_DIR / "downloads"  # used internally for downloads of txt files from uniprot
@@ -165,13 +189,23 @@ def generate_base_graph(request):
         return JsonResponse({"success": False, "message": "Invalid request method. Use POST."}, status=405)
     data = json.loads(request.body)
     protein_id = data.get("protein_id")
+    protein_file = data.get("protein_file", "")  # Option B: uploaded protein file
 
     peptide_file = data.get("peptide_file", "")
-    path_to_protein_file = load_protein_file(protein_id, peptide_file)
-    uniprot_id = path_to_protein_file.split("/")[-1].split(".")[0]
+
+    # Determine which path to use
+    if protein_file:
+        # Option B: Use uploaded protein file
+        path_to_protein_file = protein_file
+        uniprot_id = path_to_protein_file.split("/")[-1].split(".")[0]
+    else:
+        # Option C: Download from UniProt
+        path_to_protein_file = load_protein_file(protein_id, peptide_file)
+        uniprot_id = path_to_protein_file.split("/")[-1].split(".")[0] if path_to_protein_file else ""
 
     if not path_to_protein_file:
-        return JsonResponse({"success": False, "message": f"Failed to download protein file for {protein_id}."},
+        error_msg = f"Failed to download protein file for {protein_id}." if not protein_file else "Failed to process protein file."
+        return JsonResponse({"success": False, "message": error_msg},
                             status=500)
     output_folder_path = f"{PROJECT_ROOT_DIR}/data"
 
@@ -275,3 +309,75 @@ def upload_file(request):
             destination.write(chunk)
 
     return JsonResponse({"success": True, "filePath": str(file_path), "message": "File uploaded successfully."})
+
+
+@ensure_csrf_cookie
+def process_protein_file(request):
+    """
+    API endpoint to process an uploaded protein text file.
+    Validates the file and prepares it for graph generation, similar to load_protein_file.
+    """
+    if request.method != "POST":
+        return JsonResponse({"success": False, "message": "Invalid request method. Use POST."}, status=405)
+
+    data = json.loads(request.body)
+    protein_file_path = data.get("protein_file_path")
+    peptide_file = data.get("peptide_file", "")
+
+    if not protein_file_path:
+        return JsonResponse({"success": False, "message": "No protein file path provided."}, status=400)
+
+    # Validate that the file exists and is readable
+    if not os.path.exists(protein_file_path):
+        return JsonResponse({"success": False, "message": f"Protein file '{protein_file_path}' does not exist."}, status=400)
+
+    # Validate file format
+    if not validate_protein_file(protein_file_path):
+        return JsonResponse(
+            {"success": False, "message": "Invalid protein file format. Please ensure the file is a valid UniProt protein text file."},
+            status=400
+        )
+
+    # Extract the protein identifier from the file (first word after "ID " line)
+    uniprot_id = ""
+    try:
+        with open(protein_file_path, "r", encoding="utf-8", errors="ignore") as file:
+            for line in file:
+                if line.startswith("ID "):
+                    uniprot_id = line[3:].split()[0].strip()
+                    break
+    except Exception as e:
+        return JsonResponse({"success": False, "message": f"Failed to read protein file: {str(e)}"}, status=500)
+
+    if not uniprot_id:
+        return JsonResponse({"success": False, "message": "Could not extract protein ID from file."}, status=400)
+
+    # Copy file to downloads directory (similar to load_protein_file behavior)
+    download_dir = PROJECT_ROOT_DIR / "downloads"
+    if not os.path.exists(download_dir):
+        os.makedirs(download_dir)
+
+    processed_file = f"{download_dir}/{uniprot_id}.txt"
+    try:
+        with open(protein_file_path, "r", encoding="utf-8", errors="ignore") as src:
+            with open(processed_file, "w", encoding="utf-8") as dst:
+                dst.write(src.read())
+    except Exception as e:
+        return JsonResponse({"success": False, "message": f"Failed to process protein file: {str(e)}"}, status=500)
+
+    # If peptide file is provided, update UniProt IDs in it
+    if peptide_file:
+        try:
+            force_uniprot_ids(os.path.basename(peptide_file), uniprot_id, uniprot_id)
+        except Exception as e:
+            # This is non-critical, log but don't fail
+            print(f"Warning: Could not process peptide file: {str(e)}")
+
+    return JsonResponse({
+        "success": True,
+        "message": f"Protein file processed successfully.",
+        "protein_file": processed_file,
+        "protein_id": uniprot_id
+    })
+
+

@@ -26,4 +26,5 @@ urlpatterns = [
     path('api/convert_file/', views.convert_file, name='convert_file'),
     path('api/generate_base_graph/', views.generate_base_graph, name='generate_base_graph'),
     path('api/upload_file/', views.upload_file, name='upload_file'),
+    path('api/process_protein_file/', views.process_protein_file, name='process_protein_file'),
 ]
