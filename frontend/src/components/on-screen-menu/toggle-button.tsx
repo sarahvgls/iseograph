@@ -2,14 +2,13 @@ import styled from "styled-components";
 import { theme } from "../../theme";
 import { Icon, type IconType } from "../icon";
 
-const ScreenPositions = ["80px", "130px", "180px"];
-
 const StyledButton = styled.button<{
   isOpen: boolean;
   positionIndex: number;
 }>`
   position: fixed;
-  right: ${({ positionIndex }) => ScreenPositions[positionIndex]};
+  right: ${({ positionIndex }) =>
+    theme.offsets.rightTopButtonOffsets[positionIndex]};
   bottom: calc(100vh - 50px);
   width: 45px;
   height: 45px;

@@ -114,6 +114,7 @@ export const theme = {
   offsets: {
     defaultYSpacingBetweenNodes: 85, // vertical distance between variations
     debugYSpacingBetweenNodes: 500,
+    rightTopButtonOffsets: ["80px", "130px", "180px", "230px"],
   },
   layout: {
     linear: {

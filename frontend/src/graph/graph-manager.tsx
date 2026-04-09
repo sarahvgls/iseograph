@@ -90,6 +90,7 @@ const graphIntensitySelector = (state: RFState) => ({
   intensitySourceTop: state.intensitySourceTop,
   intensitySourceBottom: state.intensitySourceBottom,
   isDualGraphMode: state.showDualScreen,
+  setIsDualGraphMode: state.setShowDualScreen,
   glowMethod: state.glowMethod,
 });
 
@@ -171,6 +172,7 @@ const Flow = memo(() => {
     intensitySourceBottom,
     isDualGraphMode,
     glowMethod,
+    setIsDualGraphMode,
   } = useGraphStore(graphIntensitySelector, shallow);
 
   const { setSearchResults } = useGraphStore((state) => ({
@@ -610,15 +612,6 @@ const Flow = memo(() => {
           position="top-right"
           style={{ pointerEvents: "auto", right: "200px" }}
         >
-          <CaptureButton
-            setIsActive={setIsCaptureModeActive}
-            isActive={isCaptureModeActive}
-            testId="capture-mode-button"
-            onActivate={() => {
-              setIsOnScreenMenuOpen(false);
-              setIsMapOpen(false);
-            }}
-          />
           <ToggleMenuButton
             setIsOpen={setIsOnScreenMenuOpen}
             isOpen={isOnScreenMenuOpen}
@@ -630,6 +623,23 @@ const Flow = memo(() => {
             isOpen={isMapOpen}
             icon={"map"}
             positionIndex={1}
+          />
+          <ToggleMenuButton
+            setIsOpen={setIsPeptideMonitorOpen}
+            isOpen={isPeptideMonitorOpen}
+            icon={"barchart"}
+            positionIndex={2}
+          />
+          <CaptureButton
+            setIsActive={setIsCaptureModeActive}
+            isActive={isCaptureModeActive}
+            testId="capture-mode-button"
+            onActivate={() => {
+              setIsOnScreenMenuOpen(false);
+              setIsMapOpen(false);
+              setIsDualGraphMode(false);
+            }}
+            positionIndex={3}
           />
           <SettingsButton
             setIsSettingsOpen={setIsSideMenuOpen}
