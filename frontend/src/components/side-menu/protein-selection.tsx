@@ -64,7 +64,8 @@ export const ProteinSelection = ({
   };
 
   // Option B: Upload protein file
-  const [uploadedProteinFilePath, setUploadedProteinFilePath] = useState<string>("");
+  const [uploadedProteinFilePath, setUploadedProteinFilePath] =
+    useState<string>("");
   const [uploadedProteinId, setUploadedProteinId] = useState<string>("");
   const [isProcessingUpload, setIsProcessingUpload] = useState<boolean>(false);
 
@@ -77,7 +78,7 @@ export const ProteinSelection = ({
         "api/process_protein_file/",
         {
           protein_file_path: filePath,
-        }
+        },
       );
 
       if (!response.success) {
@@ -151,7 +152,9 @@ export const ProteinSelection = ({
     const isOptionC = newProteinName.length > 0;
 
     if (!isOptionB && !isOptionC) {
-      alert("Please either upload a protein file (Option B) or enter a protein ID (Option C).");
+      alert(
+        "Please either upload a protein file (Option B) or enter a protein ID (Option C).",
+      );
       return;
     }
 
@@ -222,7 +225,8 @@ export const ProteinSelection = ({
         // reset file dropdown
         const names = await getFileNames(setFileNames);
         // Determine the file name to look for
-        const searchFileName = newFileName || uploadedProteinId || newProteinName;
+        const searchFileName =
+          newFileName || uploadedProteinId || newProteinName;
         const fileName = `${searchFileName}.graphml`;
         if (names.includes(fileName)) {
           setSelectedFile(fileName);
@@ -246,7 +250,7 @@ export const ProteinSelection = ({
 
   return (
     <StyledSection
-      style={{ maxHeight: "75vh", overflowY: "scroll", marginBottom: 0 }}
+      style={{ maxHeight: "100%", overflowY: "scroll", marginBottom: 0 }}
     >
       <StyledSectionTitle>Protein Selection</StyledSectionTitle>
       <p style={{ fontSize: "12px", display: "block" }}>
@@ -285,7 +289,14 @@ export const ProteinSelection = ({
           tooltipTitle={"Protein File Upload"}
         />
         {isProcessingUpload && (
-          <div style={{ marginTop: "8px", display: "flex", alignItems: "center", gap: "8px" }}>
+          <div
+            style={{
+              marginTop: "8px",
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+            }}
+          >
             <CircularProgress size={20} />
             <span>Processing file...</span>
           </div>
@@ -293,7 +304,13 @@ export const ProteinSelection = ({
 
         {/* Show configuration options for Option B */}
         {uploadedProteinId && !newProteinName && (
-          <div style={{ marginTop: "16px", paddingTop: "16px", borderTop: "1px solid #ccc" }}>
+          <div
+            style={{
+              marginTop: "16px",
+              paddingTop: "16px",
+              borderTop: "1px solid #ccc",
+            }}
+          >
             <ProteinConfigOptions
               shouldGenerateVariant={shouldGenerateVariant}
               setShouldGenerateVariant={setShouldGenerateVariant}
@@ -316,9 +333,13 @@ export const ProteinSelection = ({
               shouldMergePeptides={shouldMergePeptides}
               setShouldMergePeptides={setShouldMergePeptides}
               selectedOAggregation={selectedOAggregation as string}
-              setSelectedOAggregation={setSelectedOAggregation as (value: string) => void}
+              setSelectedOAggregation={
+                setSelectedOAggregation as (value: string) => void
+              }
               selectedMAggregation={selectedMAggregation as string}
-              setSelectedMAggregation={setSelectedMAggregation as (value: string) => void}
+              setSelectedMAggregation={
+                setSelectedMAggregation as (value: string) => void
+              }
               newFileName={newFileName}
               setNewFileName={setNewFileName}
               AggregationOptions={AggregationOptions}
@@ -355,7 +376,13 @@ export const ProteinSelection = ({
 
         {/* Show configuration options for Option C */}
         {newProteinName && !uploadedProteinId && (
-          <div style={{ marginTop: "16px", paddingTop: "16px", borderTop: "1px solid #ccc" }}>
+          <div
+            style={{
+              marginTop: "16px",
+              paddingTop: "16px",
+              borderTop: "1px solid #ccc",
+            }}
+          >
             <ProteinConfigOptions
               shouldGenerateVariant={shouldGenerateVariant}
               setShouldGenerateVariant={setShouldGenerateVariant}
@@ -378,9 +405,13 @@ export const ProteinSelection = ({
               shouldMergePeptides={shouldMergePeptides}
               setShouldMergePeptides={setShouldMergePeptides}
               selectedOAggregation={selectedOAggregation as string}
-              setSelectedOAggregation={setSelectedOAggregation as (value: string) => void}
+              setSelectedOAggregation={
+                setSelectedOAggregation as (value: string) => void
+              }
               selectedMAggregation={selectedMAggregation as string}
-              setSelectedMAggregation={setSelectedMAggregation as (value: string) => void}
+              setSelectedMAggregation={
+                setSelectedMAggregation as (value: string) => void
+              }
               newFileName={newFileName}
               setNewFileName={setNewFileName}
               AggregationOptions={AggregationOptions}
