@@ -141,7 +141,6 @@ export const OnScreenPeptidesMenu = ({
             title={"Peptide glow colorscale:"}
             onClose={() => {
               setIsOpen(false);
-              useGraphStore.setState({ isPeptideMenuFullSize: false });
             }}
             testId={"peptides-menu-close-button"}
           />
@@ -265,10 +264,6 @@ export const OnScreenPeptidesMenu = ({
               value={glowMethod}
               onChange={(e) => {
                 setGlowMethod(e.target.value as glowMethods);
-                if (e.target.value === glowMethods.intensity) {
-                  useGraphStore.setState({ isPeptideMenuFullSize: true });
-                } else {
-                  useGraphStore.setState({ isPeptideMenuFullSize: false });
                   setShowDualScreen(false);
                 }
               }}
@@ -330,6 +325,7 @@ export const OnScreenPeptidesMenu = ({
                     </option>
                   ))}
                 </StyledSlimmDropdown>
+                    if (e.target.value === glowMethods.count) {
               </div>
             )}
           </PeptidesMenuContainer>

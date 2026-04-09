@@ -86,11 +86,6 @@ const graphIntensitySelector = (state: RFState) => ({
   glowMethod: state.glowMethod,
 });
 
-const graphMenuSelector = (state: RFState) => ({
-  isPeptideMenuFullSize: state.isPeptideMenuFullSize,
-  isIsoformMenuFullSize: state.isIsoformMenuFullSize,
-});
-
 const nodeOrigin: NodeOrigin = [0.5, 0.5];
 const myNodeTypes = {
   [nodeTypes.SequenceNode]: SequenceNode,
@@ -171,11 +166,6 @@ const Flow = memo(() => {
     glowMethod,
   } = useGraphStore(graphIntensitySelector, shallow);
 
-  const { isPeptideMenuFullSize, isIsoformMenuFullSize } = useGraphStore(
-    graphMenuSelector,
-    shallow,
-  );
-
   const { setSearchResults } = useGraphStore((state) => ({
     setSearchResults: state.setSearchResults,
   }));
@@ -207,7 +197,6 @@ const Flow = memo(() => {
   const [isOnScreenMenuOpen, setIsOnScreenMenuOpen] = useState(true);
   const [isPeptideMonitorOpen, setIsPeptideMonitorOpen] = useState(false);
   const [isMapOpen, setIsMapOpen] = useState(true);
-  const shouldShiftButtons = isPeptideMenuFullSize && isIsoformMenuFullSize;
 
   // graph component
   const [topGraphComponent, setTopGraphComponent] =
@@ -575,29 +564,19 @@ const Flow = memo(() => {
         >
           <CaptureButton toggleCapture={() => {}} />
           <ToggleMenuButton
-            onToggle={() => {
-              if (glowMethod === glowMethods.intensity) {
-                useGraphStore.setState({
-                  isPeptideMenuFullSize: !isOnScreenMenuOpen,
-                });
-              }
-            }}
             setIsOpen={setIsOnScreenMenuOpen}
             isOpen={isOnScreenMenuOpen}
             icon={"pencil_brush"}
             positionIndex={0}
-            isShifted={shouldShiftButtons}
           />
           <ToggleMenuButton
             setIsOpen={setIsMapOpen}
             isOpen={isMapOpen}
             icon={"map"}
             positionIndex={1}
-            isShifted={shouldShiftButtons}
           />
           <SettingsButton
             setIsSettingsOpen={setIsSideMenuOpen}
-            isShifted={shouldShiftButtons}
             testId="open-menu-button"
           />
         </StyledButtonPanel>
@@ -668,7 +647,6 @@ const Flow = memo(() => {
       setIsPeptideMonitorOpen,
       isOnScreenMenuOpen,
       isMapOpen,
-      shouldShiftButtons,
       glowMethod,
       focusNodeWithDelay,
       searchValue,
