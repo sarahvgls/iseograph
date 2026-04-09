@@ -97,7 +97,7 @@ export const OnScreenMenu = ({
         ];
       updateIsoformColor(isoform, defaultColor);
     });
-    updateIsoformColor("Default", theme.defaultColor);
+    updateIsoformColor("Default", theme.defaultColorEdge);
   };
 
   const deselectAll = () => {
@@ -138,7 +138,11 @@ export const OnScreenMenu = ({
                   type="checkbox"
                   id={`isoform-${isoform}`}
                   checked={selectedIsoforms.includes(isoform)}
-                  onChange={() => toggleIsoformSelection(isoform)}
+                  onChange={() => {
+                    if (isoform !== "Default") {
+                      toggleIsoformSelection(isoform);
+                    }
+                  }}
                   style={{ marginRight: "10px" }}
                 />
 
