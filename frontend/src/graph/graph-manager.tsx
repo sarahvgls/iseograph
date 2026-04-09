@@ -638,6 +638,7 @@ const Flow = memo(() => {
               setIsOnScreenMenuOpen(false);
               setIsMapOpen(false);
               setIsDualGraphMode(false);
+              setIsPeptideMonitorOpen(false);
             }}
             positionIndex={3}
           />
