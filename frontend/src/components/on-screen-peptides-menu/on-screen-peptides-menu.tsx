@@ -34,8 +34,21 @@ const MenuContainer = styled.div<{ isOpen: boolean }>`
 `;
 
 const PeptidesMenuContainer = styled.div`
-  width: 250px;
+  width: 200px;
+  max-height: 40vh;
+  overflow-y: auto;
   padding: 5px;
+
+  &::-webkit-scrollbar {
+    height: 4px;
+    width: 4px;
+    background-color: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 3px;
+  }
 `;
 
 const ColorSelection = styled.div`
@@ -248,7 +261,7 @@ export const OnScreenPeptidesMenu = ({
                         flexDirection: "column",
                         justifyContent: "space-between",
                         height: "80px",
-                        marginLeft: "30px",
+                        marginLeft: "15px",
                       }}
                     >
                       <div>∞</div>
@@ -259,7 +272,7 @@ export const OnScreenPeptidesMenu = ({
                         marginLeft: "10px",
                         borderRadius: "5px",
                         height: "80px",
-                        width: "100px",
+                        width: "80px",
                         background: generateGradient(
                           colorScale as colorScaleOptions,
                         ),
@@ -270,7 +283,8 @@ export const OnScreenPeptidesMenu = ({
                 </>
               )}
             </div>
-            <StyledSectionTitle>Method selection:</StyledSectionTitle>
+            {isScaleSelectionOpen && (
+              <div>
                 <MultiCompatibleCheckbox
                   label={"Show glow on nodes with no intensity"}
                   checked={selectedZeroValues}
@@ -278,73 +292,84 @@ export const OnScreenPeptidesMenu = ({
                 />
                 <StyledSectionTitle>Method selection:</StyledSectionTitle>
 
-            <StyledSlimmDropdown
-              style={{ marginBottom: "10px" }}
-              value={glowMethod}
-              onChange={(e) => {
-                setGlowMethod(e.target.value as glowMethods);
-                  setShowDualScreen(false);
-                }
-              }}
-            >
-              {Object.values(glowMethods).map((method) => (
-                <option key={method} value={method}>
-                  {method}
-                </option>
-              ))}
-            </StyledSlimmDropdown>
-            {glowMethod === glowMethods.intensity && (
-              <div>
-                <BoldStyledLabel>
-                  Choose top source for intensities:
-                </BoldStyledLabel>
                 <StyledSlimmDropdown
                   style={{ marginBottom: "10px" }}
-                  value={intensitySourceTop}
-                  onChange={(e) => setIntensitySourceTop(e.target.value)}
+                  value={glowMethod}
+                  onChange={(e) => {
+                    setGlowMethod(e.target.value as glowMethods);
+                    if (e.target.value === glowMethods.count) {
+                      setShowDualScreen(false);
+                    }
+                  }}
                 >
-                  {allIntensitySources.map((source) => (
-                    <option key={source} value={source}>
-                      {source}
-                    </option>
-                  ))}
-                </StyledSlimmDropdown>
-                <MultiCompatibleCheckbox
-                  label={"Compare with second intensity"}
-                  checked={showDualScreen}
-                  onChange={(checked) => setShowDualScreen(checked)}
-                />
-                {showDualScreen && (
-                  <div>
-                    <BoldStyledLabel>
-                      Choose bottom source for intensities:
-                    </BoldStyledLabel>
-                    <StyledSlimmDropdown
-                      value={intensitySourceBottom}
-                      onChange={(e) => setIntensitySourceBottom(e.target.value)}
-                    >
-                      {allIntensitySources.map((source) => (
-                        <option key={source} value={source}>
-                          {source}
-                        </option>
-                      ))}
-                    </StyledSlimmDropdown>
-                  </div>
-                )}
-                <BoldStyledLabel>
-                  Choose how to handle multiple peptides in one node:
-                </BoldStyledLabel>
-                <StyledSlimmDropdown
-                  value={intensityMethod}
-                  onChange={(e) => setIntensityMethod(e.target.value)}
-                >
-                  {Object.values(intensityMethods).map((method) => (
+                  {Object.values(glowMethods).map((method) => (
                     <option key={method} value={method}>
                       {method}
                     </option>
                   ))}
                 </StyledSlimmDropdown>
-                    if (e.target.value === glowMethods.count) {
+                {glowMethod === glowMethods.intensity && (
+                  <div>
+                    <BoldStyledLabel>
+                      {showDualScreen
+                        ? "Choose sources for intensities:"
+                        : "Choose source for intensities:"}
+                    </BoldStyledLabel>
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        gap: "10px",
+                      }}
+                    >
+                      <StyledSlimmDropdown
+                        style={{ marginBottom: "10px" }}
+                        value={intensitySourceTop}
+                        onChange={(e) => setIntensitySourceTop(e.target.value)}
+                      >
+                        {allIntensitySources.map((source) => (
+                          <option key={source} value={source}>
+                            {source}
+                          </option>
+                        ))}
+                      </StyledSlimmDropdown>
+                      {showDualScreen && (
+                        <StyledSlimmDropdown
+                          style={{ marginBottom: "10px" }}
+                          value={intensitySourceBottom}
+                          onChange={(e) =>
+                            setIntensitySourceBottom(e.target.value)
+                          }
+                        >
+                          {allIntensitySources.map((source) => (
+                            <option key={source} value={source}>
+                              {source}
+                            </option>
+                          ))}
+                        </StyledSlimmDropdown>
+                      )}
+                    </div>
+
+                    <MultiCompatibleCheckbox
+                      label={"Compare on dual screen"}
+                      checked={showDualScreen}
+                      onChange={(checked) => setShowDualScreen(checked)}
+                    />
+                    <BoldStyledLabel>
+                      Method to handle multiple peptides in one node:
+                    </BoldStyledLabel>
+                    <StyledSlimmDropdown
+                      value={intensityMethod}
+                      onChange={(e) => setIntensityMethod(e.target.value)}
+                    >
+                      {Object.values(intensityMethods).map((method) => (
+                        <option key={method} value={method}>
+                          {method}
+                        </option>
+                      ))}
+                    </StyledSlimmDropdown>
+                  </div>
+                )}
               </div>
             )}
           </PeptidesMenuContainer>

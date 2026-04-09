@@ -560,7 +560,7 @@ const Flow = memo(() => {
         </StyledPanel>
         <StyledButtonPanel
           position="top-right"
-          style={{ pointerEvents: "auto", right: "200px", top: "10px" }}
+          style={{ pointerEvents: "auto", right: "200px" }}
         >
           <CaptureButton toggleCapture={() => {}} />
           <ToggleMenuButton
@@ -631,7 +631,6 @@ const Flow = memo(() => {
             <OnScreenMenu
               isOpen={isOnScreenMenuOpen}
               setIsOpen={setIsOnScreenMenuOpen}
-              focusNodeWithDelay={focusNodeWithDelay}
             />
           </MenuStackContainer>
         </StyledPanel>

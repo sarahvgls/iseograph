@@ -24,7 +24,7 @@ const MenuContainer = styled.div<{ isOpen: boolean }>`
 
 const ColorSelection = styled.div`
   margin-top: 15px;
-  max-height: 200px;
+  max-height: 160px;
   overflow-y: auto;
 
   &::-webkit-scrollbar {
@@ -40,8 +40,8 @@ const ColorSelection = styled.div`
 
 const ColorPickerBox = styled.div`
   position: absolute;
-  top: 120px;
-  left: -170px;
+  top: 60px;
+  left: -220px;
   display: inline-block;
   width: 200px;
   height: 200px;
