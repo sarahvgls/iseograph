@@ -12,6 +12,7 @@ import {
   ColorScaleOptions,
   glowMethods,
   intensityMethods,
+  localStorageKeys,
 } from "../../theme/types.tsx";
 import { getColor } from "../../controls/peptides-color.tsx";
 import { useState } from "react";
@@ -98,6 +99,7 @@ export const OnScreenPeptidesMenu = ({
     setIntensityMethod,
     glowMethod,
     setGlowMethod,
+    zeroValuesPeptides,
   } = useGraphStore((state) => ({
     allIntensitySources: state.allIntensitySources,
     colorScale: state.colorScale,
@@ -112,10 +114,21 @@ export const OnScreenPeptidesMenu = ({
     setIntensityMethod: state.setIntensityMethod,
     glowMethod: state.glowMethod,
     setGlowMethod: state.setGlowMethod,
+    zeroValuesPeptides: state.zeroValuesPeptides,
   }));
+  const set: (arg0: { zeroValuesPeptides?: boolean }) => void =
+    useGraphStore.setState;
 
   const [isScaleSelectionOpen, setIsScaleSelectionOpen] =
     useState<boolean>(false);
+  const [selectedZeroValues, setSelectedZeroValues] =
+    useState<boolean>(zeroValuesPeptides);
+
+  const handleZeroValuesChange = (checked: boolean) => {
+    setSelectedZeroValues(checked);
+    set({ zeroValuesPeptides: checked });
+    localStorage.setItem(localStorageKeys.zeroValuesPeptides, String(checked));
+  };
 
   // Helper function to generate gradient CSS for each color scale
   const generateGradient = (colorScaleOption: colorScaleOptions) => {
@@ -258,6 +271,12 @@ export const OnScreenPeptidesMenu = ({
               )}
             </div>
             <StyledSectionTitle>Method selection:</StyledSectionTitle>
+                <MultiCompatibleCheckbox
+                  label={"Show glow on nodes with no intensity"}
+                  checked={selectedZeroValues}
+                  onChange={handleZeroValuesChange}
+                />
+                <StyledSectionTitle>Method selection:</StyledSectionTitle>
 
             <StyledSlimmDropdown
               style={{ marginBottom: "10px" }}
