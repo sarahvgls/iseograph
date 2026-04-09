@@ -5,4 +5,5 @@ export interface SearchBarProps {
   searchResultText: string;
   maxPathLength?: number;
   onMaxPathLengthChange?: (value: number) => void;
+  isHidden?: boolean;
 }
