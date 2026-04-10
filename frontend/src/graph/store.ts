@@ -307,7 +307,7 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
   },
   // --- isoform colored edges ---
   isoformColorMapping: initialIsoformColorMapping,
-  selectedIsoforms: [],
+  selectedIsoforms: ["Default"],
   toggleIsoformSelection: (isoform: string) => {
     const { selectedIsoforms } = get();
     const newSelection = selectedIsoforms.includes(isoform)
