@@ -177,11 +177,6 @@ export const createEdges = (
       overallIntensityExtremesBySource,
     );
 
-    // const isoformList = convertIsoformStringToList(
-    //   edge.data.isoformString || "",
-    // );
-    // console.log(isoformList);
-
     return {
       ...edge,
       type: "arrow",
