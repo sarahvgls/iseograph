@@ -176,9 +176,19 @@ def generate_base_graph(request):
     output_folder_path = f"{PROJECT_ROOT_DIR}/data"
 
     features = "-ft VAR_SEQ "
-    if "features" in data:  # arg sollte eine Liste sein, werte in der List nur aus dieser Auswahl MUTAGEN, VARIANT, CONFLICT, VAR_SEQ
+    if "features" in data:  # arg sollte eine Liste sein, werte in der List nur aus dieser Auswahl MUTAGEN, VARIANT, CONFLICT, VAR_SEQ, INIT_MET, SIGNAL, PROPEP, CHAIN, PEPTIDE
         for feature in data.get("features"):
             features = features + f"-ft {feature} "
+
+    digestion = "skip"
+    if "digestion" in data:  # arg sollte eins aus skip, trypsin, gluc, full 
+        digestion = data.get("digestion")
+    #skip sollte default sein. dann vllt noch irgwie ne info, dass Trypsin [ED](?!P) ist und Glu-C [ED](?!P) ist. (Glu-C scheint die offizielle bezeichung zu sein, gluc nur intern), full cuttet halt alles
+
+    collapse = "" #togglebar, ob man collapsed edges gaben will oder nicht, vllt sagen, dass bei aktiver digestion collapsed vllt empfohlen ist.
+    if "collapse" in data:
+        if data.get("collapse"):
+            collapse = "--no_collapsed_edges"
 
     peptide_file = ""  # quasi optional, aber müssen wa nochmal drüber reden #csv mit Sample,Protein ID,Sequence,Intensity
     if "peptide_file" in data:  # ein pfad
@@ -238,7 +248,7 @@ def generate_base_graph(request):
                     {o_aggregation} \
                     {output_file} \
                     {substitute} \
-                    -d skip -o {output_folder_path}/statistics.csv"
+                    -d {digestion} {collapse} -o {output_folder_path}/statistics.csv"
 
     subprocess.run(cmd_string, shell=True)
 
