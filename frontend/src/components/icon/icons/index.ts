@@ -10,3 +10,4 @@ export { default as invisible } from "./invisible.svg?react";
 export { default as sliders } from "./sliders.svg?react";
 export { default as focus } from "./focus.svg?react";
 export { default as capture } from "./capture.svg?react";
+export { default as barchart } from "./barchart.svg?react";

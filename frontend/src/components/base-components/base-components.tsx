@@ -23,7 +23,8 @@ export const StyledSection = styled.div`
 export const StyledSectionTitle = styled.h3`
   font-size: 16px;
   font-weight: bold;
-  margin-bottom: 12px;
+  margin-bottom: 6px;
+  margin-top: 10px;
   color: #333;
   border-bottom: 1px solid #e1e4e8;
   padding-bottom: 8px;

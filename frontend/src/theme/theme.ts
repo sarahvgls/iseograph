@@ -89,7 +89,7 @@ export const defaultValues = {
   numberOfAllowedIsoforms: 4,
   rowWidth: 3000,
   labelVisibility: labelVisibilities.always,
-  zeroValuesPeptides: true,
+  zeroValuesPeptides: false,
 };
 
 export const theme = {
@@ -114,6 +114,7 @@ export const theme = {
   offsets: {
     defaultYSpacingBetweenNodes: 85, // vertical distance between variations
     debugYSpacingBetweenNodes: 500,
+    rightTopButtonOffsets: ["80px", "130px", "180px", "230px"],
   },
   layout: {
     linear: {
@@ -152,6 +153,7 @@ export const theme = {
     defaultPalette.yellowHover,
     defaultPalette.redHover,
   ],
+  defaultColorEdge: "#d5d5d5",
   defaultColor: "#9e9e9e",
   miniMap: {
     sequenceNode: "rgb(191, 117, 255, 0.5)",

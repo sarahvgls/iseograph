@@ -6,6 +6,7 @@ export const MenuStackContainer = styled.div`
   flex-direction: column;
   width: 100%;
   height: 100%;
+  max-height: 90vh;
   pointer-events: none;
   gap: 15px;
 `;

@@ -138,7 +138,7 @@ export const generateIsoformColorMatching = (
   });
 
   // Add a default color for no isoform
-  isoformsColors["Default"] = theme.defaultColor;
+  isoformsColors["Default"] = theme.defaultColorEdge;
   return isoformsColors;
 };
 
@@ -176,11 +176,6 @@ export const createEdges = (
       peptideLog,
       overallIntensityExtremesBySource,
     );
-
-    // const isoformList = convertIsoformStringToList(
-    //   edge.data.isoformString || "",
-    // );
-    // console.log(isoformList);
 
     return {
       ...edge,
