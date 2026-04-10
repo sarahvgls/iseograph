@@ -9,10 +9,10 @@ const Container = styled.div<{ isOpen: boolean }>`
   background-color: #f9f9f9;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  max-height: 100%;
+  max-height: 60vh;
   overflow-y: auto;
   font-size: 0.85rem;
-  width: 200px;
+  width: 250px;
   transform: translateX(${({ isOpen }) => (isOpen ? "0" : "-110%")});
   transition: transform 0.2s ease-in-out;
   pointer-events: auto;
@@ -201,7 +201,7 @@ export const PeptideMonitor = ({
       {hasPeptides ? (
         <Content>
           <PeptideEntries>
-            <SectionTitle>Peptide Entries:</SectionTitle>
+            <SectionTitle>Peptides found in this node:</SectionTitle>
             {currentPeptideLog.peptideEntries.map((peptide, index) => (
               <PeptideCard key={index}>
                 <PeptideSequence>

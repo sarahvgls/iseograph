@@ -43,8 +43,8 @@ export type labelVisibilities =
   (typeof labelVisibilities)[keyof typeof labelVisibilities];
 
 export const glowMethods = {
-  intensity: "intensity, log and normalized",
-  count: "count",
+  intensity: "Highlight by intensity (values logarithmized and normalized)",
+  count: "Highlight by amount of peptides",
 };
 
 export type glowMethods = (typeof glowMethods)[keyof typeof glowMethods];

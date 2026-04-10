@@ -90,12 +90,8 @@ const graphIntensitySelector = (state: RFState) => ({
   intensitySourceTop: state.intensitySourceTop,
   intensitySourceBottom: state.intensitySourceBottom,
   isDualGraphMode: state.showDualScreen,
+  setIsDualGraphMode: state.setShowDualScreen,
   glowMethod: state.glowMethod,
-});
-
-const graphMenuSelector = (state: RFState) => ({
-  isPeptideMenuFullSize: state.isPeptideMenuFullSize,
-  isIsoformMenuFullSize: state.isIsoformMenuFullSize,
 });
 
 const nodeOrigin: NodeOrigin = [0.5, 0.5];
@@ -176,12 +172,8 @@ const Flow = memo(() => {
     intensitySourceBottom,
     isDualGraphMode,
     glowMethod,
+    setIsDualGraphMode,
   } = useGraphStore(graphIntensitySelector, shallow);
-
-  const { isPeptideMenuFullSize, isIsoformMenuFullSize } = useGraphStore(
-    graphMenuSelector,
-    shallow,
-  );
 
   const { setSearchResults } = useGraphStore((state) => ({
     setSearchResults: state.setSearchResults,
@@ -218,7 +210,6 @@ const Flow = memo(() => {
   // Capture mode state
   const [isCaptureModeActive, setIsCaptureModeActive] = useState(false);
   const [exportConfig] = useState<ExportConfig>(DEFAULT_EXPORT_CONFIG);
-  const shouldShiftButtons = isPeptideMenuFullSize && isIsoformMenuFullSize;
 
   const handleCaptureConfirm = useCallback(
     async (bounds: { width?: number; height?: number }) => {
@@ -619,8 +610,26 @@ const Flow = memo(() => {
         </StyledPanel>
         <StyledButtonPanel
           position="top-right"
-          style={{ pointerEvents: "auto", right: "200px", top: "10px" }}
+          style={{ pointerEvents: "auto", right: "200px" }}
         >
+          <ToggleMenuButton
+            setIsOpen={setIsOnScreenMenuOpen}
+            isOpen={isOnScreenMenuOpen}
+            icon={"pencil_brush"}
+            positionIndex={0}
+          />
+          <ToggleMenuButton
+            setIsOpen={setIsMapOpen}
+            isOpen={isMapOpen}
+            icon={"map"}
+            positionIndex={1}
+          />
+          <ToggleMenuButton
+            setIsOpen={setIsPeptideMonitorOpen}
+            isOpen={isPeptideMonitorOpen}
+            icon={"barchart"}
+            positionIndex={2}
+          />
           <CaptureButton
             setIsActive={setIsCaptureModeActive}
             isActive={isCaptureModeActive}
@@ -628,32 +637,13 @@ const Flow = memo(() => {
             onActivate={() => {
               setIsOnScreenMenuOpen(false);
               setIsMapOpen(false);
+              setIsDualGraphMode(false);
+              setIsPeptideMonitorOpen(false);
             }}
-          />
-          <ToggleMenuButton
-            onToggle={() => {
-              if (glowMethod === glowMethods.intensity) {
-                useGraphStore.setState({
-                  isPeptideMenuFullSize: !isOnScreenMenuOpen,
-                });
-              }
-            }}
-            setIsOpen={setIsOnScreenMenuOpen}
-            isOpen={isOnScreenMenuOpen}
-            icon={"pencil_brush"}
-            positionIndex={0}
-            isShifted={shouldShiftButtons}
-          />
-          <ToggleMenuButton
-            setIsOpen={setIsMapOpen}
-            isOpen={isMapOpen}
-            icon={"map"}
-            positionIndex={1}
-            isShifted={shouldShiftButtons}
+            positionIndex={3}
           />
           <SettingsButton
             setIsSettingsOpen={setIsSideMenuOpen}
-            isShifted={shouldShiftButtons}
             testId="open-menu-button"
           />
         </StyledButtonPanel>
@@ -708,7 +698,6 @@ const Flow = memo(() => {
             <OnScreenMenu
               isOpen={isOnScreenMenuOpen}
               setIsOpen={setIsOnScreenMenuOpen}
-              focusNodeWithDelay={focusNodeWithDelay}
             />
           </MenuStackContainer>
         </StyledPanel>
@@ -725,7 +714,6 @@ const Flow = memo(() => {
       isOnScreenMenuOpen,
       isCaptureModeActive,
       isMapOpen,
-      shouldShiftButtons,
       glowMethod,
       focusNodeWithDelay,
       searchValue,

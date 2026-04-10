@@ -2,20 +2,14 @@ import styled from "styled-components";
 import { theme } from "../../theme";
 import { Icon, type IconType } from "../icon";
 
-const ScreenPositions = ["80px", "130px", "180px"];
-const ShiftedScreenPositions = ["322px", "372px", "422px"];
-
 const StyledButton = styled.button<{
   isOpen: boolean;
   positionIndex: number;
-  isShifted: boolean;
 }>`
   position: fixed;
-  right: ${({ positionIndex, isShifted }) =>
-    isShifted
-      ? ShiftedScreenPositions[positionIndex]
-      : ScreenPositions[positionIndex]};
-  bottom: calc(100vh - 70px);
+  right: ${({ positionIndex }) =>
+    theme.offsets.rightTopButtonOffsets[positionIndex]};
+  bottom: calc(100vh - 50px);
   width: 45px;
   height: 45px;
   border-radius: 15%;
@@ -43,14 +37,12 @@ export const ToggleMenuButton = ({
   isOpen,
   icon,
   positionIndex,
-  isShifted,
 }: {
   setIsOpen: (isOpen: boolean) => void;
   onToggle?: () => void;
   isOpen: boolean;
   icon: IconType;
   positionIndex: number;
-  isShifted: boolean;
 }) => {
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -62,7 +54,6 @@ export const ToggleMenuButton = ({
       onClick={toggleMenu}
       isOpen={isOpen}
       positionIndex={positionIndex}
-      isShifted={isShifted}
     >
       <Icon icon={icon} color={isOpen ? "onPrimary" : "background"} />
     </StyledButton>

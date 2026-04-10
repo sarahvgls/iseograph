@@ -17,14 +17,14 @@ const MenuContainer = styled.div<{ isOpen: boolean }>`
   align-items: flex-end;
   justify-content: end;
   gap: 15px;
-  transform: translateX(${({ isOpen }) => (isOpen ? "0" : "100%")});
+  transform: translateX(${({ isOpen }) => (isOpen ? "0" : "150%")});
   transition: transform 0.3s ease-in-out;
   pointer-events: none;
 `;
 
 const ColorSelection = styled.div`
   margin-top: 15px;
-  max-height: 200px;
+  max-height: 160px;
   overflow-y: auto;
 
   &::-webkit-scrollbar {
@@ -40,8 +40,8 @@ const ColorSelection = styled.div`
 
 const ColorPickerBox = styled.div`
   position: absolute;
-  top: 120px;
-  left: -170px;
+  top: 60px;
+  left: -220px;
   display: inline-block;
   width: 200px;
   height: 200px;
@@ -97,7 +97,7 @@ export const OnScreenMenu = ({
         ];
       updateIsoformColor(isoform, defaultColor);
     });
-    updateIsoformColor("Default", theme.defaultColor);
+    updateIsoformColor("Default", theme.defaultColorEdge);
   };
 
   const deselectAll = () => {
@@ -118,7 +118,6 @@ export const OnScreenMenu = ({
           <StyledSectionTitleWithButton
             onClose={() => {
               setIsOpen(false);
-              useGraphStore.setState({ isIsoformMenuFullSize: false });
             }}
             title={"Isoform-colored edges"}
           />
@@ -139,7 +138,11 @@ export const OnScreenMenu = ({
                   type="checkbox"
                   id={`isoform-${isoform}`}
                   checked={selectedIsoforms.includes(isoform)}
-                  onChange={() => toggleIsoformSelection(isoform)}
+                  onChange={() => {
+                    if (isoform !== "Default") {
+                      toggleIsoformSelection(isoform);
+                    }
+                  }}
                   style={{ marginRight: "10px" }}
                 />
 

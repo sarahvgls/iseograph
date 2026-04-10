@@ -64,8 +64,6 @@ export type RFState = {
   setHoveredNode: (nodeId: string | null) => void;
   clickedNode: string | null;
   setClickedNode: (nodeId: string | null) => void;
-  isIsoformMenuFullSize: boolean;
-  isPeptideMenuFullSize: boolean;
 
   preparedNodes: SequenceNodeProps[];
   sourceToTargets: SourceToTargets;
@@ -178,7 +176,8 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
   // --- layouting ---
   layoutMode: defaultValues.layoutMode,
   setLayoutMode: async (layoutMode: layoutModes) => {
-    let { nodes, edges, rowWidth, preparedNodes, sourceToTargets } = get();
+    const { nodes, edges, rowWidth } = get();
+    let { preparedNodes, sourceToTargets } = get();
 
     // Calculate position data if not already done
     if (preparedNodes.length === 0) {
@@ -306,11 +305,9 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
   setClickedNode: (nodeId: string | null) => {
     set({ clickedNode: nodeId });
   },
-  isIsoformMenuFullSize: Object.values(initialIsoformColorMapping).length > 3,
-  isPeptideMenuFullSize: false,
   // --- isoform colored edges ---
   isoformColorMapping: initialIsoformColorMapping,
-  selectedIsoforms: [],
+  selectedIsoforms: ["Default"],
   toggleIsoformSelection: (isoform: string) => {
     const { selectedIsoforms } = get();
     const newSelection = selectedIsoforms.includes(isoform)
@@ -324,7 +321,7 @@ const useGraphStore = createWithEqualityFn<RFState>((set, get) => ({
     localStorage.setItem("selectedIsoforms", JSON.stringify(newSelection));
   },
   deselectAllIsoforms: () => {
-    set({ selectedIsoforms: [] });
+    set({ selectedIsoforms: ["Default"] });
   },
   updateIsoformColor: (isoform: string, color: string) => {
     const { isoformColorMapping } = get();
