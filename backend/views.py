@@ -2,6 +2,8 @@ import json
 import os
 from pathlib import Path
 import subprocess
+from subprocess import CalledProcessError
+
 from django.views.decorators.csrf import ensure_csrf_cookie
 
 from django.http import JsonResponse
@@ -184,7 +186,6 @@ def generate_base_graph(request):
     """
     API endpoint to generate a graph with this organizations fork of protgraph.
     """
-    # TODO implement new parameter "substitute" in data
     if request.method != "POST":
         return JsonResponse({"success": False, "message": "Invalid request method. Use POST."}, status=405)
     data = json.loads(request.body)
@@ -255,6 +256,12 @@ def generate_base_graph(request):
     elif protein_id != uniprot_id:
         # case: given protein name was converted to uniprot id: name file with original id
         output_file = "-of " + custom_file_name
+
+    # remove file if it exists to ensure protgraph subprocess can be validated by checking if file was created
+    file = output_folder_path + "/" + custom_file_name + ".graphml"
+    if os.path.isfile(file):
+        os.remove(file)
+
     substitute = ""
     if "substitute" in data:
         substitute = "-raa 'L->J' -raa 'I->J' "
@@ -274,7 +281,13 @@ def generate_base_graph(request):
                     {substitute} \
                     -d skip -o {output_folder_path}/statistics.csv"
 
-    subprocess.run(cmd_string, shell=True)
+    try:
+        subprocess.run(cmd_string, shell=True, check=True)
+    except CalledProcessError as e:
+        return JsonResponse({"success": False, "message": e.output}, status=e.returncode)
+    except Exception as e:
+        error_msg = f"Failed to run protgraph. Error: {e}"
+        return JsonResponse({"success": False, "message": error_msg}, status=500)
 
     output_file = os.path.join(output_folder_path, f"{custom_file_name}.graphml")
     if not os.path.exists(output_file):
@@ -329,12 +342,14 @@ def process_protein_file(request):
 
     # Validate that the file exists and is readable
     if not os.path.exists(protein_file_path):
-        return JsonResponse({"success": False, "message": f"Protein file '{protein_file_path}' does not exist."}, status=400)
+        return JsonResponse({"success": False, "message": f"Protein file '{protein_file_path}' does not exist."},
+                            status=400)
 
     # Validate file format
     if not validate_protein_file(protein_file_path):
         return JsonResponse(
-            {"success": False, "message": "Invalid protein file format. Please ensure the file is a valid UniProt protein text file."},
+            {"success": False,
+             "message": "Invalid protein file format. Please ensure the file is a valid UniProt protein text file."},
             status=400
         )
 
@@ -379,5 +394,3 @@ def process_protein_file(request):
         "protein_file": processed_file,
         "protein_id": uniprot_id
     })
-
-
