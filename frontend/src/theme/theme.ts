@@ -84,7 +84,7 @@ export const defaultValues = {
   layoutMode: layoutModes.Snake,
   nodeWidthMode: nodeWidthModes.Collapsed,
   isAnimated: false,
-  allowInteraction: false,
+  allowInteraction: true,
   reverseNodes: true,
   numberOfAllowedIsoforms: 4,
   rowWidth: 3000,
