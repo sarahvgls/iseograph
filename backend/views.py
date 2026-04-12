@@ -176,9 +176,13 @@ def convert_file(request):
     if not file_name:
         raise ValueError("File name must be provided")
 
-    run_conversion_script(file_name)
-    clean_up(file_name.split(".")[0])  # remove file extension for clean_up
-    return JsonResponse({"success": True, "message": f"File '{file_name}' converted successfully."})
+    try:
+        run_conversion_script(file_name)
+        clean_up(file_name.split(".")[0])  # remove file extension for clean_up
+        return JsonResponse({"success": True, "message": f"File '{file_name}' converted successfully."})
+    except Exception:
+        error_msg = f"Failed to convert GraphML file '{file_name}'."
+        return JsonResponse({"success": False, "message": error_msg}, status=500)
 
 
 @ensure_csrf_cookie
@@ -218,12 +222,12 @@ def generate_base_graph(request):
     digestion = "skip"
     if "digestion" in data:  # arg sollte eins aus skip, trypsin, gluc, full 
         digestion = data.get("digestion")
-    #skip sollte default sein. dann vllt noch irgwie ne info, dass Trypsin [ED](?!P) ist und Glu-C [ED](?!P) ist. (Glu-C scheint die offizielle bezeichung zu sein, gluc nur intern), full cuttet halt alles
+    # skip sollte default sein. dann vllt noch irgwie ne info, dass Trypsin [ED](?!P) ist und Glu-C [ED](?!P) ist. (Glu-C scheint die offizielle bezeichung zu sein, gluc nur intern), full cuttet halt alles
 
-    collapse = "" #togglebar, ob man collapsed edges gaben will oder nicht, vllt sagen, dass bei aktiver digestion collapsed vllt empfohlen ist.
+    collapse = "--no_collapsing_edges"  # togglebar, ob man collapsed edges gaben will oder nicht, vllt sagen, dass bei aktiver digestion collapsed vllt empfohlen ist.
     if "collapse" in data:
         if data.get("collapse"):
-            collapse = "--no_collapsed_edges"
+            collapse = ""
 
     peptide_file = ""  # quasi optional, aber müssen wa nochmal drüber reden #csv mit Sample,Protein ID,Sequence,Intensity
     if "peptide_file" in data:  # ein pfad
@@ -290,6 +294,7 @@ def generate_base_graph(request):
                     {output_file} \
                     {substitute} \
                     -d {digestion} {collapse} -o {output_folder_path}/statistics.csv"
+    print("Running protgraph with command: ", cmd_string)
 
     try:
         subprocess.run(cmd_string, shell=True, check=True)
@@ -303,8 +308,12 @@ def generate_base_graph(request):
     if not os.path.exists(output_file):
         return JsonResponse({"success": False, "message": f"Failed to generate graph for {protein_id}."}, status=500)
 
-    run_conversion_script(f"{custom_file_name}.graphml")
-    clean_up(custom_file_name)
+    try:
+        run_conversion_script(f"{custom_file_name}.graphml")
+        clean_up(custom_file_name)
+    except Exception:
+        error_msg = f"Failed to convert GraphML to JSON for {protein_id}."
+        return JsonResponse({"success": False, "message": error_msg}, status=500)
 
     return JsonResponse({"success": True, "message": f"Generated {protein_id} a graph as .graphml successfully."})
 
