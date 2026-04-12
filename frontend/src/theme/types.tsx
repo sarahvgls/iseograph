@@ -35,7 +35,7 @@ export const Generic = {
 export type Generic = (typeof Generic)[keyof typeof Generic];
 
 export const labelVisibilities = {
-  onHover: "onHover",
+  onHover: "on hovering of connected nodes",
   always: "always",
 };
 
