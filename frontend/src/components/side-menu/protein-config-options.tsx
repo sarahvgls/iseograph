@@ -129,11 +129,11 @@ export const ProteinConfigOptions = ({
         tooltipTitle={"Signal Peptide"}
       />
       <MultiCompatibleCheckbox
-        label={"Pro-Protein"}
+        label={"Pro-Peptide"}
         checked={shouldIncludePropep}
         onChange={(checked) => setShouldIncludePropep(checked)}
-        tooltip={tooltips.proProtein}
-        tooltipTitle={"Pro-Protein"}
+        tooltip={tooltips.proPeptide}
+        tooltipTitle={"Pro-Peptide"}
       />
       <MultiCompatibleCheckbox
         label={"Polypeptide Chain"}

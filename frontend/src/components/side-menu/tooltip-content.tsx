@@ -34,8 +34,8 @@ export const tooltips = {
     "Include initial methionine processing from UniProt (identifier: INIT_MET). This marks whether the initial methionine residue is removed post-translationally.",
   signalPeptide:
     "Include signal peptides from UniProt (identifier: SIGNAL). Signal peptides are N-terminal targeting sequences that direct proteins to the secretory pathway and are typically cleaved off.",
-  proProtein:
-    "Include pro-protein/proprotein cleavage sites from UniProt (identifier: PROPEP). Pro-proteins are inactive precursors that require post-translational cleavage to generate mature active peptides.",
+  proPeptide:
+    "Include pro-peptide cleavage sites from UniProt (identifier: PROPEP). A propeptide is a part of a protein that is cleaved during maturation or activation. Once cleaved, a propeptide generally has no independent biological function.",
   polypeptideChain:
     "Include polypeptide chains from UniProt (identifier: CHAIN). This marks the extent of mature chains in proteins that undergo proteolytic processing to generate multiple functional chains.",
   peptide:
