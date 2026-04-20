@@ -73,7 +73,6 @@ def convert_graphml_to_json(input_file, output_dir):
                 "peptideCount": data.get("count", ""),
             }
 
-            # Helper function to get default value for a field
             def get_default(field):
                 if field in ["init_met", "signal", "cleaved"]:
                     return False
@@ -81,21 +80,24 @@ def convert_graphml_to_json(input_file, output_dir):
                     return "canonical"
                 return "None"
 
-            # For each field, prioritize non-default values
+            # For each field, handle conflicts appropriately
             for field in merged_data.keys():
                 default_val = get_default(field)
                 current_val = merged_data[field]
                 new_val = new_data[field]
 
-                # Check if both current and new values are non-default and different
-                if current_val != default_val and new_val != default_val and current_val != new_val:
+                # For isoformString, allow conflicting values and comma-separate them
+                if field == "isoformString" and current_val != new_val:
+                    # Comma-separate the values
+                    merged_data[field] = f"{current_val},{new_val}"
+                # For other fields, check if both current and new values are non-default and different
+                elif field != "isoformString" and current_val != default_val and new_val != default_val and current_val != new_val:
                     raise ValueError(
                         f"Conflicting non-default values for '{field}' in edges {edge_key}: "
                         f"'{current_val}' vs '{new_val}'. Multiple edges must have at most one non-default value."
                     )
-
                 # Prioritize non-default value
-                if new_val != default_val:
+                elif new_val != default_val:
                     merged_data[field] = new_val
 
     edges = [
