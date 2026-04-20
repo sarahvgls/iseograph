@@ -138,6 +138,20 @@ export const ProteinSelection = ({
   const [selectedMAggregation, setSelectedMAggregation] =
     useState<AggregationOption>("lmedian");
 
+  // Feature selections for protein processing
+  const [shouldIncludeInitMet, setShouldIncludeInitMet] =
+    useState<boolean>(false);
+  const [shouldIncludeSignal, setShouldIncludeSignal] =
+    useState<boolean>(false);
+  const [shouldIncludePropep, setShouldIncludePropep] =
+    useState<boolean>(false);
+  const [shouldIncludeChain, setShouldIncludeChain] = useState<boolean>(false);
+  const [shouldIncludePeptide, setShouldIncludePeptide] =
+    useState<boolean>(false);
+  const [selectedDigestion, setSelectedDigestion] = useState<string>("Skip");
+  const [shouldCollapseEdges, setShouldCollapseEdges] =
+    useState<boolean>(false);
+
   // Reset option C when option B is activated
   const handleNewProteinNameChange = (value: string) => {
     setNewProteinName(value);
@@ -179,7 +193,22 @@ export const ProteinSelection = ({
     if (shouldGenerateConflict) features.push("CONFLICT");
     if (shouldGenerateMutagen) features.push("MUTAGEN");
     if (shouldGenerateVariant) features.push("VARIANT");
+    if (shouldIncludeInitMet) features.push("INIT_MET");
+    if (shouldIncludeSignal) features.push("SIGNAL");
+    if (shouldIncludePropep) features.push("PROPEP");
+    if (shouldIncludeChain) features.push("CHAIN");
+    if (shouldIncludePeptide) features.push("PEPTIDE");
     if (features.length > 0) bodyParameters.features = features;
+
+    // Add digestion selection
+    if (selectedDigestion && selectedDigestion !== "Skip") {
+      bodyParameters.digestion = selectedDigestion.toLowerCase();
+    }
+
+    // Add collapse parameter only if digestion is not skip
+    if (shouldCollapseEdges) {
+      bodyParameters.collapse = false;
+    }
 
     if (peptideFilePath) {
       bodyParameters.peptide_file = peptideFilePath;
@@ -343,6 +372,20 @@ export const ProteinSelection = ({
               newFileName={newFileName}
               setNewFileName={setNewFileName}
               AggregationOptions={AggregationOptions}
+              shouldIncludeInitMet={shouldIncludeInitMet}
+              setShouldIncludeInitMet={setShouldIncludeInitMet}
+              shouldIncludeSignal={shouldIncludeSignal}
+              setShouldIncludeSignal={setShouldIncludeSignal}
+              shouldIncludePropep={shouldIncludePropep}
+              setShouldIncludePropep={setShouldIncludePropep}
+              shouldIncludeChain={shouldIncludeChain}
+              setShouldIncludeChain={setShouldIncludeChain}
+              shouldIncludePeptide={shouldIncludePeptide}
+              setShouldIncludePeptide={setShouldIncludePeptide}
+              selectedDigestion={selectedDigestion}
+              setSelectedDigestion={setSelectedDigestion}
+              shouldCollapseEdges={shouldCollapseEdges}
+              setShouldCollapseEdges={setShouldCollapseEdges}
             />
             <SecondaryButton
               style={{
@@ -415,6 +458,20 @@ export const ProteinSelection = ({
               newFileName={newFileName}
               setNewFileName={setNewFileName}
               AggregationOptions={AggregationOptions}
+              shouldIncludeInitMet={shouldIncludeInitMet}
+              setShouldIncludeInitMet={setShouldIncludeInitMet}
+              shouldIncludeSignal={shouldIncludeSignal}
+              setShouldIncludeSignal={setShouldIncludeSignal}
+              shouldIncludePropep={shouldIncludePropep}
+              setShouldIncludePropep={setShouldIncludePropep}
+              shouldIncludeChain={shouldIncludeChain}
+              setShouldIncludeChain={setShouldIncludeChain}
+              shouldIncludePeptide={shouldIncludePeptide}
+              setShouldIncludePeptide={setShouldIncludePeptide}
+              selectedDigestion={selectedDigestion}
+              setSelectedDigestion={setSelectedDigestion}
+              shouldCollapseEdges={shouldCollapseEdges}
+              setShouldCollapseEdges={setShouldCollapseEdges}
             />
             <SecondaryButton
               style={{

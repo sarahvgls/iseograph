@@ -37,6 +37,7 @@ const Sequence = styled.div`
   white-space: normal;
   cursor: pointer;
   user-select: text;
+  text-wrap: nowrap;
 `;
 
 export const SequenceContainer: React.FC<SequenceContainerProps> = ({

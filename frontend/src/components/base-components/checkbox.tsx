@@ -66,19 +66,32 @@ export const Checkbox: React.FC<CheckboxProps> = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
   return (
     <CheckboxContainer className={className}>
-      <HiddenCheckbox
-        checked={checked}
-        onChange={(e) => onChange(e.target.checked)}
-      />
-      <StyledCheckboxControl checked={checked}>
-        {checked && <CheckMark>✓</CheckMark>}
-      </StyledCheckboxControl>
-      <CheckboxLabel>{label}</CheckboxLabel>
-      {tooltip && (
-        <SecondaryButton onClick={() => setIsModalOpen(!isModalOpen)}>
-          i
-        </SecondaryButton>
-      )}
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+          width: "100%",
+        }}
+      >
+        <div style={{ display: "flex", flexDirection: "row" }}>
+          <HiddenCheckbox
+            checked={checked}
+            onChange={(e) => onChange(e.target.checked)}
+          />
+          <StyledCheckboxControl checked={checked}>
+            {checked && <CheckMark>✓</CheckMark>}
+          </StyledCheckboxControl>
+          <CheckboxLabel>{label}</CheckboxLabel>
+        </div>
+
+        {tooltip && (
+          <SecondaryButton onClick={() => setIsModalOpen(!isModalOpen)}>
+            i
+          </SecondaryButton>
+        )}
+      </div>
       {tooltip && (
         <Modal
           text={tooltip}

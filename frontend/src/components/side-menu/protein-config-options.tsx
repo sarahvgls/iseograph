@@ -1,6 +1,4 @@
-import {
-  StyledLabel,
-} from "../base-components";
+import { StyledLabel } from "../base-components";
 import { MultiCompatibleCheckbox } from "../base-components/checkbox.tsx";
 import { DropdownComponent } from "../base-components/dropdown.tsx";
 import { TextComponent } from "../base-components/textfield.tsx";
@@ -35,6 +33,20 @@ export const ProteinConfigOptions = ({
   newFileName,
   setNewFileName,
   AggregationOptions,
+  shouldIncludeInitMet,
+  setShouldIncludeInitMet,
+  shouldIncludeSignal,
+  setShouldIncludeSignal,
+  shouldIncludePropep,
+  setShouldIncludePropep,
+  shouldIncludeChain,
+  setShouldIncludeChain,
+  shouldIncludePeptide,
+  setShouldIncludePeptide,
+  selectedDigestion,
+  setSelectedDigestion,
+  shouldCollapseEdges,
+  setShouldCollapseEdges,
 }: {
   shouldGenerateVariant: boolean;
   setShouldGenerateVariant: (value: boolean) => void;
@@ -63,25 +75,97 @@ export const ProteinConfigOptions = ({
   newFileName: string;
   setNewFileName: (value: string) => void;
   AggregationOptions: Record<string, string>;
+  shouldIncludeInitMet: boolean;
+  setShouldIncludeInitMet: (value: boolean) => void;
+  shouldIncludeSignal: boolean;
+  setShouldIncludeSignal: (value: boolean) => void;
+  shouldIncludePropep: boolean;
+  setShouldIncludePropep: (value: boolean) => void;
+  shouldIncludeChain: boolean;
+  setShouldIncludeChain: (value: boolean) => void;
+  shouldIncludePeptide: boolean;
+  setShouldIncludePeptide: (value: boolean) => void;
+  selectedDigestion: string;
+  setSelectedDigestion: (value: string) => void;
+  shouldCollapseEdges: boolean;
+  setShouldCollapseEdges: (value: boolean) => void;
 }) => {
   return (
     <>
       <StyledLabel>Generate graph with:</StyledLabel>
       <MultiCompatibleCheckbox
-        label={"Variant"}
+        label={"Sequence Variants"}
         checked={shouldGenerateVariant}
         onChange={(checked) => setShouldGenerateVariant(checked)}
+        tooltip={tooltips.variant}
+        tooltipTitle={"Sequence Variants"}
       />
       <MultiCompatibleCheckbox
-        label={"Mutagen"}
+        label={"Mutagenesis Sites"}
         checked={shouldGenerateMutagen}
         onChange={(checked) => setShouldGenerateMutagen(checked)}
+        tooltip={tooltips.mutagen}
+        tooltipTitle={"Mutagenesis Sites"}
       />
       <MultiCompatibleCheckbox
-        label={"Conflict"}
+        label={"Sequence Conflicts"}
         checked={shouldGenerateConflict}
         onChange={(checked) => setShouldGenerateConflict(checked)}
+        tooltip={tooltips.conflict}
+        tooltipTitle={"Sequence Conflicts"}
       />
+      <MultiCompatibleCheckbox
+        label={"Initial Methionine"}
+        checked={shouldIncludeInitMet}
+        onChange={(checked) => setShouldIncludeInitMet(checked)}
+        tooltip={tooltips.initialMethionine}
+        tooltipTitle={"Initial Methionine"}
+      />
+      <MultiCompatibleCheckbox
+        label={"Signal Peptide"}
+        checked={shouldIncludeSignal}
+        onChange={(checked) => setShouldIncludeSignal(checked)}
+        tooltip={tooltips.signalPeptide}
+        tooltipTitle={"Signal Peptide"}
+      />
+      <MultiCompatibleCheckbox
+        label={"Pro-Peptide"}
+        checked={shouldIncludePropep}
+        onChange={(checked) => setShouldIncludePropep(checked)}
+        tooltip={tooltips.proPeptide}
+        tooltipTitle={"Pro-Peptide"}
+      />
+      <MultiCompatibleCheckbox
+        label={"Polypeptide Chain"}
+        checked={shouldIncludeChain}
+        onChange={(checked) => setShouldIncludeChain(checked)}
+        tooltip={tooltips.polypeptideChain}
+        tooltipTitle={"Polypeptide Chain"}
+      />
+      <MultiCompatibleCheckbox
+        label={"Bioactive Peptide"}
+        checked={shouldIncludePeptide}
+        onChange={(checked) => setShouldIncludePeptide(checked)}
+        tooltip={tooltips.peptide}
+        tooltipTitle={"Bioactive Peptide"}
+      />
+
+      <DropdownComponent
+        placeholder={"-- Select digestion method --"}
+        value={selectedDigestion}
+        setValue={setSelectedDigestion}
+        options={["Skip", "Gluc", "Trypsin", "Full"]}
+        label={"Digestion method:"}
+      />
+
+      {/*<MultiCompatibleCheckbox*/}
+      {/*  label={"Collapse edges"}*/}
+      {/*  checked={shouldCollapseEdges}*/}
+      {/*  onChange={(checked) => setShouldCollapseEdges(checked)}*/}
+      {/*  tooltip={tooltips.collapse}*/}
+      {/*  tooltipTitle={"Collapse Edges"}*/}
+      {/*/>*/}
+
       <StyledLabel>If available, provide experiment background:</StyledLabel>
       <div>
         <FileUpload
@@ -128,7 +212,7 @@ export const ProteinConfigOptions = ({
             label={"Substitution of amino acids I and L with J."}
             checked={shouldSubstitue}
             onChange={setShouldSubstitue}
-            tooltip={tooltips.substitue}
+            tooltip={tooltips.substitute}
             tooltipTitle={"Substitute I and L"}
           />
           <MultiCompatibleCheckbox
@@ -171,4 +255,3 @@ export const ProteinConfigOptions = ({
     </>
   );
 };
-

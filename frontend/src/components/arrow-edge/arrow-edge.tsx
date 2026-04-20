@@ -81,6 +81,37 @@ export default function ArrowEdge({
   const isConnectedNodeHovered =
     hoveredNode === source || hoveredNode === target;
 
+  // Valid label that is not none
+  const labelValid =
+    label && (label as string).toLowerCase() !== "none"
+      ? (label as string)
+      : undefined;
+
+    // Build combined feature label from generic and additional features
+    const featureLabels: string[] = [];
+    if (labelValid) {
+      featureLabels.push(labelValid);
+    }
+    // Add INIT_MET if init_met is true
+    if ((data as Record<string, unknown>)?.init_met === true) {
+      featureLabels.push("INIT_MET");
+    }
+    // Add SIGNAL if signal is true
+    if ((data as Record<string, unknown>)?.signal === true) {
+      featureLabels.push("SIGNAL");
+    }
+    // Add CLEAVED if cleaved is true
+    if ((data as Record<string, unknown>)?.cleaved === true) {
+      featureLabels.push("CLEAVED");
+    }
+    // Access cleaved_feature from data if it exists and is not None or empty
+    const cleanedFeatureValue = (data as Record<string, unknown>)?.cleaved_feature as string | undefined;
+    if (cleanedFeatureValue && cleanedFeatureValue.toLowerCase() !== "none" && cleanedFeatureValue.trim() !== "") {
+      featureLabels.push(cleanedFeatureValue);
+    }
+    const combinedLabel =
+      featureLabels.length > 0 ? featureLabels.join(", ") : undefined;
+
   // prepare path elements to be rendered in the correct order
   const pathElements = [];
 
@@ -158,12 +189,6 @@ export default function ArrowEdge({
     const brightness = (r * 299 + g * 587 + b * 114) / 1000;
     return brightness > 128 ? "#000" : "#fff"; // Return black for light colors, white for dark colors
   }, [labelColor]);
-
-  // Valid label that is not none
-  const labelValid =
-    label && (label as string).toLowerCase() !== "none"
-      ? (label as string)
-      : undefined;
 
   // If no isoforms are selected, render simple black edge
   if (!hasSelectedIsoform) {
@@ -289,7 +314,7 @@ export default function ArrowEdge({
       {/* Render multiple parallel paths for each isoform */}
       {pathElements}
 
-      {labelValid &&
+      {combinedLabel &&
         (labelVisibility === labelVisibilities.always ||
           (labelVisibility === labelVisibilities.onHover &&
             isConnectedNodeHovered)) && (
@@ -308,7 +333,7 @@ export default function ArrowEdge({
                 border: "1px solid #ccc",
               }}
             >
-              {labelValid}
+              {combinedLabel}
             </div>
           </EdgeLabelRenderer>
         )}
