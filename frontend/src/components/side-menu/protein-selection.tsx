@@ -8,13 +8,13 @@ import {
 import { useEffect, useState } from "react";
 import { callApiWithParameters } from "../../helper/api-call.ts";
 import { localStorageKeys } from "../../theme/types.tsx";
-import { DropdownComponent } from "../base-components/dropdown.tsx";
 import { TextComponent } from "../base-components/textfield.tsx";
 import { FileUpload } from "../base-components/file-upload.tsx";
 import { getFileNames } from "./protein-selection-helper.tsx";
 import useGraphStore from "../../graph/store.ts";
 import { CircularProgress } from "@mui/material";
 import { ProteinConfigOptions } from "./protein-config-options.tsx";
+import { FileBrowserModal } from "../file-management/file-browser-modal";
 
 export const ProteinSelection = ({
   previousSelectedFile,
@@ -26,6 +26,7 @@ export const ProteinSelection = ({
     useState<string>(previousSelectedFile);
   const [isAddLoading, setIsAddLoading] = useState<boolean>(false);
   const [isLoadLoading, setIsLoadLoading] = useState<boolean>(false);
+  const [isFileBrowserOpen, setIsFileBrowserOpen] = useState<boolean>(false);
 
   useEffect(() => {
     void getFileNames(setFileNames);
@@ -289,23 +290,46 @@ export const ProteinSelection = ({
       <div style={{ marginBottom: "16px" }}>
         <BoldStyledLabel>A) Select protein from recently used:</BoldStyledLabel>
         <FlexRow>
-          <DropdownComponent
-            placeholder={"--- Select a file ---"}
-            value={selectedFile}
-            setValue={setSelectedFile}
-            options={fileNames}
-            testId={"file-dropdown"}
-          />
           <SecondaryButton
-            onClick={handleRecentFileSubmit}
+            onClick={() => setIsFileBrowserOpen(true)}
             disabled={isLoadLoading}
-            id="load-button"
+            id="browse-files-button"
             data-status={isLoadLoading ? "loading" : "idle"}
+            style={{ flex: 1 }}
           >
-            {isLoadLoading ? <CircularProgress size={20} /> : "Load"}{" "}
+            {isLoadLoading ? <CircularProgress size={20} /> : "Browse Files"}
           </SecondaryButton>
+          {selectedFile && (
+            <SecondaryButton
+              onClick={handleRecentFileSubmit}
+              disabled={isLoadLoading}
+              id="load-button"
+              data-status={isLoadLoading ? "loading" : "idle"}
+            >
+              {isLoadLoading ? <CircularProgress size={20} /> : "Load"}
+            </SecondaryButton>
+          )}
         </FlexRow>
+        {selectedFile && (
+          <div style={{ marginTop: "8px", fontSize: "12px", color: "#666" }}>
+            Selected: <strong>{selectedFile}</strong>
+          </div>
+        )}
       </div>
+
+      <FileBrowserModal
+        isOpen={isFileBrowserOpen}
+        onClose={() => setIsFileBrowserOpen(false)}
+        onFileSelected={(filename) => {
+          setSelectedFile(filename);
+          localStorage.setItem(localStorageKeys.selectedFile, filename);
+        }}
+        onFileDeleted={() => {
+          setFileNames(fileNames.filter((f) => f !== selectedFile));
+          setSelectedFile("");
+          localStorage.removeItem(localStorageKeys.selectedFile);
+        }}
+      />
 
       {/* Option B: Upload protein file */}
       <div style={{ marginBottom: "16px" }}>

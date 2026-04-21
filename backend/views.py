@@ -3,6 +3,7 @@ import os
 from pathlib import Path
 import subprocess
 from subprocess import CalledProcessError
+from datetime import datetime
 
 from django.views.decorators.csrf import ensure_csrf_cookie
 
@@ -146,6 +147,107 @@ def clean_up(file_name: str) -> None:
             file_path = os.path.join(uplaods_dir, file)
             if os.path.isfile(file_path):
                 os.remove(file_path)
+
+
+# --- metadata management ---
+
+def get_metadata_path(graphml_filename: str) -> Path:
+    """
+    Returns the metadata JSON file path for a given graphml file.
+    """
+    data_dir = PROJECT_ROOT_DIR / "test_data" if TEST_MODE else PROJECT_ROOT_DIR / "data"
+    # Replace .graphml with .metadata.json
+    metadata_filename = graphml_filename.replace(".graphml", ".metadata.json")
+    return data_dir / metadata_filename
+
+
+def save_file_metadata(graphml_filename: str, metadata: dict) -> None:
+    """
+    Saves metadata for a generated graphml file.
+    """
+    metadata_path = get_metadata_path(graphml_filename)
+
+    # Add timestamp if not present
+    if "created_at" not in metadata:
+        metadata["created_at"] = datetime.utcnow().isoformat()
+
+    # Ensure filename is in metadata
+    metadata["filename"] = graphml_filename
+
+    try:
+        with open(metadata_path, "w") as f:
+            json.dump(metadata, f, indent=2)
+    except Exception as e:
+        print(f"Warning: Failed to save metadata for {graphml_filename}: {e}")
+
+
+def load_file_metadata(graphml_filename: str) -> dict | None:
+    """
+    Loads metadata for a graphml file. Returns None if metadata doesn't exist.
+    """
+    metadata_path = get_metadata_path(graphml_filename)
+
+    try:
+        if metadata_path.exists():
+            with open(metadata_path, "r") as f:
+                return json.load(f)
+    except Exception as e:
+        print(f"Warning: Failed to load metadata for {graphml_filename}: {e}")
+
+    return None
+
+
+def delete_file_and_metadata(graphml_filename: str) -> bool:
+    """
+    Deletes both the graphml file and its metadata.
+    Returns True if successful, False otherwise.
+    """
+    data_dir = PROJECT_ROOT_DIR / "test_data" if TEST_MODE else PROJECT_ROOT_DIR / "data"
+    graphml_path = data_dir / graphml_filename
+    metadata_path = get_metadata_path(graphml_filename)
+
+    try:
+        if graphml_path.exists():
+            os.remove(graphml_path)
+        if metadata_path.exists():
+            os.remove(metadata_path)
+        return True
+    except Exception as e:
+        print(f"Warning: Failed to delete file {graphml_filename}: {e}")
+        return False
+
+
+def get_all_files_with_metadata() -> list[dict]:
+    """
+    Returns a list of all graphml files in the data directory with their metadata.
+    """
+    data_dir = PROJECT_ROOT_DIR / "test_data" if TEST_MODE else PROJECT_ROOT_DIR / "data"
+    files_with_metadata = []
+
+    if not os.path.exists(data_dir):
+        return files_with_metadata
+
+    for filename in sorted(os.listdir(data_dir)):
+        if filename.endswith(".graphml"):
+            metadata = load_file_metadata(filename)
+
+            # Get file modification time as fallback
+            file_path = data_dir / filename
+            if metadata is None:
+                # Create basic metadata if none exists
+                mod_time = os.path.getmtime(file_path)
+                created_at = datetime.fromtimestamp(mod_time).isoformat()
+                metadata = {
+                    "filename": filename,
+                    "created_at": created_at
+                }
+
+            files_with_metadata.append(metadata)
+
+    # Sort by creation date, newest first
+    files_with_metadata.sort(key=lambda x: x.get("created_at", ""), reverse=True)
+
+    return files_with_metadata
 
 
 # --- api calls ---
@@ -308,6 +410,34 @@ def generate_base_graph(request):
     if not os.path.exists(output_file):
         return JsonResponse({"success": False, "message": f"Failed to generate graph for {protein_id}."}, status=500)
 
+    # Save metadata about the generated file
+    graphml_filename = f"{custom_file_name}.graphml"
+    metadata = {
+        "filename": graphml_filename,
+        "created_at": datetime.utcnow().isoformat(),
+        "protein_id": protein_id,
+        "uniprot_id": uniprot_id,
+        "features": data.get("features", ["VAR_SEQ"]),
+        "digestion": digestion,
+        "collapse_edges": data.get("collapse", False),
+        "peptide_file": data.get("peptide_file", None),
+        "metadata_file": data.get("metadata_file", None),
+        "compare_column": data.get("compare_column", None),
+        "has_intensity": "intensity" in data,
+        "count_peptides": "count" in data,
+        "merge_peptides": "merge_peptides" in data,
+        "o_aggregation": data.get("o_aggregation", None),
+        "m_aggregation": data.get("m_aggregation", None),
+        "substitute": "substitute" in data,
+        # Extract file names from paths for better display
+        "peptide_file_name": data.get("peptide_file", "").split("/")[-1] if data.get("peptide_file") else None,
+        "metadata_file_name": data.get("metadata_file", "").split("/")[-1] if data.get("metadata_file") else None,
+        # Peptide handling methods
+        "peptide_overlap_handling": "merge" if "merge_peptides" in data else "default",
+        "multiple_peptide_instances": "aggregated" if data.get("m_aggregation") else "default",
+    }
+    save_file_metadata(graphml_filename, metadata)
+
     try:
         run_conversion_script(f"{custom_file_name}.graphml")
         clean_up(custom_file_name)
@@ -413,3 +543,45 @@ def process_protein_file(request):
         "protein_file": processed_file,
         "protein_id": uniprot_id
     })
+
+
+@ensure_csrf_cookie
+def get_files_with_metadata(request):
+    """
+    API endpoint to get all available files with their metadata.
+    """
+    if request.method != "GET":
+        return JsonResponse({"success": False, "message": "Invalid request method. Use GET."}, status=405)
+
+    try:
+        files_with_metadata = get_all_files_with_metadata()
+        return JsonResponse({"success": True, "data": files_with_metadata})
+    except Exception as e:
+        error_msg = f"Failed to retrieve files: {str(e)}"
+        return JsonResponse({"success": False, "message": error_msg}, status=500)
+
+
+@ensure_csrf_cookie
+def delete_file(request):
+    """
+    API endpoint to delete a file and its metadata.
+    """
+    if request.method != "POST":
+        return JsonResponse({"success": False, "message": "Invalid request method. Use POST."}, status=405)
+
+    data = json.loads(request.body)
+    filename = data.get("filename")
+
+    if not filename:
+        return JsonResponse({"success": False, "message": "Filename must be provided."}, status=400)
+
+    if not filename.endswith(".graphml"):
+        return JsonResponse({"success": False, "message": "Invalid file type. Only .graphml files can be deleted."},
+                            status=400)
+
+    success = delete_file_and_metadata(filename)
+
+    if success:
+        return JsonResponse({"success": True, "message": f"File '{filename}' deleted successfully."})
+    else:
+        return JsonResponse({"success": False, "message": f"Failed to delete file '{filename}'."}, status=500)
