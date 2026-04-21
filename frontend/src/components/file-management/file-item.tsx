@@ -107,7 +107,6 @@ export const FileItem: React.FC<{
   onSelect: () => void;
   onDelete: () => void;
 }> = ({ file, onDelete, onSelect }) => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isExpanded, setIsExpanded] = useState(false);
 
   const handleFileItemClick = (e: React.MouseEvent) => {

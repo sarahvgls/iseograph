@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import styled from "styled-components";
 import { CircularProgress } from "@mui/material";
 import { callApiWithParameters } from "../../helper/api-call.ts";
 import { callApi } from "../../helper/api-call.ts";
 import { FileItem } from "./file-item";
-import { useOutsidePress } from "../../helper/outside-press.tsx";
+import { IconButton } from "../icon";
+import { createPortal } from "react-dom";
 
 interface FileMetadata {
   filename: string;
@@ -25,30 +26,36 @@ interface FileMetadata {
   substitute?: boolean;
 }
 
-const Backdrop = styled.div`
+const GlobalContainer = styled.div`
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
+  width: 100vw;
+  height: 100vh;
   background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 10001;
+`;
+
+const CenteredContainer = styled.div`
+  position: relative;
+  width: auto;
+  max-width: 90vw;
+  max-height: 90vh;
+  z-index: 10002;
 `;
 
 const ModalContainer = styled.div`
   background: white;
   border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-  max-width: 600px;
-  width: 90%;
-  max-height: 80vh;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  height: 90vh;
   display: flex;
   flex-direction: column;
   padding: 0;
-  z-index: 1001;
 `;
 
 const Header = styled.div`
@@ -57,11 +64,16 @@ const Header = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  width: 40vw;
 
   h2 {
     margin: 0;
     font-size: 18px;
     color: #333;
+    flex: 1;
+    min-width: 200px;
   }
 
   button {
@@ -80,6 +92,27 @@ const Header = styled.div`
     &:hover {
       color: #000;
     }
+  }
+`;
+
+const SearchContainer = styled.div<{ isVisible: boolean }>`
+  display: ${(props) => (props.isVisible ? "flex" : "none")};
+  padding: 10px 20px;
+  border-bottom: 1px solid #e0e0e0;
+  gap: 12px;
+`;
+
+const SearchInput = styled.input`
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+
+  &::placeholder {
+    color: #999;
   }
 `;
 
@@ -136,9 +169,80 @@ export const FileBrowserModal: React.FC<{
   const [files, setFiles] = useState<FileMetadata[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const modalRef = useRef<HTMLDivElement>(null!);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const containerRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
-  useOutsidePress(modalRef, onClose, isOpen, false);
+  // Handle outside click to close modal
+  useEffect(() => {
+    const handleOutsideClick = (event: MouseEvent) => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleOutsideClick);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, [isOpen, onClose]);
+
+  // Filter files based on search query
+  const filteredFiles = useMemo(() => {
+    if (!searchQuery.trim()) {
+      return files;
+    }
+
+    const query = searchQuery.toLowerCase();
+    return files.filter((file) => {
+      // Search in filename
+      if (file.filename.toLowerCase().includes(query)) {
+        return true;
+      }
+      // Search in protein ID
+      if (file.protein_id?.toLowerCase().includes(query)) {
+        return true;
+      }
+      // Search in UniProt ID
+      if (file.uniprot_id?.toLowerCase().includes(query)) {
+        return true;
+      }
+      // Search in features
+      if (file.features?.some((f) => f.toLowerCase().includes(query))) {
+        return true;
+      }
+      // Search in digestion method
+      if (file.digestion?.toLowerCase().includes(query)) {
+        return true;
+      }
+      // Search in file names
+      if (file.peptide_file?.toLowerCase().includes(query)) {
+        return true;
+      }
+      if (file.metadata_file?.toLowerCase().includes(query)) {
+        return true;
+      }
+      // Search in compare column
+      if (file.compare_column?.toLowerCase().includes(query)) {
+        return true;
+      }
+      return false;
+    });
+  }, [files, searchQuery]);
+
+  // Focus search input when search is opened
+  useEffect(() => {
+    if (isSearchOpen && searchInputRef.current) {
+      searchInputRef.current.focus();
+    }
+  }, [isSearchOpen]);
 
   useEffect(() => {
     if (isOpen) {
@@ -186,42 +290,64 @@ export const FileBrowserModal: React.FC<{
     return null;
   }
 
-  return (
-    <Backdrop>
-      <ModalContainer ref={modalRef}>
-        <Header>
-          <h2>Select File from Recently Used</h2>
-          <button onClick={onClose}>×</button>
-        </Header>
-        <Content>
-          {loading ? (
-            <LoadingContainer>
-              <CircularProgress size={40} />
-            </LoadingContainer>
-          ) : error ? (
-            <EmptyState>
-              <p>{error}</p>
-            </EmptyState>
-          ) : files.length === 0 ? (
-            <EmptyState>
-              <p>No files available yet.</p>
-              <p>Generate a protein graph to get started.</p>
-            </EmptyState>
-          ) : (
-            files.map((file) => (
-              <FileItem
-                key={file.filename}
-                file={file}
-                onSelect={() => {
-                  onFileSelected(file.filename);
-                  onClose();
-                }}
-                onDelete={() => handleFileDelete(file.filename)}
-              />
-            ))
-          )}
-        </Content>
-      </ModalContainer>
-    </Backdrop>
+  return createPortal(
+    <GlobalContainer>
+      <CenteredContainer ref={containerRef}>
+        <ModalContainer>
+          <Header>
+            <h2>Select File from Recently Used</h2>
+            <IconButton
+              icon="search"
+              onClick={() => setIsSearchOpen(!isSearchOpen)}
+            />
+            <button onClick={onClose}>×</button>
+          </Header>
+          <SearchContainer isVisible={isSearchOpen}>
+            <SearchInput
+              ref={searchInputRef}
+              type="text"
+              placeholder="Search by filename, protein ID, features, digestion method..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </SearchContainer>
+          <Content>
+            {loading ? (
+              <LoadingContainer>
+                <CircularProgress size={40} />
+              </LoadingContainer>
+            ) : error ? (
+              <EmptyState>
+                <p>{error}</p>
+              </EmptyState>
+            ) : filteredFiles.length === 0 ? (
+              <EmptyState>
+                <p>
+                  {searchQuery
+                    ? "No files match your search."
+                    : "No files available yet."}
+                </p>
+                {!searchQuery && (
+                  <p>Generate a protein graph to get started.</p>
+                )}
+              </EmptyState>
+            ) : (
+              filteredFiles.map((file) => (
+                <FileItem
+                  key={file.filename}
+                  file={file}
+                  onSelect={() => {
+                    onFileSelected(file.filename);
+                    onClose();
+                  }}
+                  onDelete={() => handleFileDelete(file.filename)}
+                />
+              ))
+            )}
+          </Content>
+        </ModalContainer>
+      </CenteredContainer>
+    </GlobalContainer>,
+    document.body,
   );
 };
